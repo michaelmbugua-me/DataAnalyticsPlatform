@@ -1,5 +1,7 @@
 # Data Analytics Platform
 
+[![Coverage Status](https://coveralls.io/repos/github/michaelmbugua-me/AngularTestingJest/badge.svg)](https://coveralls.io/github/michaelmbugua-me/AngularTestingJest)
+
 A modern Angular-based data analytics platform designed for exploring, filtering, and visualizing medium to large datasets with exceptional performance and user experience.
 
 ## Features
@@ -107,4 +109,3 @@ npm run test:coverage
 # Run tests in watch mode
 npm run test:watch
 ```
-[![Coverage Status](https://coveralls.io/repos/github/michaelmbugua-me/AngularTestingJest/badge.svg)](https://coveralls.io/github/michaelmbugua-me/AngularTestingJest)

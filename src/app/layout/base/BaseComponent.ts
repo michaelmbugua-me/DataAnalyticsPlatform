@@ -89,15 +89,25 @@ export class BaseComponent implements OnInit, AfterViewChecked {
         id: 1, title: 'DASHBOARD', route: ['/dashboard'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-chart-bar'
       },
 
-      // Table with stats
+      // Data Explorer
       {
         id: 2, title: 'DATA EXPLORER', route: ['/data-explorer'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-search'
+      },
+
+      // Filter Builder
+      {
+        id: 3, title: 'FILTER BUILDER', route: ['/filter-builder'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-filter'
+      },
+
+      // Table with stats
+      {
+        id: 4, title: 'ANALYSIS TOOLS', route: ['/analysis-tools'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-hammer'
       },
 
 
       // Table with stats
       {
-        id: 3, title: 'VISUALIZATIONS', route: ['/visualization'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-cog'
+        id: 5, title: 'VISUALIZATIONS', route: ['/visualization'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-cog'
       }
 
 
