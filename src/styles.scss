@@ -1,0 +1,54 @@
+@use "tailwindcss";
+@import "primeicons/primeicons.css";
+
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+
+a {
+  text-decoration: none;
+}
+
+button {
+  font-family: 'Inter', sans-serif!important;
+}
+
+:root {
+  /* Brand primary color */
+  --bs-primary: #A32A29;
+  --bs-primary-rgb: 163, 42, 41;
+  --bs-link-color: #A32A29;
+  --bs-link-hover-color: #8c2423;
+}
+
+
+.custom-btn-primary {
+  background-color: #A32A29 !important;
+  border-color: #A32A29 !important;
+}
+
+.custom-btn-primary:hover {
+  background-color: #8c2423 !important;
+  border-color: #8c2423 !important;
+}
+
+/* Checkbox/radio checked color */
+.form-check-input:checked {
+  background-color: #A32A29;
+  border-color: #A32A29;
+}

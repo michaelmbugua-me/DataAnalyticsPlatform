@@ -1,0 +1,77 @@
+<div class="flex flex-col lg:flex-row">
+  <!-- Left Column -->
+  <div class="lg:w-1/2 lg:ml-2 flex justify-center items-center h-screen">
+    <div class="lg:w-5/8">
+      <ul class="mx-0 p-0 mt-3 border-0 shadow-sm">
+        <li>
+          <a [class.active_nav_titles]="true" class="nav_titles text-center"></a>
+          <div class="lg:px-4 py-4 rounded-lg shadow-md bg-white px-2">
+            <h5 class="text-[#BA0C2F] text-left">Log in to your Account</h5>
+            <form (ngSubmit)="signIn()" [formGroup]="loginForm" class="mt-2">
+              <div class="w-full pt-3">
+                <label class="login-label mb-2">Email Address</label>
+                <input class="form-control" formControlName="username" placeholder="Enter your Email" required
+                       type="email">
+
+              </div>
+              <div class="w-full pt-3">
+                <label class="login-label mb-2">Password</label>
+                <div class="input-group mb-3">
+                  <input [type]="inputType" aria-label="password" autocomplete="off" class="form-control"
+                         formControlName="password" id="password" placeholder="******" required>
+                  <div (click)="toggleShowPassword()" class="input-group-prepend cursor-pointer">
+                  </div>
+                </div>
+                <div>
+                </div>
+              </div>
+              <div class="flex justify-between pt-1">
+                <div class="form-check mb-2 mt-2">
+                  <input class="form-check-input" id="exampleCheck1" type="checkbox">
+                  <label class="login-label-two" for="exampleCheck1">Remember me</label>
+                </div>
+                <p class="login-label-two mb-2 mt-2 cursor-pointer">Forgot your Password?</p>
+              </div>
+              <div class="pt-3 pb-2">
+
+
+                <button class="btn custom-btn-primary w-100" pButton type="submit">
+                  <i class="pi pi-lock" pButtonIcon></i>
+                  <span pButtonLabel>Log In</span>
+                </button>
+
+              </div>
+            </form>
+          </div>
+        </li>
+      </ul>
+      <p
+        class="mb-2 text-center mt-2 mx-auto small">{{ portalVersion }}</p>
+    </div>
+  </div>
+
+
+  <!-- Right Column -->
+  <div class="hidden lg:flex lg:w-1/2 justify-center items-center me-5">
+    <div class="image-container rounded-lg">
+      <div class="row">
+        <div class="col-4 mt-4 mb-4">
+          <img alt="equity_logo" height="90" ngSrc="/images/Inverse.svg" width="120">
+        </div>
+      </div>
+      <div class="mt-auto">
+        <div class="row">
+          <div class="col-12 mt-3">
+            <span class="text-white welcome-font">Welcome to Equity Analytics</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 mt-2">
+            <span
+              class="text-white welcome-subtext-font">Get an overview of different analytics data from this platform</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
