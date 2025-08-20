@@ -1,6 +1,6 @@
 globalThis.ngJest = {
   skipNgcc: true,
-  tsconfig: 'tsconfig.spec.json', // this is the project root tsconfig
+  tsconfig: 'tsconfig.spec.json',
 };
 
 /** @type {import('@jest/types').Config.InitialOptions} */
