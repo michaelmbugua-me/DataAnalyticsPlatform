@@ -1,59 +1,110 @@
-# DataAnalytics
+# Data Analytics Platform
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.6.
+A modern Angular-based data analytics platform designed for exploring, filtering, and visualizing medium to large datasets with exceptional performance and user experience.
 
-## Development server
+## Features
 
-To start a local development server, run:
+### Data Exploration
+- **Dataset Management**: Load and browse large datasets with intuitive interface
+- **Advanced Filtering**: Multi-criteria filtering with complex conditions
+- **Saved Filters**: Store and quickly access frequently used filter configurations
+- **Global Search**: Text-based search across entire datasets
 
-```bash
-ng serve
+### Data Analysis
+- **Grouping & Aggregation**: Summarize data to identify patterns and trends
+- **Pivot Table Creation**: Analyze data from multiple perspectives
+- **Calculated Aggregates**: Automatic computation of statistics and distributions
+- **Custom Query Building**: Create specific data views with advanced query tools
+
+### Data Visualization
+- **Interactive Charts**: Multiple chart types for trend visualization
+- **High-Performance Rendering**: Efficient chart loading without workflow interruption
+- **Real-time Feedback**: Clear loading states and error notifications
+- **Export Capabilities**: Share visualizations in multiple formats
+
+### User Experience
+- **Responsive Design**: Seamless experience across desktop and mobile devices
+- **Collaboration Tools**: Share analysis views with team members
+- **Work Caching**: Automatic saving of recent work for efficiency
+- **Intuitive Interface**: User-friendly navigation and interactions
+
+## Technical Stack
+
+- **Framework**: Angular 17+ (Standalone Components)
+- **Styling**: Sass with PrimeNG UI Component Library
+- **State Management**: Angular Signals + RxJS
+- **Testing**: Jest with comprehensive unit test coverage
+- **Build Tool**: Angular CLI with optimized production builds
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── core/                 # Core services and interceptors
+│   ├── features/            # Feature modules
+│   │   ├── dashboard/       # Dashboard components
+│   │   ├── data-explorer/   # Data exploration tools
+│   │   ├── analysis/        # Analysis components
+│   │   ├── visualization/   # Charting components
+│   │   └── shared/          # Shared utilities
+│   ├── models/              # TypeScript interfaces and types
+│   ├── services/            # Business logic and data services
+│   └── utils/               # Utility functions and helpers
+├── assets/
+│   ├── data/               # Mock datasets
+│   └── styles/             # Global styles and themes
+└── environments/           # Environment configurations
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Getting Started
 
-## Code scaffolding
+### Prerequisites
+- Node.js 18+
+- npm 9+ or yarn 1.22+
+- Angular CLI 17+
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd data-analytics-platform
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server**
+   ```bash
+   ng serve
+   ```
+
+4. **Open your browser**
+   Navigate to `http://localhost:4200`
+
+### Building for Production
 
 ```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
+# Development build
 ng build
+
+# Production build with optimization
+ng build --configuration production
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### Running Tests
 
 ```bash
-ng test
+# Run unit tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run tests in watch mode
+npm run test:watch
 ```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+[![Coverage Status](https://coveralls.io/repos/github/michaelmbugua-me/AngularTestingJest/badge.svg)](https://coveralls.io/github/michaelmbugua-me/AngularTestingJest)
