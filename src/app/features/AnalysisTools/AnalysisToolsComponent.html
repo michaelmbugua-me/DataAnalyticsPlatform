@@ -109,6 +109,145 @@
 
         </section>
 
+        <div class="my-2">
+          <div class="bg-surface-50 dark:bg-surface-950">
+              <div class="space-y-6">
+                <!-- Row 1 -->
+                <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
+                  <div class="w-full rounded-xl border border-gray-200 bg-white shadow p-4 md:p-6">
+
+                    <div class="controls-panel">
+                      <div class="control-section">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Data Grouping</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                          <div class="flex flex-col">
+                            <label for="group-by" class="block text-sm font-medium mb-2">Group By</label>
+                            <p-select id="group-by" [options]="[
+                              {label: '-- Select Dimension --', value: ''},
+                              {label: 'Platform', value: 'platform'},
+                              {label: 'Country', value: 'country'},
+                              {label: 'Device Tier', value: 'device_tier'},
+                              {label: 'Event Type', value: 'event_name'},
+                              {label: 'Network Type', value: 'network_type'},
+                              {label: 'Day', value: 'day'}
+                            ]" class="w-full"></p-select>
+                          </div>
+
+                          <div class="flex flex-col">
+                            <label for="aggregation" class="block text-sm font-medium mb-2">Aggregation</label>
+                            <p-select id="aggregation" [options]="[
+                              {label: 'Count', value: 'count'},
+                              {label: 'Sum', value: 'sum'},
+                              {label: 'Average', value: 'avg'},
+                              {label: 'Minimum', value: 'min'},
+                              {label: 'Maximum', value: 'max'}
+                            ]" class="w-full"></p-select>
+                          </div>
+
+                          <div class="flex flex-col">
+                            <label for="measure" class="block text-sm font-medium mb-2">Measure</label>
+                            <p-select id="measure" [options]="[
+                              {label: 'Count', value: 'count'},
+                              {label: 'Duration (ms)', value: 'duration_ms'},
+                              {label: 'Revenue (USD)', value: 'revenue_usd'}
+                            ]" class="w-full"></p-select>
+                          </div>
+
+                          <div class="flex flex-col">
+                            <span class="text-transparent block text-sm font-medium mb-2">Apply</span>
+                            <button class="btn custom-btn-primary" pButton type="submit">
+                              <i class="pi pi-filter" pButtonIcon></i>
+                              <span pButtonLabel>Apply Grouping</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="control-section">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3 mt-3">Pivot Table Configuration</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                          <div class="flex flex-col">
+                            <label for="row-dimension" class="block text-sm font-medium mb-2">Rows</label>
+                            <p-select id="row-dimension" [options]="[
+                              {label: 'Platform', value: 'platform'},
+                              {label: 'Country', value: 'country'},
+                              {label: 'Device Tier', value: 'device_tier'},
+                              {label: 'Event Type', value: 'event_name'}
+                            ]" class="w-full"></p-select>
+                          </div>
+
+                          <div class="flex flex-col">
+                            <label for="column-dimension" class="block text-sm font-medium mb-2">Columns</label>
+                            <p-select id="column-dimension" [options]="[
+                              {label: '-- None --', value: ''},
+                              {label: 'Platform', value: 'platform'},
+                              {label: 'Country', value: 'country'},
+                              {label: 'Device Tier', value: 'device_tier'},
+                              {label: 'Event Type', value: 'event_name'}
+                            ]" class="w-full"></p-select>
+                          </div>
+
+                          <div class="control-item">
+                            <label for="value-measure" class="block text-sm font-medium mb-2">Values</label>
+                            <p-select id="value-measure" [options]="[
+                              {label: 'Count', value: 'count'},
+                              {label: 'Duration (ms)', value: 'duration_ms'},
+                              {label: 'Revenue (USD)', value: 'revenue_usd'}
+                            ]" class="w-full"></p-select>
+                          </div>
+
+                          <div class="flex flex-col">
+                            <span class="text-transparent block text-sm font-medium mb-2">Apply</span>
+                            <button class="btn custom-btn-primary" pButton type="submit">
+                              <i class="pi pi-filter" pButtonIcon></i>
+                              <span pButtonLabel>Generate Pivot</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+
+        <div class="my-2">
+          <div class="bg-surface-50 dark:bg-surface-950">
+            @if (true) {
+              <div class="space-y-6">
+                <!-- Row 1 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div class="w-full rounded-xl border border-gray-200 bg-white shadow p-4 md:p-6">
+
+                    <ag-grid-angular
+                      style="height: 400px; width: 100%;"
+                      [rowData]="data()"
+                      [columnDefs]="columnDefs"
+                      [defaultColDef]="defaultColDef"
+                      [gridOptions]="gridOptions"
+                    ></ag-grid-angular>
+
+                  </div>
+                  <div class="w-full rounded-xl border border-gray-200 bg-white shadow p-4 md:p-6">
+                    <ag-grid-angular
+                      style="height: 400px; width: 100%;"
+                      [rowData]="data()"
+                      [columnDefs]="columnDefs"
+                      [defaultColDef]="defaultColDef"
+                      [gridOptions]="gridOptions"
+                    ></ag-grid-angular>
+                  </div>
+                </div>
+              </div>
+            } @else {
+              <div class="flex justify-center items-center h-screen">
+                <p-progressSpinner></p-progressSpinner>
+              </div>
+            }
+          </div>
+        </div>
+
       </div>
 
 

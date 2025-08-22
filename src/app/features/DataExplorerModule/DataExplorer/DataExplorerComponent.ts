@@ -64,8 +64,8 @@ export class DataExplorerComponent implements OnInit {
   };
 
   async ngOnInit() {
-    const response = await fetch('/data/raw_events.json');
-    this.data.set(await response.json());
+      const response = await fetch('/data/raw_events.json');
+      this.data.set(await response.json());
 
     this.filters = [
       {name: 'Today\'s records', code: 'NY'},
