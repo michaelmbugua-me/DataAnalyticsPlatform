@@ -1,11 +1,10 @@
-import {Component, OnInit, Signal} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {ColDef, GridOptions, GridReadyEvent} from 'ag-grid-community';
 import {Drawer} from 'primeng/drawer';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {Listbox} from 'primeng/listbox';
 import {FormsModule} from '@angular/forms';
-
 
 
 @Component({
@@ -30,12 +29,16 @@ export class DataExplorerComponent implements OnInit {
 
   selectedFilter!: Filter;
 
-
-  visible: boolean = false;
+  visible = signal(false);
 
   columnDefs: ColDef[] = [
     {field: 'id', headerName: 'ID', filter: 'agTextColumnFilter'},
-    {field: 'timestamp', headerName: 'Timestamp', filter: 'agDateColumnFilter', valueFormatter: params => new Date(params.value).toLocaleString()},
+    {
+      field: 'timestamp',
+      headerName: 'Timestamp',
+      filter: 'agDateColumnFilter',
+      valueFormatter: params => new Date(params.value).toLocaleString()
+    },
     {field: 'day', headerName: 'Day', filter: 'agNumberColumnFilter'},
     {field: 'hour', headerName: 'Hour', filter: 'agNumberColumnFilter'},
     {field: 'source', headerName: 'Source', filter: 'agTextColumnFilter'},
@@ -44,15 +47,9 @@ export class DataExplorerComponent implements OnInit {
     {field: 'user_pseudo_id', headerName: 'User Pseudo ID', filter: 'agTextColumnFilter'}
   ];
 
-  public defaultColDef: ColDef = {
-    // ... same default column definitions
-  };
+  public defaultColDef: ColDef = {};
 
-  paginationPageSizeSelector = [5, 10, 20, 50, 100];
-  paginationPageSize = 10;
-
-  rowData: any = [];
-  public data: any[] = [];
+  public data = signal<any[]>([]);
 
   // Grid Options
   public gridOptions: GridOptions = {
@@ -68,13 +65,13 @@ export class DataExplorerComponent implements OnInit {
 
   async ngOnInit() {
     const response = await fetch('/data/raw_events.json');
-    this.data = await response.json();
+    this.data.set(await response.json());
 
     this.filters = [
-      { name: 'Today\'s records' , code: 'NY' },
-      { name: 'This weeks\'s records', code: 'RM' },
-      { name: 'This month\'s records', code: 'LDN' },
-      { name: 'This year\'s records', code: 'IST' }
+      {name: 'Today\'s records', code: 'NY'},
+      {name: 'This weeks\'s records', code: 'RM'},
+      {name: 'This month\'s records', code: 'LDN'},
+      {name: 'This year\'s records', code: 'IST'}
     ];
   }
 
@@ -85,7 +82,7 @@ export class DataExplorerComponent implements OnInit {
   }
 
   toggleFilterVisibility() {
-    this.visible = !this.visible;
+    this.visible.update(v => !v);
   }
 }
 
