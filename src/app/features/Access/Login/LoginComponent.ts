@@ -8,7 +8,7 @@ import {NgOptimizedImage} from '@angular/common';
 @Component({
   selector: 'app-login',
   templateUrl: 'LoginComponent.html',
-  styleUrl: 'LoginComponent.css',
+  styleUrl: 'LoginComponent.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,

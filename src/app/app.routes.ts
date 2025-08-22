@@ -4,6 +4,7 @@ import {DashboardComponent} from './features/Dashboard/DashboardComponent';
 import {BaseComponent} from './layout/base/BaseComponent';
 import {VisualizationsComponent} from './features/Visualizations/VisualizationsComponent';
 import {DataExplorerComponent} from './features/DataExplorer/DataExplorerComponent';
+import {AnalysisToolsComponent} from './features/AnalysisTools/AnalysisToolsComponent';
 
 export const routes: Routes = [
 
@@ -16,6 +17,7 @@ export const routes: Routes = [
       {path: 'dashboard', component: DashboardComponent},
       {path: 'visualization', component: VisualizationsComponent},
       {path: 'data-explorer', component: DataExplorerComponent},
+      {path: 'analysis-tools', component: AnalysisToolsComponent},
     ]
   }
 ];

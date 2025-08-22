@@ -1,30 +1,23 @@
 import {Component, OnInit, Signal} from '@angular/core';
-import {GridModule, PageService, SortService, VirtualScrollService} from '@syncfusion/ej2-angular-grids';
-import {DataService} from '../../core/services/DataService';
-import { DataManager, WebApiAdaptor } from '@syncfusion/ej2-data';
+import {TableLazyLoadEvent, TableModule} from 'primeng/table';
+import {HttpClient} from '@angular/common/http';
 
 
 @Component({
-  selector: 'app-visualizations',
-  templateUrl: './VisualizationsComponent.html',
+  selector: 'app-analysis-tools',
+  templateUrl: './AnalysisToolsComponent.html',
   imports: [
-    GridModule
+    TableModule,
   ],
-  providers: [SortService, PageService, VirtualScrollService],
-  styleUrls: ['./VisualizationsComponent.scss']
+  providers: [],
+  styleUrls: ['./AnalysisToolsComponent.scss']
 })
-export class VisualizationsComponent implements OnInit {
-  public data: any[] = [];
-  public pageSettings = { pageSize: 50 };
+export class AnalysisToolsComponent implements OnInit {
 
+  ngOnInit(): void {
+        throw new Error("Method not implemented.");
+    }
 
-  constructor() {
-  }
-
-  async ngOnInit() {
-    const response = await fetch('/data/raw_events.json');
-    this.data = await response.json();
-  }
 
 
 }

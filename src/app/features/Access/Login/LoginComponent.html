@@ -20,6 +20,12 @@
                   <input [type]="inputType" aria-label="password" autocomplete="off" class="form-control"
                          formControlName="password" id="password" placeholder="******" required>
                   <div (click)="toggleShowPassword()" class="input-group-prepend cursor-pointer">
+                    @if (!showingPassword) {
+                      <span class="input-group-text p-1"><i class="pi pi-eye" style="font-size: 2rem; color: #708090"></i></span>
+                    } @else {
+                      <span class="input-group-text p-1"><i class="pi pi-eye-slash" style="font-size: 2rem; color: #708090"></i></span>
+                    }
+
                   </div>
                 </div>
                 <div>
