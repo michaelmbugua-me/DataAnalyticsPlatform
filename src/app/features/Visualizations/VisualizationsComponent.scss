@@ -10,3 +10,21 @@
   width: 100%;
   margin-top: 20px;
 }
+
+.chart-container {
+  //padding: 20px;
+}
+
+/* Replaced row and card styles with Tailwind utility classes in the template */
+
+ag-charts,
+ag-financial-charts {
+  display: block;
+  padding: 0; /* padding now handled by Tailwind on the container */
+  height: 100%;
+  border-radius: 0; /* radius handled by container */
+  background-color: transparent; /* card bg handled by container */
+  border: none; /* border handled by container */
+  overflow: hidden;
+  transform: translate3d(0, 0, 0);
+}

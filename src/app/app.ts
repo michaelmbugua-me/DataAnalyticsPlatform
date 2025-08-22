@@ -1,17 +1,18 @@
 import {Component, OnInit, signal} from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import {Button} from 'primeng/button';
+import {RouterOutlet} from '@angular/router';
 import {initFlowbite} from 'flowbite';
+import {AllCommunityModule, ModuleRegistry} from 'ag-grid-community';
+
 
 @Component({
-  selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  selector: 'app-root', imports: [RouterOutlet], templateUrl: './app.html', styleUrl: './app.css'
 })
 export class App implements OnInit {
+  protected readonly title = signal('dataAnalytics');
+
   ngOnInit(): void {
     initFlowbite();
   }
-  protected readonly title = signal('dataAnalytics');
 }
+
+ModuleRegistry.registerModules([AllCommunityModule]);
