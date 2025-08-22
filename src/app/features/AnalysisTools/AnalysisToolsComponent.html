@@ -1,0 +1,95 @@
+<div class="">
+  <div class=" text-sm lg:pt-20 pt-5">
+
+    <div class="  pt-2 w-full" style="background-color: #FBFBFB!important">
+
+      <div class=" pt-2 ">
+        <div class="lg:block">
+          <div class="lg:flex justify-content-between pt-2 items-center">
+
+            <div class="pt-2">
+              <div class="bg-surface-0 dark:bg-surface-950">
+
+                <div class="flex items-start flex-col md:justify-between md:flex-row">
+                  <div>
+                    <div class="font-bold text-3xl text-surface-900 dark:text-surface-0 mb-4">Dashboard</div>
+                    <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+                      <div class="flex items-center gap-2">
+                        <i class="pi pi-chart-bar text-base! leading-normal!"></i>
+                        <span>Find a summary of the different analysis details here</span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+
+
+            <div class="lg:flex lg:space-x-2 ">
+
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+
+      <div class=" pt-0">
+        <div class="lg:block">
+          <div class="lg:flex justify-content-between pt-0 items-center mr-2">
+
+            <div class="pt-2">
+              <div class="py-0 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                <div class="relative">
+
+
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:flex lg:space-x-2 ">
+
+              <div class="py-0 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+              </div>
+
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-1">
+        <section class="py-3 py-md-3">
+          <div>
+            <div class="bg-surface-50 dark:bg-surface-950">
+              <ejs-grid [dataSource]="data"
+                        [allowPaging]="true"
+                        [allowSorting]="true"
+                        [enableVirtualization]="true"
+                        [pageSettings]="pageSettings"
+                        height="600">
+<!--                <e-columns>-->
+<!--                  <e-column field="id" headerText="ID" width="100"></e-column>-->
+<!--                  <e-column field="name" headerText="Name" width="200"></e-column>-->
+<!--                  <e-column field="value" headerText="Value" width="200"></e-column>-->
+<!--                </e-columns>-->
+              </ejs-grid>
+            </div>
+
+
+
+
+          </div>
+
+        </section>
+
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
