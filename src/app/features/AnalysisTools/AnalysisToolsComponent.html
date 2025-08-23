@@ -28,7 +28,10 @@
 
 
             <div class="lg:flex lg:space-x-2 ">
-
+              <button (click)="toggleFilterVisibility()" class="btn custom-btn-primary" pButton type="submit">
+                <i class="pi pi-database" pButtonIcon></i>
+                <span pButtonLabel>Set Analysis Parameters</span>
+              </button>
             </div>
 
 
@@ -81,8 +84,10 @@
                 <div class="bg-surface-0 dark:bg-surface-900 shadow-sm p-5 rounded-2xl">
                   <div class="flex justify-between gap-4">
                     <div class="flex flex-col gap-2">
-                      <span class="text-surface-700 dark:text-surface-300 font-normal leading-tight">Average Duration</span>
-                      <div class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">532ms</div>
+                      <span
+                        class="text-surface-700 dark:text-surface-300 font-normal leading-tight">Average Duration</span>
+                      <div class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">532ms
+                      </div>
                     </div>
                     <div class="flex items-center justify-center rounded-lg w-10 h-10">
                       <i class="pi pi-clock text-surface-0 dark:text-surface-900 text-xl! leading-none!"></i>
@@ -94,7 +99,8 @@
                   <div class="flex justify-between gap-4">
                     <div class="flex flex-col gap-2">
                       <span class="text-surface-700 dark:text-surface-300 font-normal leading-tight">Unique Users</span>
-                      <div class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">2841</div>
+                      <div class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">2841
+                      </div>
                     </div>
                     <div class="flex items-center justify-center rounded-lg w-10 h-10">
                       <i class="pi pi-user text-surface-0 dark:text-surface-900 text-xl! leading-none!"></i>
@@ -111,140 +117,44 @@
 
         <div class="my-2">
           <div class="bg-surface-50 dark:bg-surface-950">
-              <div class="space-y-6">
-                <!-- Row 1 -->
-                <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
+
+            <div class="space-y-6">
+              <!-- Row 1 -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                @if (groupTableLoaded) {
                   <div class="w-full rounded-xl border border-gray-200 bg-white shadow p-4 md:p-6">
-
-                    <div class="controls-panel">
-                      <div class="control-section">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Data Grouping</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                          <div class="flex flex-col">
-                            <label for="group-by" class="block text-sm font-medium mb-2">Group By</label>
-                            <p-select id="group-by" [options]="[
-                              {label: '-- Select Dimension --', value: ''},
-                              {label: 'Platform', value: 'platform'},
-                              {label: 'Country', value: 'country'},
-                              {label: 'Device Tier', value: 'device_tier'},
-                              {label: 'Event Type', value: 'event_name'},
-                              {label: 'Network Type', value: 'network_type'},
-                              {label: 'Day', value: 'day'}
-                            ]" class="w-full"></p-select>
-                          </div>
-
-                          <div class="flex flex-col">
-                            <label for="aggregation" class="block text-sm font-medium mb-2">Aggregation</label>
-                            <p-select id="aggregation" [options]="[
-                              {label: 'Count', value: 'count'},
-                              {label: 'Sum', value: 'sum'},
-                              {label: 'Average', value: 'avg'},
-                              {label: 'Minimum', value: 'min'},
-                              {label: 'Maximum', value: 'max'}
-                            ]" class="w-full"></p-select>
-                          </div>
-
-                          <div class="flex flex-col">
-                            <label for="measure" class="block text-sm font-medium mb-2">Measure</label>
-                            <p-select id="measure" [options]="[
-                              {label: 'Count', value: 'count'},
-                              {label: 'Duration (ms)', value: 'duration_ms'},
-                              {label: 'Revenue (USD)', value: 'revenue_usd'}
-                            ]" class="w-full"></p-select>
-                          </div>
-
-                          <div class="flex flex-col">
-                            <span class="text-transparent block text-sm font-medium mb-2">Apply</span>
-                            <button class="btn custom-btn-primary" pButton type="submit">
-                              <i class="pi pi-filter" pButtonIcon></i>
-                              <span pButtonLabel>Apply Grouping</span>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="control-section">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-3 mt-3">Pivot Table Configuration</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                          <div class="flex flex-col">
-                            <label for="row-dimension" class="block text-sm font-medium mb-2">Rows</label>
-                            <p-select id="row-dimension" [options]="[
-                              {label: 'Platform', value: 'platform'},
-                              {label: 'Country', value: 'country'},
-                              {label: 'Device Tier', value: 'device_tier'},
-                              {label: 'Event Type', value: 'event_name'}
-                            ]" class="w-full"></p-select>
-                          </div>
-
-                          <div class="flex flex-col">
-                            <label for="column-dimension" class="block text-sm font-medium mb-2">Columns</label>
-                            <p-select id="column-dimension" [options]="[
-                              {label: '-- None --', value: ''},
-                              {label: 'Platform', value: 'platform'},
-                              {label: 'Country', value: 'country'},
-                              {label: 'Device Tier', value: 'device_tier'},
-                              {label: 'Event Type', value: 'event_name'}
-                            ]" class="w-full"></p-select>
-                          </div>
-
-                          <div class="control-item">
-                            <label for="value-measure" class="block text-sm font-medium mb-2">Values</label>
-                            <p-select id="value-measure" [options]="[
-                              {label: 'Count', value: 'count'},
-                              {label: 'Duration (ms)', value: 'duration_ms'},
-                              {label: 'Revenue (USD)', value: 'revenue_usd'}
-                            ]" class="w-full"></p-select>
-                          </div>
-
-                          <div class="flex flex-col">
-                            <span class="text-transparent block text-sm font-medium mb-2">Apply</span>
-                            <button class="btn custom-btn-primary" pButton type="submit">
-                              <i class="pi pi-filter" pButtonIcon></i>
-                              <span pButtonLabel>Generate Pivot</span>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-          </div>
-        </div>
-
-        <div class="my-2">
-          <div class="bg-surface-50 dark:bg-surface-950">
-            @if (true) {
-              <div class="space-y-6">
-                <!-- Row 1 -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div class="w-full rounded-xl border border-gray-200 bg-white shadow p-4 md:p-6">
-
+                    <h6 class="text-lg font-semibold text-gray-800 mb-3">Pivot Table View</h6>
                     <ag-grid-angular
-                      style="height: 400px; width: 100%;"
-                      [rowData]="data()"
-                      [columnDefs]="columnDefs"
-                      [defaultColDef]="defaultColDef"
-                      [gridOptions]="gridOptions"
-                    ></ag-grid-angular>
-
-                  </div>
-                  <div class="w-full rounded-xl border border-gray-200 bg-white shadow p-4 md:p-6">
-                    <ag-grid-angular
-                      style="height: 400px; width: 100%;"
-                      [rowData]="data()"
-                      [columnDefs]="columnDefs"
-                      [defaultColDef]="defaultColDef"
-                      [gridOptions]="gridOptions"
+                      [columnDefs]="pivotColumnDefs"
+                      [defaultColDef]="pivotDefaultColDef"
+                      [domLayout]="domLayout"
+                      [rowData]="pivotRowData"
                     ></ag-grid-angular>
                   </div>
-                </div>
+                } @else {
+                  <div class="flex justify-center items-center h-screen">
+                    <p-progressSpinner></p-progressSpinner>
+                  </div>
+                }
+
+                @if (groupTableLoaded) {
+                  <div class="w-full rounded-xl border border-gray-200 bg-white shadow p-4 md:p-6">
+                    <h6 class="text-lg font-semibold text-gray-800 mb-3">Grouped Data View</h6>
+                    <ag-grid-angular
+                      [columnDefs]="groupColumnDefs"
+                      [rowData]="groupRowData"
+                      [defaultColDef]="groupDefaultColDef"
+                      [domLayout]="domLayout"
+                    ></ag-grid-angular>
+                  </div>
+                } @else {
+                  <div class="flex justify-center items-center h-screen">
+                    <p-progressSpinner></p-progressSpinner>
+                  </div>
+                }
               </div>
-            } @else {
-              <div class="flex justify-center items-center h-screen">
-                <p-progressSpinner></p-progressSpinner>
-              </div>
-            }
+            </div>
+
           </div>
         </div>
 
@@ -255,3 +165,107 @@
   </div>
 </div>
 
+
+<p-drawer [(visible)]="visible" header="Set Parameters" position="right">
+  <div class="my-2">
+    <div class="bg-surface-50 dark:bg-surface-950">
+      <div class="space-y-6">
+        <!-- Row 1 -->
+        <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
+            <div class="controls-panel">
+              <form (ngSubmit)="onSubmit()" [formGroup]="dataGroupForm">
+                <h6 class="text-lg font-semibold text-gray-800 mb-3">Grouped Data Configuration</h6>
+                <div>
+                  <div class="flex flex-col">
+                    <label class="block text-sm font-medium mb-2" for="group-by">Group By</label>
+                    <p-select [formControlName]="'groupBy'" [options]="[
+                                {label: '-- Select Dimension --', value: ''},
+                                {label: 'Platform', value: 'platform'},
+                                {label: 'Country', value: 'country'},
+                                {label: 'Device Tier', value: 'device_tier'},
+                                {label: 'Event Type', value: 'event_name'},
+                                {label: 'Network Type', value: 'network_type'},
+                                {label: 'Day', value: 'day'}
+                              ]" class="w-full" id="group-by"></p-select>
+                  </div>
+
+                  <div class="flex flex-col">
+                    <label class="block text-sm font-medium mb-2" for="aggregation">Aggregation</label>
+                    <p-select [formControlName]="'aggregation'" [options]="[
+                                {label: 'Count', value: 'count'},
+                                {label: 'Sum', value: 'sum'},
+                                {label: 'Average', value: 'avg'},
+                                {label: 'Minimum', value: 'min'},
+                                {label: 'Maximum', value: 'max'}
+                              ]" class="w-full" id="aggregation"></p-select>
+                  </div>
+
+                  <div class="flex flex-col">
+                    <label class="block text-sm font-medium mb-2" for="measure">Measure</label>
+                    <p-select [formControlName]="'measure'" [options]="[
+                              {label: 'Count', value: 'count'},
+                              {label: 'Duration (ms)', value: 'duration_ms'},
+                              {label: 'Revenue (USD)', value: 'revenue_usd'}
+                            ]" class="w-full" id="measure"></p-select>
+                  </div>
+
+                  <div class="flex flex-col">
+                    <span class="text-transparent block text-sm font-medium mb-2">Apply</span>
+                    <button class="btn custom-btn-primary" pButton type="submit">
+                      <i class="pi pi-calculator" pButtonIcon></i>
+                      <span pButtonLabel class="small">Apply Grouping</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              <form (ngSubmit)="onPivotSubmit()" [formGroup]="pivotTableForm">
+                <h6 class="text-lg font-semibold text-gray-800 mb-3 mt-3">Pivot Table Configuration</h6>
+                <div>
+                  <div class="flex flex-col">
+                    <label class="block text-sm font-medium mb-2" for="row-dimension">Rows</label>
+                    <p-select [options]="[
+                              {label: 'Platform', value: 'platform'},
+                              {label: 'Country', value: 'country'},
+                              {label: 'Device Tier', value: 'device_tier'},
+                              {label: 'Event Type', value: 'event_name'}
+                            ]" class="w-full" formControlName="rowDimension" id="row-dimension"></p-select>
+                  </div>
+
+                  <div class="flex flex-col">
+                    <label class="block text-sm font-medium mb-2" for="column-dimension">Columns</label>
+                    <p-select [options]="[
+                              {label: '-- None --', value: ''},
+                              {label: 'Platform', value: 'platform'},
+                              {label: 'Country', value: 'country'},
+                              {label: 'Device Tier', value: 'device_tier'},
+                              {label: 'Event Type', value: 'event_name'}
+                            ]" class="w-full" formControlName="columnDimension" id="column-dimension"></p-select>
+                  </div>
+
+                  <div class="flex flex-col">
+                    <label class="block text-sm font-medium mb-2" for="value-measure">Values</label>
+                    <p-select [options]="[
+                              {label: 'Count', value: 'count'},
+                              {label: 'Duration (ms)', value: 'duration_ms'},
+                              {label: 'Revenue (USD)', value: 'revenue_usd'}
+                            ]" class="w-full" formControlName="valueMeasure" id="value-measure"></p-select>
+                  </div>
+
+
+                  <div class="flex flex-col">
+                    <span class="text-transparent block text-sm font-medium mb-2">Apply</span>
+                    <button class="btn custom-btn-primary" pButton type="submit">
+                      <i class="pi pi-table" pButtonIcon></i>
+                      <span pButtonLabel class="small">Generate Pivot Table</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</p-drawer>
