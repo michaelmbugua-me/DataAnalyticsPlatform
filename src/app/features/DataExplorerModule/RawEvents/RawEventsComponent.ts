@@ -4,7 +4,7 @@ import {ColDef, GridOptions, GridReadyEvent} from 'ag-grid-community';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {FormsModule} from '@angular/forms';
 import {DataService} from '../../../core/services/DataService';
-import {FilterDrawerComponent} from '../../shared/Dashboard/FilterDrawerComponent';
+import {FilterDrawerComponent} from '../../shared/FilterDrawerComponent/FilterDrawerComponent';
 
 
 @Component({

@@ -86,7 +86,7 @@ export class BaseComponent implements OnInit, AfterViewChecked {
     this.navItems = [
 
       {
-        id: 6,
+        id: 1,
         title: 'DATA EXPLORER',
         icon: 'pi pi-search',
         isCollapsible: true,
@@ -111,16 +111,28 @@ export class BaseComponent implements OnInit, AfterViewChecked {
         id: 2, title: 'FILTER BUILDER', route: ['/filter-builder'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-filter'
       },
 
-      // Table with stats
+
       {
-        id: 3, title: 'ANALYSIS TOOLS', route: ['/analysis-tools'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-hammer'
+        id: 3,
+        title: 'ANALYSIS TOOLS',
+        icon: 'pi pi-hammer',
+        isCollapsible: true,
+        alwaysVisible: true,
+        collapseId: 'analysis-tools',
+        children: [
+          {
+            id: 1,
+            title: '- RAW EVENTS',
+            route: ['/analysis-tools/raw-events'],
+          },
+          {
+            id: 2,
+            title: '- DAILY ROLLUPS',
+            route: ['/analysis-tools/daily-rollups'],
+          }
+        ]
       },
 
-      //
-      // // Table with stats
-      // {
-      //   id: 4, title: 'VISUALIZATIONS', route: ['/visualization'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-cog'
-      // },
 
       {
         id: 4,

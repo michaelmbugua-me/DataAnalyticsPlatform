@@ -7,12 +7,12 @@ import {Select} from 'primeng/select';
 import {AgGridAngular} from 'ag-grid-angular';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Drawer} from 'primeng/drawer';
-import {DataService} from '../../core/services/DataService';
+import {DataService} from '../../../core/services/DataService';
 
 
 @Component({
-  selector: 'app-analysis-tools',
-  templateUrl: './AnalysisToolsComponent.html',
+  selector: 'app-analysis-tools-daily',
+  templateUrl: './analysis-tools-daily.component.html',
   imports: [
     TableModule,
     ProgressSpinner,
@@ -26,9 +26,9 @@ import {DataService} from '../../core/services/DataService';
     FormsModule,
   ],
   providers: [],
-  styleUrls: ['./AnalysisToolsComponent.scss']
+  styleUrls: ['./analysis-tools-daily.component.scss']
 })
-export class AnalysisToolsComponent implements OnInit {
+export class AnalysisToolsDailyComponent implements OnInit {
 
   private dataService = inject(DataService);
 

@@ -1,11 +1,9 @@
 import { Routes } from '@angular/router';
 import {LoginComponent} from './features/Access/Login/LoginComponent';
-import {FilterDrawerComponent} from './features/shared/Dashboard/FilterDrawerComponent';
 import {BaseComponent} from './layout/base/BaseComponent';
-import {VisualizationsRawDataComponent} from './features/VisualizationsModule/VisualizationsRawData/VisualizationsRawDataComponent';
-import {AnalysisToolsComponent} from './features/AnalysisTools/AnalysisToolsComponent';
 import {DataExplorerModule} from './features/DataExplorerModule/data-explorer.module';
 import {VisualizationsModule} from './features/VisualizationsModule/visualizations.module';
+import {AnalysisToolsModule} from './features/AnalysisToolsModule/analysis-tools.module';
 
 export const routes: Routes = [
 
@@ -15,7 +13,6 @@ export const routes: Routes = [
     path: '',
     component: BaseComponent,
     children: [
-      {path: 'dashboard', component: FilterDrawerComponent},
       {
         path: 'data-explorer',
         loadChildren: () => DataExplorerModule
@@ -23,7 +20,9 @@ export const routes: Routes = [
       {path: 'visualization',
         loadChildren: () => VisualizationsModule
       },
-      {path: 'analysis-tools', component: AnalysisToolsComponent},
+      {path: 'analysis-tools',
+        loadChildren: () => AnalysisToolsModule
+      },
     ]
   }
 ];
