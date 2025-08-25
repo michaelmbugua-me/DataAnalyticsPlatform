@@ -20,23 +20,24 @@ export class VisualizationsDailyRollupComponent implements OnInit {
 
   private dataService = inject(DataService);
 
-  public data = this.dataService.data;
+  public data = this.dataService.dailyRollups;
   loading = this.dataService.loading;
   error = this.dataService.error;
 
+  eventsOverTime: any;
+  eventGroupDistribution: any;
+  platformDistribution: any;
+  deviceTierPerformance: any;
+  countryDistribution: any;
+  appStartPercentilesOverTime: any;
 
-  performanceData: any;
-  eventDistribution: any;
-  platformData: any;
-  deviceTierData: any;
-  countryChartData: any;
-  networkChartData: any;
-  performanceChartOptions!: AgChartOptions;
+  // Chart options
+  eventsOverTimeChartOptions!: AgChartOptions;
   eventsChartOptions!: AgChartOptions;
   platformChartOptions!: AgChartOptions;
   deviceTierChartOptions!: AgChartOptions;
   countryChartOptions!: AgChartOptions;
-  networkChartOptions!: AgChartOptions;
+  appStartPercentilesChartOptions!: AgChartOptions;
 
   filters!: Filter[];
 
@@ -50,236 +51,209 @@ export class VisualizationsDailyRollupComponent implements OnInit {
   constructor() {
   }
 
-  getEventDistribution() {
-    const eventCounts: any = {};
+  // Sum events_count per day
+  getEventsOverTime() {
+    const byDay: Record<string, number> = {};
     this.data().forEach((item: any) => {
-      if (item.event_name) {
-        eventCounts[item.event_name] = (eventCounts[item.event_name] || 0) + 1;
-      }
+      byDay[item.day] = (byDay[item.day] || 0) + (item.events_count || 0);
     });
+    return Object.keys(byDay)
+      .sort()
+      .map(day => ({ day, events_count: byDay[day] }));
+  }
 
-    return Object.keys(eventCounts).map(event => ({
-      event, count: eventCounts[event]
+  // Distribution of events_count by event_group
+  getEventGroupDistribution() {
+    const groups: Record<string, number> = {};
+    this.data().forEach((item: any) => {
+      const key = item.event_group || 'unknown';
+      groups[key] = (groups[key] || 0) + (item.events_count || 0);
+    });
+    return Object.keys(groups).map(event_group => ({ event_group, events_count: groups[event_group] }));
+  }
+
+  // Sum events_count by platform
+  getPlatformDistribution() {
+    const platforms: Record<string, number> = {};
+    this.data().forEach((item: any) => {
+      const key = item.platform || 'unknown';
+      platforms[key] = (platforms[key] || 0) + (item.events_count || 0);
+    });
+    return Object.keys(platforms).map(platform => ({ platform, events_count: platforms[platform] }));
+  }
+
+  // Weighted average app_start avg_duration_ms by device_tier
+  getAppStartByDeviceTier() {
+    const sumWeighted: Record<string, number> = {};
+    const sumCounts: Record<string, number> = {};
+    this.data()
+      .filter((item: any) => item.source === 'performance' && item.event_group === 'performance:app_start' && typeof item.avg_duration_ms === 'number')
+      .forEach((item: any) => {
+        const tier = item.device_tier || 'unknown';
+        const count = item.events_count || 0;
+        sumWeighted[tier] = (sumWeighted[tier] || 0) + item.avg_duration_ms * count;
+        sumCounts[tier] = (sumCounts[tier] || 0) + count;
+      });
+    return Object.keys(sumCounts).map(device_tier => ({
+      device_tier,
+      avg_duration_ms: Math.round(sumWeighted[device_tier] / (sumCounts[device_tier] || 1))
     }));
   }
 
-  getPerformanceData() {
-    return this.data()
-      .filter(item => item.source === 'performance' && item.perf_type === 'app_start')
-      .map(item => ({
-        day: item.day, duration_ms: item.duration_ms, platform: item.platform
+  // Sum events_count by country
+  getCountryDistribution() {
+    const countries: Record<string, number> = {};
+    this.data().forEach((item: any) => {
+      const key = item.country || 'unknown';
+      countries[key] = (countries[key] || 0) + (item.events_count || 0);
+    });
+    return Object.keys(countries).map(country => ({ country, events_count: countries[country] }));
+  }
+
+  // Weighted average percentiles per day for app_start
+  getAppStartPercentilesOverTime() {
+    const byDay: Record<string, { w: number; p50: number; p90: number; p99: number }> = {};
+    this.data()
+      .filter((item: any) => item.source === 'performance' && item.event_group === 'performance:app_start')
+      .forEach((item: any) => {
+        const w = item.events_count || 0;
+        const d = item.day;
+        if (!byDay[d]) byDay[d] = { w: 0, p50: 0, p90: 0, p99: 0 };
+        byDay[d].w += w;
+        if (typeof item.p50_duration_ms === 'number') byDay[d].p50 += item.p50_duration_ms * w;
+        if (typeof item.p90_duration_ms === 'number') byDay[d].p90 += item.p90_duration_ms * w;
+        if (typeof item.p99_duration_ms === 'number') byDay[d].p99 += item.p99_duration_ms * w;
+      });
+
+    return Object.keys(byDay)
+      .sort()
+      .map(day => ({
+        day,
+        p50_duration_ms: Math.round(byDay[day].p50 / (byDay[day].w || 1)),
+        p90_duration_ms: Math.round(byDay[day].p90 / (byDay[day].w || 1)),
+        p99_duration_ms: Math.round(byDay[day].p99 / (byDay[day].w || 1)),
       }));
-  }
-
-  getPlatformData() {
-    const platformCounts: any = {};
-    this.data().forEach((item: any) => {
-      platformCounts[item.platform] = (platformCounts[item.platform] || 0) + 1;
-    });
-
-    return Object.keys(platformCounts).map((platform) => ({
-      platform,
-      count: platformCounts[platform]
-    }));
-  }
-
-  getDeviceTierData() {
-    const tierData: any = {};
-    const tierCounts: any = {};
-
-    this.data()
-      .filter(item => item.duration_ms)
-      .forEach(item => {
-        if (!tierData[item.device_tier]) {
-          tierData[item.device_tier] = 0;
-          tierCounts[item.device_tier] = 0;
-        }
-        tierData[item.device_tier] += item.duration_ms;
-        tierCounts[item.device_tier]++;
-      });
-
-    return Object.keys(tierData).map(tier => ({
-      device_tier: tier,
-      avg_duration: Math.round(tierData[tier] / tierCounts[tier])
-    }));
-  }
-
-  getCountryData() {
-    const countryCounts: any = {};
-    this.data().forEach(item => {
-      countryCounts[item.country] = (countryCounts[item.country] || 0) + 1;
-    });
-
-    return Object.keys(countryCounts).map(country => ({
-      country,
-      count: countryCounts[country]
-    }));
-  }
-
-  getNetworkData() {
-    const networkData: any = {};
-    const networkCounts: any = {};
-
-    this.data()
-      .filter(item => item.duration_ms && item.network_type)
-      .forEach(item => {
-        if (!networkData[item.network_type]) {
-          networkData[item.network_type] = 0;
-          networkCounts[item.network_type] = 0;
-        }
-        networkData[item.network_type] += item.duration_ms;
-        networkCounts[item.network_type]++;
-      });
-
-    return Object.keys(networkData).map(network => ({
-      network_type: network,
-      avg_duration: Math.round(networkData[network] / networkCounts[network])
-    }));
   }
 
 
   async ngOnInit() {
 
-    this.performanceData = this.getPerformanceData();
-    this.eventDistribution = this.getEventDistribution();
-    this.platformData = this.getPlatformData();
-    this.deviceTierData = this.getDeviceTierData();
-    this.countryChartData = this.getCountryData();
-    this.networkChartData = this.getNetworkData();
+    // Prepare datasets based on daily rollups
+    this.eventsOverTime = this.getEventsOverTime();
+    this.eventGroupDistribution = this.getEventGroupDistribution();
+    this.platformDistribution = this.getPlatformDistribution();
+    this.deviceTierPerformance = this.getAppStartByDeviceTier();
+    this.countryDistribution = this.getCountryDistribution();
+    this.appStartPercentilesOverTime = this.getAppStartPercentilesOverTime();
 
     this.chartLoaded = true;
 
-    // Chart 1: Performance Over Time (App Start Duration)
-    this.performanceChartOptions = {
+    // Chart 1: Events Over Time (Daily Total Events)
+    this.eventsOverTimeChartOptions = {
       title: {
-        text: 'App Start Performance Over Time',
-      }, data: this.performanceData, series: [{
-        type: 'line', xKey: 'day', yKey: 'duration_ms', yName: 'App Start Time (ms)',
-      },], axes: [{
-        type: 'category', position: 'bottom', title: {
-          text: 'Date',
+        text: 'Events Over Time (Daily Totals)',
+      },
+      data: this.eventsOverTime,
+      series: [
+        {
+          type: 'line',
+          xKey: 'day',
+          yKey: 'events_count',
+          yName: 'Events',
         },
-      }, {
-        type: 'number', position: 'left', title: {
-          text: 'Duration (ms)',
+      ],
+      axes: [
+        {
+          type: 'category', position: 'bottom', title: { text: 'Date' },
         },
-      },],
+        {
+          type: 'number', position: 'left', title: { text: 'Events' },
+        },
+      ],
     };
 
-    // Chart 2: Event Distribution
+    // Chart 2: Event Group Distribution (by Events)
     this.eventsChartOptions = {
       title: {
-        text: 'User Event Distribution',
-      }, data: this.eventDistribution, series: [{
-        type: 'pie', angleKey: 'count', legendItemKey: 'event', calloutLabelKey: 'event'
-      }],
+        text: 'Event Group Distribution',
+      },
+      data: this.eventGroupDistribution,
+      series: [
+        {
+          type: 'pie', angleKey: 'events_count', legendItemKey: 'event_group', calloutLabelKey: 'event_group',
+        },
+      ],
     };
 
-    // Chart 3: Platform Usage
+    // Chart 3: Platform Distribution (by Events)
     this.platformChartOptions = {
       title: {
-        text: 'Usage by Platform',
+        text: 'Events by Platform',
       },
-      data: this.getPlatformData(),
+      data: this.platformDistribution,
       series: [
         {
           type: 'bar',
           xKey: 'platform',
-          yKey: 'count',
+          yKey: 'events_count',
         },
       ],
       axes: [
-        {
-          type: 'category',
-          position: 'bottom',
-        },
-        {
-          type: 'number',
-          position: 'left',
-          title: {
-            text: 'Number of Events',
-          },
-        },
+        { type: 'category', position: 'bottom' },
+        { type: 'number', position: 'left', title: { text: 'Events' } },
       ],
     };
 
-    // Chart 4: Performance by Device Tier
+    // Chart 4: App Start Performance by Device Tier (avg duration)
     this.deviceTierChartOptions = {
       title: {
-        text: 'Performance by Device Tier',
+        text: 'App Start Performance by Device Tier',
       },
-      data: this.deviceTierData,
+      data: this.deviceTierPerformance,
       series: [
         {
           type: 'bar',
           xKey: 'device_tier',
-          yKey: 'avg_duration',
+          yKey: 'avg_duration_ms',
           yName: 'Average Duration (ms)',
         },
       ],
       axes: [
-        {
-          type: 'category',
-          position: 'bottom',
-          title: {
-            text: 'Device Tier',
-          },
-        },
-        {
-          type: 'number',
-          position: 'left',
-          title: {
-            text: 'Average Duration (ms)',
-          },
-        },
+        { type: 'category', position: 'bottom', title: { text: 'Device Tier' } },
+        { type: 'number', position: 'left', title: { text: 'Average Duration (ms)' } },
       ],
     };
 
-    // Chart 5: Usage by Country
+    // Chart 5: Events by Country
     this.countryChartOptions = {
       title: {
-        text: 'Usage by Country',
+        text: 'Events by Country',
       },
-      data: this.getCountryData(),
+      data: this.countryDistribution,
       series: [
         {
           type: 'pie',
-          angleKey: 'count',
+          angleKey: 'events_count',
           legendItemKey: 'country',
           calloutLabelKey: 'country',
         },
       ],
     };
 
-    // Chart 6: Performance by Network Type
-    this.networkChartOptions = {
+    // Chart 6: App Start Percentiles Over Time (P50/P90/P99)
+    this.appStartPercentilesChartOptions = {
       title: {
-        text: 'Performance by Network Type',
+        text: 'App Start Percentiles Over Time',
       },
-      data: this.networkChartData,
+      data: this.appStartPercentilesOverTime,
       series: [
-        {
-          type: 'bar',
-          xKey: 'network_type',
-          yKey: 'avg_duration',
-          yName: 'Average Duration (ms)',
-        },
+        { type: 'line', xKey: 'day', yKey: 'p50_duration_ms', yName: 'P50 (ms)' },
+        { type: 'line', xKey: 'day', yKey: 'p90_duration_ms', yName: 'P90 (ms)' },
+        { type: 'line', xKey: 'day', yKey: 'p99_duration_ms', yName: 'P99 (ms)' },
       ],
       axes: [
-        {
-          type: 'category',
-          position: 'bottom',
-          title: {
-            text: 'Network Type',
-          },
-        },
-        {
-          type: 'number',
-          position: 'left',
-          title: {
-            text: 'Average Duration (ms)',
-          },
-        },
+        { type: 'category', position: 'bottom', title: { text: 'Date' } },
+        { type: 'number', position: 'left', title: { text: 'Duration (ms)' } },
       ],
     };
 

@@ -26,13 +26,10 @@ export class RawEventsComponent implements OnInit {
 
   private dataService = inject(DataService);
 
-  public data = this.dataService.filteredRawData;
-  loading = this.dataService.loading;
+  public data = this.dataService.data;
   error = this.dataService.error;
 
   filters!: Filter[];
-
-  selectedFilter!: Filter;
 
   visible = signal(false);
 
