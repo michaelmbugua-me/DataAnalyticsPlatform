@@ -133,12 +133,12 @@ export class BaseComponent implements OnInit, AfterViewChecked {
           {
             id: 1,
             title: '- RAW EVENTS',
-            route: ['/visualization'],
+            route: ['/visualization/raw-events'],
           },
           {
             id: 2,
             title: '- DAILY ROLLUPS',
-            route: ['/visualization'],
+            route: ['/visualization/daily-rollups'],
           }
         ]
       },

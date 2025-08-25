@@ -6,17 +6,17 @@ import {FormsModule} from '@angular/forms';
 import {AgChartOptions} from 'ag-charts-community';
 import {AgCharts} from 'ag-charts-angular';
 import {ProgressSpinner} from 'primeng/progressspinner';
-import {DataService} from '../../core/services/DataService';
+import {DataService} from '../../../core/services/DataService';
 
 
 @Component({
   selector: 'app-visualizations',
-  templateUrl: './VisualizationsComponent.html',
+  templateUrl: './VisualizationsDailyRollupComponent.html',
   imports: [Drawer, ButtonDirective, ButtonIcon, ButtonLabel, Listbox, FormsModule, Button, AgCharts, ProgressSpinner],
   providers: [],
-  styleUrls: ['./VisualizationsComponent.scss']
+  styleUrls: ['./VisualizationsDailyRollupComponent.scss']
 })
-export class VisualizationsComponent implements OnInit {
+export class VisualizationsDailyRollupComponent implements OnInit {
 
   private dataService = inject(DataService);
 
