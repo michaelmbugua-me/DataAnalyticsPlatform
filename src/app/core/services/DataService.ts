@@ -25,6 +25,7 @@ export class DataService {
   readonly dateRange = signal<DateRange>(getDefaultMonthRange());
 
   setDateRange(r: DateRange) { this.dateRange.set(r); }
+
   resetToThisMonth() { this.dateRange.set(getDefaultMonthRange()); }
 
   private inRange(d: Date, r: DateRange) {

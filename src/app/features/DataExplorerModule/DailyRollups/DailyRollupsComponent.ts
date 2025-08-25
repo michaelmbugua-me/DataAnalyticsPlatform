@@ -1,11 +1,10 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {ColDef, GridOptions, GridReadyEvent} from 'ag-grid-community';
-import {Drawer} from 'primeng/drawer';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
-import {Listbox} from 'primeng/listbox';
 import {FormsModule} from '@angular/forms';
 import {DataService} from '../../../core/services/DataService';
+import {FilterDrawerComponent} from '../../shared/FilterDrawerComponent/FilterDrawerComponent';
 
 
 @Component({
@@ -13,13 +12,12 @@ import {DataService} from '../../../core/services/DataService';
   templateUrl: './DailyRollupsComponent.html',
   imports: [
     AgGridAngular,
-    Drawer,
     ButtonDirective,
     ButtonIcon,
     ButtonLabel,
-    Listbox,
     FormsModule,
-    Button
+    Button,
+    FilterDrawerComponent
   ],
   providers: [],
   styleUrls: ['./DailyRollupsComponent.scss']
@@ -28,13 +26,11 @@ export class DailyRollupsComponent implements OnInit {
 
   private dataService = inject(DataService);
 
-  public data = this.dataService.dailyRollups;
-  loading = this.dataService.loading;
+  public data = this.dataService.filteredDailyRollups;
   error = this.dataService.error;
 
   filters!: Filter[];
 
-  selectedFilter!: Filter;
 
   visible = signal(false);
 

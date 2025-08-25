@@ -29,6 +29,7 @@ export class FilterDrawerComponent {
 
   @Output() filterApplied = new EventEmitter<unknown>();
   @Output() visibleChange = new EventEmitter<WritableSignal<boolean>>();
+  @Input() dataType!: string;
 
 
   applyFilter(start: string, end: string) {
