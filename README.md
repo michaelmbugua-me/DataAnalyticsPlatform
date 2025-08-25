@@ -1,6 +1,6 @@
 # Data Analytics Platform
 
-[![Coverage Status](https://coveralls.io/repos/github/michaelmbugua-me/AngularTestingJest/badge.svg)](https://coveralls.io/github/michaelmbugua-me/AngularTestingJest)
+[![Coverage Status](https://coveralls.io/repos/github/michaelmbugua-me/DataAnalyticsPlatform/badge.svg?branch=main)](https://coveralls.io/github/michaelmbugua-me/DataAnalyticsPlatform?branch=main)
 
 A modern Angular-based data analytics platform designed for exploring, filtering, and visualizing medium to large datasets with exceptional performance and user experience.
 
