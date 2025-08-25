@@ -1,15 +1,16 @@
-import {Component, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {ColDef, GridOptions, GridReadyEvent} from 'ag-grid-community';
 import {Drawer} from 'primeng/drawer';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {Listbox} from 'primeng/listbox';
 import {FormsModule} from '@angular/forms';
+import {DataService} from '../../../core/services/DataService';
 
 
 @Component({
-  selector: 'app-data-explorer',
-  templateUrl: './DataExplorerComponent.html',
+  selector: 'app-raw-events-component',
+  templateUrl: './RawEventsComponent.html',
   imports: [
     AgGridAngular,
     Drawer,
@@ -21,9 +22,15 @@ import {FormsModule} from '@angular/forms';
     Button
   ],
   providers: [],
-  styleUrls: ['./DataExplorerComponent.scss']
+  styleUrls: ['./RawEventsComponent.scss']
 })
-export class DataExplorerComponent implements OnInit {
+export class RawEventsComponent implements OnInit {
+
+  private dataService = inject(DataService);
+
+  public data = this.dataService.data;
+  loading = this.dataService.loading;
+  error = this.dataService.error;
 
   filters!: Filter[];
 
@@ -49,8 +56,6 @@ export class DataExplorerComponent implements OnInit {
 
   public defaultColDef: ColDef = {};
 
-  public data = signal<any[]>([]);
-
   // Grid Options
   public gridOptions: GridOptions = {
     rowModelType: 'clientSide',
@@ -64,8 +69,6 @@ export class DataExplorerComponent implements OnInit {
   };
 
   async ngOnInit() {
-      const response = await fetch('/data/raw_events.json');
-      this.data.set(await response.json());
 
     this.filters = [
       {name: 'Today\'s records', code: 'NY'},
@@ -77,8 +80,7 @@ export class DataExplorerComponent implements OnInit {
 
   onGridReady(params: GridReadyEvent) {
     console.log('Grid is ready');
-    // You can access the grid API here if needed
-    // params.api.sizeColumnsToFit();
+    params.api.sizeColumnsToFit();
   }
 
   toggleFilterVisibility() {

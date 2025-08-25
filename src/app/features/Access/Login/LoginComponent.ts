@@ -73,7 +73,7 @@ export class LoginComponent implements OnInit {
   async signIn(): Promise<void> {
 
     localStorage.setItem('assignedModules', JSON.stringify([]));
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/data-explorer']);
 
   }
 

@@ -1,17 +1,36 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+import {
+  APP_INITIALIZER,
+  ApplicationConfig,
+  inject,
+  provideZoneChangeDetection
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideHttpClient } from '@angular/common/http';
+import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 
-
 import { routes } from './app.routes';
-import {providePrimeNG} from 'primeng/config';
-import {provideHttpClient} from '@angular/common/http';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { DataService } from './core/services/DataService';
+import {combineLatest, firstValueFrom, forkJoin, of, timeout} from 'rxjs';
+import {catchError} from 'rxjs/operators';
 
+export function preloadDataFactory() {
+  return () => {
+    const ds = inject(DataService);
+    return firstValueFrom(combineLatest([ds.rawData$, ds.dailyRollups$]).pipe(
+      timeout(10000),
+      catchError(error => {
+        console.error('Data loading timeout:', error);
+        return of([[], []]);
+      })
+    ));
+
+  };
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
     provideAnimations(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideHttpClient(),
@@ -20,6 +39,11 @@ export const appConfig: ApplicationConfig = {
         preset: Aura
       }
     }),
-    provideRouter(routes)
+    provideRouter(routes),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: preloadDataFactory,
+      multi: true
+    }
   ]
 };

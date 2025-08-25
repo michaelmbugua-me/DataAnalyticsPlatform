@@ -211,15 +211,16 @@
 
 /* Active state styles */
 .bg-side-items-bg {
-  background-color: #00A8A724; /* Your active background color */
+  background-color: #fef3f2; /* Your active background color */
+  border-left: 1px solid #a32a29;
 }
 
 .text-side-items-text {
-  color: #00929F!important; /* Your active text color */
+  color: #a32a29!important; /* Your active text color */
 }
 
 .border-side-items-text {
-  border-color: #00929F!important; /* Your active border color */
+  border-color: #a32a29!important; /* Your active border color */
 }
 
 /* Transition for smooth hover/active effects */

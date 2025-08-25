@@ -3,12 +3,14 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 
-import {DataExplorerComponent} from './DataExplorer/DataExplorerComponent';
+import {RawEventsComponent} from './RawEvents/RawEventsComponent';
+import {DailyRollupsComponent} from './DailyRollups/DailyRollupsComponent';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'overview', pathMatch: 'full' },
-  { path: 'overview', component: DataExplorerComponent },
-  { path: '**', redirectTo: 'overview' }
+  { path: '', redirectTo: 'raw-events', pathMatch: 'full' },
+  { path: 'raw-events', component: RawEventsComponent },
+  { path: 'daily-rollups', component: DailyRollupsComponent },
+  { path: '**', redirectTo: 'raw-events' }
 ];
 
 @NgModule({

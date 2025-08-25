@@ -1,14 +1,13 @@
-import {Component, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {TableModule} from 'primeng/table';
 
 import {ProgressSpinner} from 'primeng/progressspinner';
 import {ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {Select} from 'primeng/select';
 import {AgGridAngular} from 'ag-grid-angular';
-import {GridOptions} from 'ag-grid-community';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Drawer} from 'primeng/drawer';
-import {Listbox} from 'primeng/listbox';
+import {DataService} from '../../core/services/DataService';
 
 
 @Component({
@@ -30,6 +29,13 @@ import {Listbox} from 'primeng/listbox';
   styleUrls: ['./AnalysisToolsComponent.scss']
 })
 export class AnalysisToolsComponent implements OnInit {
+
+  private dataService = inject(DataService);
+
+  public data = this.dataService.data;
+  loading = this.dataService.loading;
+  error = this.dataService.error;
+
   groupColumnDefs: any[] = [];
   groupRowData: any[] = [];
   groupDefaultColDef = { sortable: true, filter: true, resizable: true };
@@ -41,13 +47,9 @@ export class AnalysisToolsComponent implements OnInit {
 
 
   filters!: Filter[];
-  selectedFilter!: Filter;
-
 
   visible = signal(false);
 
-
-  // Reactive forms
   dataGroupForm!: FormGroup;
   pivotTableForm!: FormGroup;
 
@@ -55,14 +57,7 @@ export class AnalysisToolsComponent implements OnInit {
   groupTableLoaded: boolean = true;
   pivotTableLoaded: boolean = true;
 
-  public data = signal<any[]>([]);
-
-
-  // Group Grid Options
-  public groupGridOptions!: GridOptions;
-
   constructor(private fb: FormBuilder) {
-    // Initialize forms with defaults
     this.dataGroupForm = fb.group({
       groupBy: ['country', Validators.required],
       aggregation: ['count', Validators.required],
@@ -77,11 +72,6 @@ export class AnalysisToolsComponent implements OnInit {
   }
 
   async ngOnInit() {
-    // Load data
-    const response = await fetch('/data/raw_events.json');
-    this.data.set(await response.json());
-
-
 
     this.filters = [
       {name: 'Today\'s records', code: 'NY'},

@@ -84,31 +84,64 @@ export class BaseComponent implements OnInit, AfterViewChecked {
     this.allowedModules = JSON.parse(data) || [];
 
     this.navItems = [
-      // Dashboard
-      {
-        id: 1, title: 'DASHBOARD', route: ['/dashboard'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-chart-bar'
-      },
 
-      // Data Explorer
       {
-        id: 2, title: 'DATA EXPLORER', route: ['/data-explorer'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-search'
+        id: 6,
+        title: 'DATA EXPLORER',
+        icon: 'pi pi-search',
+        isCollapsible: true,
+        alwaysVisible: true,
+        collapseId: 'data-explorer',
+        children: [
+          {
+            id: 1,
+            title: '- RAW EVENTS',
+            route: ['/data-explorer/raw-events'],
+          },
+          {
+            id: 2,
+            title: '- DAILY ROLLUPS',
+            route: ['/data-explorer/daily-rollups'],
+          }
+        ]
       },
 
       // Filter Builder
       {
-        id: 3, title: 'FILTER BUILDER', route: ['/filter-builder'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-filter'
+        id: 2, title: 'FILTER BUILDER', route: ['/filter-builder'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-filter'
       },
 
       // Table with stats
       {
-        id: 4, title: 'ANALYSIS TOOLS', route: ['/analysis-tools'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-hammer'
+        id: 3, title: 'ANALYSIS TOOLS', route: ['/analysis-tools'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-hammer'
       },
 
+      //
+      // // Table with stats
+      // {
+      //   id: 4, title: 'VISUALIZATIONS', route: ['/visualization'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-cog'
+      // },
 
-      // Table with stats
       {
-        id: 5, title: 'VISUALIZATIONS', route: ['/visualization'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-cog'
-      }
+        id: 4,
+        title: 'VISUALIZATIONS',
+        icon: 'pi pi-cog',
+        isCollapsible: true,
+        alwaysVisible: true,
+        collapseId: 'visualizations',
+        children: [
+          {
+            id: 1,
+            title: '- RAW EVENTS',
+            route: ['/visualization'],
+          },
+          {
+            id: 2,
+            title: '- DAILY ROLLUPS',
+            route: ['/visualization'],
+          }
+        ]
+      },
 
 
       ];

@@ -157,17 +157,17 @@
             @for (item of navItems; track item.id) {
               <ng-container>
 
-
                 @if (item.alwaysVisible || hasRequiredModules(item.requiredModules) || (item.children && hasAnyChildAccess(item.children))) {
                   <ng-container>
                     <div
-                      class="flex justify-between w-full items-center space-x-5 py-2 px-4 cursor-pointer transition-colors duration-200"
-                      [class.mt-3]="!item.isCollapsible || item.title === 'LOG OUT'"
+                      class="flex justify-between w-full items-center space-x-5 py-2 px-1 cursor-pointer transition-colors duration-200"
+                      [class.mt-1]="!item.isCollapsible || item.title === 'LOG OUT'"
                       [class]="isActive(item.route) ?
                         'text-red-700 bg-red-50 border-l-4 border-red-700 font-bold' :
                         'text-gray-500 hover:text-red-600 hover:bg-red-50 hover:font-bold'"
                       [routerLink]="!item.isCollapsible && item.route ? item.route : null"
                       [attr.data-collapse-toggle]="item.isCollapsible ? item.collapseId : null"
+
                       (click)="item.action && item.action()">
                       <i
                         [class]="item.icon + ' icon small transition-colors duration-200'"
@@ -177,7 +177,39 @@
                       <div class="text-md text-left flex-1">
                         {{ item.title }}
                       </div>
+
+                      <!-- Dropdown arrow for collapsible items -->
+                      @if (item.isCollapsible) {
+                        <i
+                          [class]="'pi pi-caret-down' + ' icon small transition-colors duration-200'">
+                        </i>
+                      }
                     </div>
+
+                    <!-- Child Items -->
+                    @if (item.children) {
+                      <ul
+                        class="hidden py-2 space-y-2"
+                        [id]="item.collapseId">
+                        @for (child of item.children; track child.id) {
+                          <li>
+                            @if (true) {
+                              <div
+                                class="flex justify-between w-full items-center space-x-5 py-2 px-4 cursor-pointer transition-colors duration-200"
+                                [class.text-side-items-text]="isActive(child.route, child.queryParams)"
+                                [class.bg-side-items-bg]="isActive(child.route, child.queryParams)"
+                                [class]="isActive(item.route) ?
+                                'text-red-700 bg-red-50 border-l-4 border-red-700 font-bold' :
+                                'text-gray-500 hover:text-red-600 hover:bg-red-50 hover:font-bold'"
+                                [routerLink]="child.route"
+                                [queryParams]="child.queryParams || null">
+                                {{ child.title }}
+                              </div>
+                            }
+                          </li>
+                        }
+                      </ul>
+                    }
                   </ng-container>
                 }
 

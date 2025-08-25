@@ -1,4 +1,4 @@
-import {Component, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {Drawer} from 'primeng/drawer';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {Listbox} from 'primeng/listbox';
@@ -6,6 +6,7 @@ import {FormsModule} from '@angular/forms';
 import {AgChartOptions} from 'ag-charts-community';
 import {AgCharts} from 'ag-charts-angular';
 import {ProgressSpinner} from 'primeng/progressspinner';
+import {DataService} from '../../core/services/DataService';
 
 
 @Component({
@@ -16,6 +17,12 @@ import {ProgressSpinner} from 'primeng/progressspinner';
   styleUrls: ['./VisualizationsComponent.scss']
 })
 export class VisualizationsComponent implements OnInit {
+
+  private dataService = inject(DataService);
+
+  public data = this.dataService.data;
+  loading = this.dataService.loading;
+  error = this.dataService.error;
 
 
   performanceData: any;
@@ -37,8 +44,6 @@ export class VisualizationsComponent implements OnInit {
 
   visible = signal(false);
 
-
-  public data = signal<any[]>([]);
   // Charts
   chartLoaded: any = false;
 
@@ -134,8 +139,6 @@ export class VisualizationsComponent implements OnInit {
 
 
   async ngOnInit() {
-    const response = await fetch('/data/raw_events.json');
-    this.data.set(await response.json());
 
     this.performanceData = this.getPerformanceData();
     this.eventDistribution = this.getEventDistribution();

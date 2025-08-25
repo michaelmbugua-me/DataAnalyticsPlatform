@@ -1,5 +1,0 @@
-[
-  { "id": 1, "name": "Alice", "age": 29, "department": "Sales", "salary": 52000 },
-  { "id": 2, "name": "Bob", "age": 34, "department": "IT", "salary": 67000 },
-  { "id": 3, "name": "Charlie", "age": 41, "department": "HR", "salary": 45000 }
-]
