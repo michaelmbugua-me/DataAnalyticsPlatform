@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, effect, inject, OnInit, signal} from '@angular/core';
 import {Drawer} from 'primeng/drawer';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {Listbox} from 'primeng/listbox';
@@ -7,12 +7,13 @@ import {AgChartOptions} from 'ag-charts-community';
 import {AgCharts} from 'ag-charts-angular';
 import {ProgressSpinner} from 'primeng/progressspinner';
 import {DataService} from '../../../core/services/DataService';
+import {DatePicker} from 'primeng/datepicker';
 
 
 @Component({
   selector: 'app-visualizations',
   templateUrl: './VisualizationsRawDataComponent.html',
-  imports: [Drawer, ButtonDirective, ButtonIcon, ButtonLabel, Listbox, FormsModule, Button, AgCharts, ProgressSpinner],
+  imports: [Drawer, ButtonDirective, ButtonIcon, ButtonLabel, Listbox, FormsModule, Button, AgCharts, ProgressSpinner, DatePicker],
   providers: [],
   styleUrls: ['./VisualizationsRawDataComponent.scss']
 })
@@ -20,17 +21,12 @@ export class VisualizationsRawDataComponent implements OnInit {
 
   private dataService = inject(DataService);
 
-  public data = this.dataService.data;
+  public data = this.dataService.filteredRawData;
   loading = this.dataService.loading;
   error = this.dataService.error;
 
 
-  performanceData: any;
-  eventDistribution: any;
-  platformData: any;
-  deviceTierData: any;
-  countryChartData: any;
-  networkChartData: any;
+
   performanceChartOptions!: AgChartOptions;
   eventsChartOptions!: AgChartOptions;
   platformChartOptions!: AgChartOptions;
@@ -42,12 +38,165 @@ export class VisualizationsRawDataComponent implements OnInit {
 
   selectedFilter!: Filter;
 
+  startDate: any;
+  endDate: any;
+
   visible = signal(false);
 
   // Charts
   chartLoaded: any = false;
 
   constructor() {
+
+    effect(() => {
+      const rows = this.data(); // track dependency
+
+      // Derive datasets from current filtered rows
+      const performanceData = this.getPerformanceData();
+      const eventDistribution = this.getEventDistribution();
+      const platformData = this.getPlatformData();
+      const deviceTierData = this.getDeviceTierData();
+      const countryChartData = this.getCountryData();
+      const networkChartData = this.getNetworkData();
+
+      this.chartLoaded = true;
+
+      // Chart 1: Performance Over Time (App Start Duration)
+      this.performanceChartOptions = {
+        title: {
+          text: 'App Start Performance Over Time',
+        }, data: [...performanceData], series: [{
+          type: 'line', xKey: 'day', yKey: 'duration_ms', yName: 'App Start Time (ms)',
+        },], axes: [{
+          type: 'category', position: 'bottom', title: {
+            text: 'Date',
+          },
+        }, {
+          type: 'number', position: 'left', title: {
+            text: 'Duration (ms)',
+          },
+        },],
+      };
+
+      // Chart 2: Event Distribution
+      this.eventsChartOptions = {
+        title: {
+          text: 'User Event Distribution',
+        }, data: [...eventDistribution], series: [{
+          type: 'pie', angleKey: 'count', legendItemKey: 'event', calloutLabelKey: 'event'
+        }],
+      };
+
+      // Chart 3: Platform Usage
+      this.platformChartOptions = {
+        title: {
+          text: 'Usage by Platform',
+        },
+        data: [...platformData],
+        series: [
+          {
+            type: 'bar',
+            xKey: 'platform',
+            yKey: 'count',
+          },
+        ],
+        axes: [
+          {
+            type: 'category',
+            position: 'bottom',
+          },
+          {
+            type: 'number',
+            position: 'left',
+            title: {
+              text: 'Number of Events',
+            },
+          },
+        ],
+      };
+
+      // Chart 4: Performance by Device Tier
+      this.deviceTierChartOptions = {
+        title: {
+          text: 'Performance by Device Tier',
+        },
+        data: [...deviceTierData],
+        series: [
+          {
+            type: 'bar',
+            xKey: 'device_tier',
+            yKey: 'avg_duration',
+            yName: 'Average Duration (ms)',
+          },
+        ],
+        axes: [
+          {
+            type: 'category',
+            position: 'bottom',
+            title: {
+              text: 'Device Tier',
+            },
+          },
+          {
+            type: 'number',
+            position: 'left',
+            title: {
+              text: 'Average Duration (ms)',
+            },
+          },
+        ],
+      };
+
+      // Chart 5: Usage by Country
+      this.countryChartOptions = {
+        title: {
+          text: 'Usage by Country',
+        },
+        data: [...countryChartData],
+        series: [
+          {
+            type: 'pie',
+            angleKey: 'count',
+            legendItemKey: 'country',
+            calloutLabelKey: 'country',
+          },
+        ],
+      };
+
+      // Chart 6: Performance by Network Type
+      this.networkChartOptions = {
+        title: {
+          text: 'Performance by Network Type',
+        },
+        data: [...networkChartData],
+        series: [
+          {
+            type: 'bar',
+            xKey: 'network_type',
+            yKey: 'avg_duration',
+            yName: 'Average Duration (ms)',
+          },
+        ],
+        axes: [
+          {
+            type: 'category',
+            position: 'bottom',
+            title: {
+              text: 'Network Type',
+            },
+          },
+          {
+            type: 'number',
+            position: 'left',
+            title: {
+              text: 'Average Duration (ms)',
+            },
+          },
+        ],
+      };
+
+    });
+
   }
 
   getEventDistribution() {
@@ -140,150 +289,6 @@ export class VisualizationsRawDataComponent implements OnInit {
 
   async ngOnInit() {
 
-    this.performanceData = this.getPerformanceData();
-    this.eventDistribution = this.getEventDistribution();
-    this.platformData = this.getPlatformData();
-    this.deviceTierData = this.getDeviceTierData();
-    this.countryChartData = this.getCountryData();
-    this.networkChartData = this.getNetworkData();
-
-    this.chartLoaded = true;
-
-    // Chart 1: Performance Over Time (App Start Duration)
-    this.performanceChartOptions = {
-      title: {
-        text: 'App Start Performance Over Time',
-      }, data: this.performanceData, series: [{
-        type: 'line', xKey: 'day', yKey: 'duration_ms', yName: 'App Start Time (ms)',
-      },], axes: [{
-        type: 'category', position: 'bottom', title: {
-          text: 'Date',
-        },
-      }, {
-        type: 'number', position: 'left', title: {
-          text: 'Duration (ms)',
-        },
-      },],
-    };
-
-    // Chart 2: Event Distribution
-    this.eventsChartOptions = {
-      title: {
-        text: 'User Event Distribution',
-      }, data: this.eventDistribution, series: [{
-        type: 'pie', angleKey: 'count', legendItemKey: 'event', calloutLabelKey: 'event'
-      }],
-    };
-
-    // Chart 3: Platform Usage
-    this.platformChartOptions = {
-      title: {
-        text: 'Usage by Platform',
-      },
-      data: this.getPlatformData(),
-      series: [
-        {
-          type: 'bar',
-          xKey: 'platform',
-          yKey: 'count',
-        },
-      ],
-      axes: [
-        {
-          type: 'category',
-          position: 'bottom',
-        },
-        {
-          type: 'number',
-          position: 'left',
-          title: {
-            text: 'Number of Events',
-          },
-        },
-      ],
-    };
-
-    // Chart 4: Performance by Device Tier
-    this.deviceTierChartOptions = {
-      title: {
-        text: 'Performance by Device Tier',
-      },
-      data: this.deviceTierData,
-      series: [
-        {
-          type: 'bar',
-          xKey: 'device_tier',
-          yKey: 'avg_duration',
-          yName: 'Average Duration (ms)',
-        },
-      ],
-      axes: [
-        {
-          type: 'category',
-          position: 'bottom',
-          title: {
-            text: 'Device Tier',
-          },
-        },
-        {
-          type: 'number',
-          position: 'left',
-          title: {
-            text: 'Average Duration (ms)',
-          },
-        },
-      ],
-    };
-
-    // Chart 5: Usage by Country
-    this.countryChartOptions = {
-      title: {
-        text: 'Usage by Country',
-      },
-      data: this.getCountryData(),
-      series: [
-        {
-          type: 'pie',
-          angleKey: 'count',
-          legendItemKey: 'country',
-          calloutLabelKey: 'country',
-        },
-      ],
-    };
-
-    // Chart 6: Performance by Network Type
-    this.networkChartOptions = {
-      title: {
-        text: 'Performance by Network Type',
-      },
-      data: this.networkChartData,
-      series: [
-        {
-          type: 'bar',
-          xKey: 'network_type',
-          yKey: 'avg_duration',
-          yName: 'Average Duration (ms)',
-        },
-      ],
-      axes: [
-        {
-          type: 'category',
-          position: 'bottom',
-          title: {
-            text: 'Network Type',
-          },
-        },
-        {
-          type: 'number',
-          position: 'left',
-          title: {
-            text: 'Average Duration (ms)',
-          },
-        },
-      ],
-    };
-
-
     this.filters = [{name: 'Today\'s records', code: 'NY'}, {
       name: 'This weeks\'s records', code: 'RM'
     }, {name: 'This month\'s records', code: 'LDN'}, {name: 'This year\'s records', code: 'IST'}];
@@ -292,6 +297,19 @@ export class VisualizationsRawDataComponent implements OnInit {
   toggleFilterVisibility() {
     this.visible.update(v => !v);
   }
+
+  applyFilter(start: string, end: string) {
+
+
+    console.log('Applying filter: ', start, end);
+
+    let from = new Date(start);
+    let to = new Date(end);
+
+    this.dataService.setDateRange({ from, to });
+  }
+
+  protected readonly Date = Date;
 }
 
 interface Filter {

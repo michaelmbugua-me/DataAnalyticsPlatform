@@ -1,5 +1,5 @@
 
-import { Injectable, Signal, signal } from '@angular/core';
+import {computed, Injectable, Signal, signal} from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, Observable, of } from 'rxjs';
@@ -20,6 +20,56 @@ export class DataService {
   private readonly sourceUrl = '/data/raw_events.json';
   private readonly dailyRollupsUrl = '/data/daily_rollups.json';
   private readonly retryCount = 2;
+
+  // Global date range (defaults to this month)
+  readonly dateRange = signal<DateRange>(getDefaultMonthRange());
+
+  setDateRange(r: DateRange) { this.dateRange.set(r); }
+  resetToThisMonth() { this.dateRange.set(getDefaultMonthRange()); }
+
+  private inRange(d: Date, r: DateRange) {
+    return d >= r.from && d <= r.to;
+  }
+
+  private getRawEventDate(rec: any): Date | null {
+    // Prefer numeric/ISO timestamp
+    if (rec?.timestamp != null) {
+      const t = new Date(rec.timestamp);
+      if (!isNaN(t.getTime())) return t;
+    }
+    // Fallback: a day string like '2025-08-05'
+    if (rec?.day) {
+      const t = new Date(rec.day);
+      if (!isNaN(t.getTime())) return t;
+    }
+    return null;
+  }
+
+  private getRollupDate(rec: any): Date | null {
+    if (!rec?.day) return null;
+    const t = new Date(rec.day);
+    return isNaN(t.getTime()) ? null : t;
+  }
+
+  // Derived, filtered signals
+  readonly filteredRawData = computed<any[]>(() => {
+    const r = this.dateRange();
+    const arr = this.data();
+    return arr.filter(rec => {
+      const d = this.getRawEventDate(rec);
+      return d ? this.inRange(d, r) : false;
+    });
+  });
+
+  readonly filteredDailyRollups = computed<any[]>(() => {
+    const r = this.dateRange();
+    const arr = this.dailyRollups();
+    return arr.filter(rec => {
+      const d = this.getRollupDate(rec);
+      return d ? this.inRange(d, r) : false;
+    });
+  });
+
 
   private readonly reload$ = new BehaviorSubject<void>(undefined);
 
@@ -77,4 +127,17 @@ export class DataService {
   refresh(): void {
     this.reload$.next();
   }
+}
+
+
+export interface DateRange {
+  from: Date;
+  to: Date;
+}
+
+function getDefaultMonthRange(now = new Date()): DateRange {
+  return {
+    from: new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0),
+    to: now,
+  };
 }
