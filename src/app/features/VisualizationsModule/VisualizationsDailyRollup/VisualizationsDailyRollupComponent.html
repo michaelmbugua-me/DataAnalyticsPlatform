@@ -122,21 +122,6 @@
 </div>
 
 
-<p-drawer [(visible)]="visible" header="Select Filter" position="right">
-  <p>Select from your preset filters</p>
-  <p-listbox
-    [(ngModel)]="selectedFilter"
-    [filter]="true"
-    [options]="filters"
-    class="w-100 md:w-56"
-    optionLabel="name"/>
+<app-filter-drawer [visible]="visible" (visibleChange)="visible = $event">
+</app-filter-drawer>
 
-  <div class="pt-3">
-    <button class="btn custom-btn-primary w-100" pButton type="submit">
-      <i class="pi pi-filter" pButtonIcon></i>
-      <span pButtonLabel>Apply Filter</span>
-    </button>
-
-  </div>
-
-</p-drawer>

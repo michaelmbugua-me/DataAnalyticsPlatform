@@ -26,7 +26,7 @@ export class RawEventsComponent implements OnInit {
 
   private dataService = inject(DataService);
 
-  public data = this.dataService.data;
+  public data = this.dataService.filteredRawData;
   error = this.dataService.error;
 
   filters!: Filter[];

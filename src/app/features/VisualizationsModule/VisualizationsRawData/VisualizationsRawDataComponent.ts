@@ -1,4 +1,4 @@
-import {Component, effect, inject, OnInit, signal} from '@angular/core';
+import {Component, effect, inject, Input, OnInit, signal} from '@angular/core';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {FormsModule} from '@angular/forms';
 import {AgChartOptions} from 'ag-charts-community';
@@ -43,6 +43,7 @@ export class VisualizationsRawDataComponent implements OnInit {
   constructor() {
 
     effect(() => {
+      const rows = this.data(); // track dependency
 
       // Derive datasets from current filtered rows
       const performanceData = this.getPerformanceData();
@@ -230,8 +231,8 @@ export class VisualizationsRawDataComponent implements OnInit {
     const tierCounts: any = {};
 
     this.data()
-      .filter(item => item.duration_ms)
-      .forEach(item => {
+      .filter((item: any) => item.duration_ms)
+      .forEach((item: any) => {
         if (!tierData[item.device_tier]) {
           tierData[item.device_tier] = 0;
           tierCounts[item.device_tier] = 0;
@@ -263,8 +264,8 @@ export class VisualizationsRawDataComponent implements OnInit {
     const networkCounts: any = {};
 
     this.data()
-      .filter(item => item.duration_ms && item.network_type)
-      .forEach(item => {
+      .filter((item: any) => item.duration_ms && item.network_type)
+      .forEach((item: any) => {
         if (!networkData[item.network_type]) {
           networkData[item.network_type] = 0;
           networkCounts[item.network_type] = 0;

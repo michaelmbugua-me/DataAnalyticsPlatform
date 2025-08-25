@@ -1,10 +1,11 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, Signal, signal} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {ColDef, GridOptions, GridReadyEvent} from 'ag-grid-community';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {FormsModule} from '@angular/forms';
 import {DataService} from '../../../core/services/DataService';
 import {FilterDrawerComponent} from '../../shared/FilterDrawerComponent/FilterDrawerComponent';
+import {DailyRollup} from '../../../core/models/DataModels';
 
 
 @Component({
@@ -26,7 +27,7 @@ export class DailyRollupsComponent implements OnInit {
 
   private dataService = inject(DataService);
 
-  public data = this.dataService.filteredDailyRollups;
+  public data: Signal<DailyRollup[]> = this.dataService.filteredDailyRollups;
   error = this.dataService.error;
 
   filters!: Filter[];

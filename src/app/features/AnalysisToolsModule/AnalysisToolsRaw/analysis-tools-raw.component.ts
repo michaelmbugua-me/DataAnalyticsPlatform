@@ -180,7 +180,7 @@ export class AnalysisToolsRawComponent implements OnInit {
     const pivotData: any = {};
     const columnValues = new Set();
 
-    this.data().forEach(item => {
+    this.data().forEach((item: any) => {
       const rowValue = item[rowDimension] || 'Unknown';
       const colValue = columnDimension ? (item[columnDimension] || 'Unknown') : 'Total';
 

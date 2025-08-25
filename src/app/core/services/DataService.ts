@@ -4,15 +4,16 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize, retry, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { DailyRollup, RawEvent } from '../../core/models/DataModels';
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
 
-  public rawData$: Observable<any[]>;
-  public data: Signal<any[]>;
+  public rawData$: Observable<RawEvent[]>;
+  public data: Signal<RawEvent[]>;
 
-  public dailyRollups$: Observable<any[]>;
-  public dailyRollups: Signal<any[]>;
+  public dailyRollups$: Observable<DailyRollup[]>;
+  public dailyRollups: Signal<DailyRollup[]>;
 
   public readonly loading = signal<boolean>(false);
   public readonly error = signal<string | null>(null);
@@ -32,7 +33,7 @@ export class DataService {
     return d >= r.from && d <= r.to;
   }
 
-  private getRawEventDate(rec: any): Date | null {
+  private getRawEventDate(rec: RawEvent): Date | null {
     // Prefer numeric/ISO timestamp
     if (rec?.timestamp != null) {
       const t = new Date(rec.timestamp);
@@ -46,14 +47,14 @@ export class DataService {
     return null;
   }
 
-  private getRollupDate(rec: any): Date | null {
+  private getRollupDate(rec: DailyRollup): Date | null {
     if (!rec?.day) return null;
     const t = new Date(rec.day);
     return isNaN(t.getTime()) ? null : t;
   }
 
   // Derived, filtered signals
-  readonly filteredRawData = computed<any[]>(() => {
+  readonly filteredRawData = computed<RawEvent[]>(() => {
     const r = this.dateRange();
     const arr = this.data();
     return arr.filter(rec => {
@@ -62,7 +63,7 @@ export class DataService {
     });
   });
 
-  readonly filteredDailyRollups = computed<any[]>(() => {
+  readonly filteredDailyRollups = computed<DailyRollup[]>(() => {
     const r = this.dateRange();
     const arr = this.dailyRollups();
     return arr.filter(rec => {
@@ -79,7 +80,7 @@ export class DataService {
       switchMap(() => {
         this.loading.set(true);
         this.error.set(null);
-        return this.http.get<any[]>(this.sourceUrl).pipe(
+        return this.http.get<RawEvent[]>(this.sourceUrl).pipe(
           retry(this.retryCount),
           tap(() => {
 
@@ -91,7 +92,7 @@ export class DataService {
 
             console.error('[DataService]', msg, err);
             this.error.set(msg);
-            return of([] as any[]);
+            return of([] as RawEvent[]);
           }),
           finalize(() => this.loading.set(false))
         );
@@ -104,7 +105,7 @@ export class DataService {
       switchMap(() => {
         this.loading.set(true);
         this.error.set(null);
-        return this.http.get<any[]>(this.dailyRollupsUrl).pipe(
+        return this.http.get<DailyRollup[]>(this.dailyRollupsUrl).pipe(
           retry(this.retryCount),
           catchError((err: HttpErrorResponse) => {
             const status = err?.status ?? 'unknown';
@@ -112,7 +113,7 @@ export class DataService {
             const msg = `Failed to load daily rollups (${status}): ${reason}`;
             console.error('[DataService]', msg, err);
             this.error.set(msg);
-            return of([] as any[]);
+            return of([] as DailyRollup[]);
           }),
           finalize(() => this.loading.set(false))
         );
@@ -121,8 +122,8 @@ export class DataService {
     );
 
     // Signals for template consumption
-    this.data = toSignal(this.rawData$, { initialValue: [] });
-    this.dailyRollups = toSignal(this.dailyRollups$, { initialValue: [] });
+    this.data = toSignal(this.rawData$, { initialValue: [] as RawEvent[] });
+    this.dailyRollups = toSignal(this.dailyRollups$, { initialValue: [] as DailyRollup[] });
   }
 
   refresh(): void {

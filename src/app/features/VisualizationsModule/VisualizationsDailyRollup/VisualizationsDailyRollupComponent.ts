@@ -1,18 +1,17 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
-import {Drawer} from 'primeng/drawer';
+import {Component, effect, inject, OnInit, signal} from '@angular/core';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
-import {Listbox} from 'primeng/listbox';
 import {FormsModule} from '@angular/forms';
 import {AgChartOptions} from 'ag-charts-community';
 import {AgCharts} from 'ag-charts-angular';
 import {ProgressSpinner} from 'primeng/progressspinner';
 import {DataService} from '../../../core/services/DataService';
+import {FilterDrawerComponent} from '../../shared/FilterDrawerComponent/FilterDrawerComponent';
 
 
 @Component({
   selector: 'app-visualizations',
   templateUrl: './VisualizationsDailyRollupComponent.html',
-  imports: [Drawer, ButtonDirective, ButtonIcon, ButtonLabel, Listbox, FormsModule, Button, AgCharts, ProgressSpinner],
+  imports: [ButtonDirective, ButtonIcon, ButtonLabel, FormsModule, Button, AgCharts, ProgressSpinner, FilterDrawerComponent],
   providers: [],
   styleUrls: ['./VisualizationsDailyRollupComponent.scss']
 })
@@ -20,7 +19,7 @@ export class VisualizationsDailyRollupComponent implements OnInit {
 
   private dataService = inject(DataService);
 
-  public data = this.dataService.dailyRollups;
+  public data = this.dataService.filteredDailyRollups;
   loading = this.dataService.loading;
   error = this.dataService.error;
 
@@ -41,14 +40,133 @@ export class VisualizationsDailyRollupComponent implements OnInit {
 
   filters!: Filter[];
 
-  selectedFilter!: Filter;
-
   visible = signal(false);
 
   // Charts
   chartLoaded: any = false;
 
   constructor() {
+    effect(() => {
+      let eventsOverTime = this.getEventsOverTime();
+      let eventGroupDistribution = this.getEventGroupDistribution();
+      let platformDistribution = this.getPlatformDistribution();
+      let deviceTierPerformance = this.getAppStartByDeviceTier();
+      let countryDistribution = this.getCountryDistribution();
+      let appStartPercentilesOverTime = this.getAppStartPercentilesOverTime();
+
+      this.chartLoaded = true;
+
+      // Chart 1: Events Over Time (Daily Total Events)
+      this.eventsOverTimeChartOptions = {
+        title: {
+          text: 'Events Over Time (Daily Totals)',
+        },
+        data: [...eventsOverTime],
+        series: [
+          {
+            type: 'line',
+            xKey: 'day',
+            yKey: 'events_count',
+            yName: 'Events',
+          },
+        ],
+        axes: [
+          {
+            type: 'category', position: 'bottom', title: {text: 'Date'},
+          },
+          {
+            type: 'number', position: 'left', title: {text: 'Events'},
+          },
+        ],
+      };
+
+      // Chart 2: Event Group Distribution (by Events)
+      this.eventsChartOptions = {
+        title: {
+          text: 'Event Group Distribution',
+        },
+        data: [...eventGroupDistribution],
+        series: [
+          {
+            type: 'pie', angleKey: 'events_count', legendItemKey: 'event_group', calloutLabelKey: 'event_group',
+          },
+        ],
+      };
+
+      // Chart 3: Platform Distribution (by Events)
+      this.platformChartOptions = {
+        title: {
+          text: 'Events by Platform',
+        },
+        data: [...platformDistribution],
+        series: [
+          {
+            type: 'bar',
+            xKey: 'platform',
+            yKey: 'events_count',
+          },
+        ],
+        axes: [
+          {type: 'category', position: 'bottom'},
+          {type: 'number', position: 'left', title: {text: 'Events'}},
+        ],
+      };
+
+      // Chart 4: App Start Performance by Device Tier (avg duration)
+      this.deviceTierChartOptions = {
+        title: {
+          text: 'App Start Performance by Device Tier',
+        },
+        data: [...deviceTierPerformance],
+        series: [
+          {
+            type: 'bar',
+            xKey: 'device_tier',
+            yKey: 'avg_duration_ms',
+            yName: 'Average Duration (ms)',
+          },
+        ],
+        axes: [
+          {type: 'category', position: 'bottom', title: {text: 'Device Tier'}},
+          {type: 'number', position: 'left', title: {text: 'Average Duration (ms)'}},
+        ],
+      };
+
+      // Chart 5: Events by Country
+      this.countryChartOptions = {
+        title: {
+          text: 'Events by Country',
+        },
+        data: [...countryDistribution],
+        series: [
+          {
+            type: 'pie',
+            angleKey: 'events_count',
+            legendItemKey: 'country',
+            calloutLabelKey: 'country',
+          },
+        ],
+      };
+
+      // Chart 6: App Start Percentiles Over Time (P50/P90/P99)
+      this.appStartPercentilesChartOptions = {
+        title: {
+          text: 'App Start Percentiles Over Time',
+        },
+        data: [...appStartPercentilesOverTime],
+        series: [
+          {type: 'line', xKey: 'day', yKey: 'p50_duration_ms', yName: 'P50 (ms)'},
+          {type: 'line', xKey: 'day', yKey: 'p90_duration_ms', yName: 'P90 (ms)'},
+          {type: 'line', xKey: 'day', yKey: 'p99_duration_ms', yName: 'P99 (ms)'},
+        ],
+        axes: [
+          {type: 'category', position: 'bottom', title: {text: 'Date'}},
+          {type: 'number', position: 'left', title: {text: 'Duration (ms)'}},
+        ],
+      };
+    });
+
+
   }
 
   // Sum events_count per day
@@ -137,126 +255,6 @@ export class VisualizationsDailyRollupComponent implements OnInit {
 
 
   async ngOnInit() {
-
-    // Prepare datasets based on daily rollups
-    this.eventsOverTime = this.getEventsOverTime();
-    this.eventGroupDistribution = this.getEventGroupDistribution();
-    this.platformDistribution = this.getPlatformDistribution();
-    this.deviceTierPerformance = this.getAppStartByDeviceTier();
-    this.countryDistribution = this.getCountryDistribution();
-    this.appStartPercentilesOverTime = this.getAppStartPercentilesOverTime();
-
-    this.chartLoaded = true;
-
-    // Chart 1: Events Over Time (Daily Total Events)
-    this.eventsOverTimeChartOptions = {
-      title: {
-        text: 'Events Over Time (Daily Totals)',
-      },
-      data: this.eventsOverTime,
-      series: [
-        {
-          type: 'line',
-          xKey: 'day',
-          yKey: 'events_count',
-          yName: 'Events',
-        },
-      ],
-      axes: [
-        {
-          type: 'category', position: 'bottom', title: { text: 'Date' },
-        },
-        {
-          type: 'number', position: 'left', title: { text: 'Events' },
-        },
-      ],
-    };
-
-    // Chart 2: Event Group Distribution (by Events)
-    this.eventsChartOptions = {
-      title: {
-        text: 'Event Group Distribution',
-      },
-      data: this.eventGroupDistribution,
-      series: [
-        {
-          type: 'pie', angleKey: 'events_count', legendItemKey: 'event_group', calloutLabelKey: 'event_group',
-        },
-      ],
-    };
-
-    // Chart 3: Platform Distribution (by Events)
-    this.platformChartOptions = {
-      title: {
-        text: 'Events by Platform',
-      },
-      data: this.platformDistribution,
-      series: [
-        {
-          type: 'bar',
-          xKey: 'platform',
-          yKey: 'events_count',
-        },
-      ],
-      axes: [
-        { type: 'category', position: 'bottom' },
-        { type: 'number', position: 'left', title: { text: 'Events' } },
-      ],
-    };
-
-    // Chart 4: App Start Performance by Device Tier (avg duration)
-    this.deviceTierChartOptions = {
-      title: {
-        text: 'App Start Performance by Device Tier',
-      },
-      data: this.deviceTierPerformance,
-      series: [
-        {
-          type: 'bar',
-          xKey: 'device_tier',
-          yKey: 'avg_duration_ms',
-          yName: 'Average Duration (ms)',
-        },
-      ],
-      axes: [
-        { type: 'category', position: 'bottom', title: { text: 'Device Tier' } },
-        { type: 'number', position: 'left', title: { text: 'Average Duration (ms)' } },
-      ],
-    };
-
-    // Chart 5: Events by Country
-    this.countryChartOptions = {
-      title: {
-        text: 'Events by Country',
-      },
-      data: this.countryDistribution,
-      series: [
-        {
-          type: 'pie',
-          angleKey: 'events_count',
-          legendItemKey: 'country',
-          calloutLabelKey: 'country',
-        },
-      ],
-    };
-
-    // Chart 6: App Start Percentiles Over Time (P50/P90/P99)
-    this.appStartPercentilesChartOptions = {
-      title: {
-        text: 'App Start Percentiles Over Time',
-      },
-      data: this.appStartPercentilesOverTime,
-      series: [
-        { type: 'line', xKey: 'day', yKey: 'p50_duration_ms', yName: 'P50 (ms)' },
-        { type: 'line', xKey: 'day', yKey: 'p90_duration_ms', yName: 'P90 (ms)' },
-        { type: 'line', xKey: 'day', yKey: 'p99_duration_ms', yName: 'P99 (ms)' },
-      ],
-      axes: [
-        { type: 'category', position: 'bottom', title: { text: 'Date' } },
-        { type: 'number', position: 'left', title: { text: 'Duration (ms)' } },
-      ],
-    };
-
 
     this.filters = [{name: 'Today\'s records', code: 'NY'}, {
       name: 'This weeks\'s records', code: 'RM'
