@@ -73,7 +73,7 @@
                   <div class="flex justify-between gap-4">
                     <div class="flex flex-col gap-2">
                       <span class="text-surface-700 dark:text-surface-300 font-normal leading-tight">Total Events Fetched</span>
-                      <div class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">152</div>
+                      <div class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">{{ this.totalEvents }}</div>
                     </div>
                     <div class="flex items-center justify-center rounded-lg w-10 h-10">
                       <i class="pi pi-list-check text-surface-0 dark:text-surface-900 text-xl! leading-none!"></i>
@@ -86,7 +86,7 @@
                     <div class="flex flex-col gap-2">
                       <span
                         class="text-surface-700 dark:text-surface-300 font-normal leading-tight">Average Duration</span>
-                      <div class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">532ms
+                      <div class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">{{ averageDuration }}
                       </div>
                     </div>
                     <div class="flex items-center justify-center rounded-lg w-10 h-10">
@@ -99,7 +99,7 @@
                   <div class="flex justify-between gap-4">
                     <div class="flex flex-col gap-2">
                       <span class="text-surface-700 dark:text-surface-300 font-normal leading-tight">Unique Users</span>
-                      <div class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">2841
+                      <div class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">{{uniqueUsers}}
                       </div>
                     </div>
                     <div class="flex items-center justify-center rounded-lg w-10 h-10">

@@ -57,6 +57,13 @@ export class AnalysisToolsDailyComponent implements OnInit {
   groupTableLoaded: boolean = true;
   pivotTableLoaded: boolean = true;
 
+
+  // Card Statistics
+  totalEvents = 0;
+  averageDuration = '0ms';
+  uniqueUsers = 0;
+  // Card Statistics
+
   constructor(private fb: FormBuilder) {
     this.dataGroupForm = fb.group({
       groupBy: ['country', Validators.required],
@@ -79,6 +86,9 @@ export class AnalysisToolsDailyComponent implements OnInit {
       {name: 'This month\'s records', code: 'LDN'},
       {name: 'This year\'s records', code: 'IST'}
     ];
+
+    this.fetchCardStatistics()
+
   }
 
   onSubmit() {
@@ -250,6 +260,31 @@ export class AnalysisToolsDailyComponent implements OnInit {
     this.visible.update(v => !v);
   }
 
+  private fetchCardStatistics() {
+
+    const data = this.data();
+    this.totalEvents = data.length;
+
+    if (this.totalEvents === 0) {
+      this.averageDuration = '0.00 ms';
+      this.uniqueUsers = 0;
+      return;
+    }
+
+    let totalDuration = 0;
+    const uniqueUserIds = new Set();
+
+      data.forEach((event: any) => {
+      totalDuration += event.duration_ms || 0;
+      if (event.user_pseudo_id) {
+        uniqueUserIds.add(event.user_pseudo_id);
+      }
+    });
+
+    this.averageDuration = (totalDuration / this.totalEvents).toFixed(2) + ' ms';
+    this.uniqueUsers = uniqueUserIds.size;
+
+  }
 
 }
 
