@@ -1,4 +1,4 @@
-import {Component, effect, inject, Input, OnInit, signal} from '@angular/core';
+import {Component, effect, inject, OnInit, signal} from '@angular/core';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {FormsModule} from '@angular/forms';
 import {AgChartOptions} from 'ag-charts-community';
@@ -43,7 +43,6 @@ export class VisualizationsRawDataComponent implements OnInit {
   constructor() {
 
     effect(() => {
-      const rows = this.data(); // track dependency
 
       // Derive datasets from current filtered rows
       const performanceData = this.getPerformanceData();

@@ -4,7 +4,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize, retry, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { DailyRollup, RawEvent } from '../../core/models/DataModels';
+import { DailyRollup, RawEvent } from '../models/DataModels';
 
 @Injectable({ providedIn: 'root' })
 export class DataService {

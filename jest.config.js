@@ -17,5 +17,36 @@ module.exports = {
   moduleDirectories: ['node_modules', 'src'],
   fakeTimers: {
     enableGlobally: true,
+  },
+
+  // Coveralls-specific configuration
+  collectCoverage: true,
+  collectCoverageFrom: [
+    'src/**/*.{ts,js}',
+    '!src/**/*.spec.{ts,js}',
+    '!src/**/*.test.{ts,js}',
+    '!src/**/*.d.ts',
+    '!src/test.ts',
+    '!src/**/index.ts',
+    '!src/**/main.ts',
+    '!src/**/polyfills.ts',
+    '!src/environments/**',
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['lcov', 'text', 'text-summary'],
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '/dist/',
+    '/coverage/'
+  ],
+
+  // Optional: Set coverage thresholds
+  coverageThreshold: {
+    global: {
+      branches: 70,
+      functions: 70,
+      lines: 70,
+      statements: 70
+    }
   }
 };
