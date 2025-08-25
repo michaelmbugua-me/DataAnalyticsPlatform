@@ -1,11 +1,10 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {ColDef, GridOptions, GridReadyEvent} from 'ag-grid-community';
-import {Drawer} from 'primeng/drawer';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
-import {Listbox} from 'primeng/listbox';
 import {FormsModule} from '@angular/forms';
 import {DataService} from '../../../core/services/DataService';
+import {FilterDrawerComponent} from '../../shared/Dashboard/FilterDrawerComponent';
 
 
 @Component({
@@ -13,13 +12,12 @@ import {DataService} from '../../../core/services/DataService';
   templateUrl: './RawEventsComponent.html',
   imports: [
     AgGridAngular,
-    Drawer,
     ButtonDirective,
     ButtonIcon,
     ButtonLabel,
-    Listbox,
     FormsModule,
-    Button
+    Button,
+    FilterDrawerComponent
   ],
   providers: [],
   styleUrls: ['./RawEventsComponent.scss']
@@ -28,7 +26,7 @@ export class RawEventsComponent implements OnInit {
 
   private dataService = inject(DataService);
 
-  public data = this.dataService.data;
+  public data = this.dataService.filteredRawData;
   loading = this.dataService.loading;
   error = this.dataService.error;
 

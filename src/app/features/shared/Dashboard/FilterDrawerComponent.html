@@ -1,0 +1,16 @@
+<p-drawer [(visible)]="visible" header="Select Filter" position="right">
+  <p>Select from your preset filters</p>
+  <div class="pt-3">
+    <div class="mb-3">
+      <p-date-picker [(ngModel)]="startDate" [showIcon]="true" placeholder="Start Date" class="w-100 md:w-56"></p-date-picker>
+    </div>
+    <div class="mb-3">
+      <p-date-picker [(ngModel)]="endDate" [showIcon]="true" placeholder="End Date" class="w-100 md:w-56"></p-date-picker>
+    </div>
+    <button class="btn custom-btn-primary w-100" pButton type="submit" (click)="applyFilter(startDate, endDate)">
+      <i class="pi pi-filter" pButtonIcon></i>
+      <span pButtonLabel>Apply Filter</span>
+    </button>
+  </div>
+
+</p-drawer>

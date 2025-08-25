@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import {LoginComponent} from './features/Access/Login/LoginComponent';
-import {DashboardComponent} from './features/Dashboard/DashboardComponent';
+import {FilterDrawerComponent} from './features/shared/Dashboard/FilterDrawerComponent';
 import {BaseComponent} from './layout/base/BaseComponent';
 import {VisualizationsRawDataComponent} from './features/VisualizationsModule/VisualizationsRawData/VisualizationsRawDataComponent';
 import {AnalysisToolsComponent} from './features/AnalysisTools/AnalysisToolsComponent';
@@ -15,7 +15,7 @@ export const routes: Routes = [
     path: '',
     component: BaseComponent,
     children: [
-      {path: 'dashboard', component: DashboardComponent},
+      {path: 'dashboard', component: FilterDrawerComponent},
       {
         path: 'data-explorer',
         loadChildren: () => DataExplorerModule

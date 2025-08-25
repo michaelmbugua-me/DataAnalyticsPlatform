@@ -1,19 +1,17 @@
-import {Component, effect, inject, OnInit, signal} from '@angular/core';
-import {Drawer} from 'primeng/drawer';
+import {Component, effect, inject, Input, OnInit, signal} from '@angular/core';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
-import {Listbox} from 'primeng/listbox';
 import {FormsModule} from '@angular/forms';
 import {AgChartOptions} from 'ag-charts-community';
 import {AgCharts} from 'ag-charts-angular';
 import {ProgressSpinner} from 'primeng/progressspinner';
 import {DataService} from '../../../core/services/DataService';
-import {DatePicker} from 'primeng/datepicker';
+import {FilterDrawerComponent} from '../../shared/Dashboard/FilterDrawerComponent';
 
 
 @Component({
   selector: 'app-visualizations',
   templateUrl: './VisualizationsRawDataComponent.html',
-  imports: [Drawer, ButtonDirective, ButtonIcon, ButtonLabel, Listbox, FormsModule, Button, AgCharts, ProgressSpinner, DatePicker],
+  imports: [ButtonDirective, ButtonIcon, ButtonLabel, FormsModule, Button, AgCharts, ProgressSpinner, FilterDrawerComponent],
   providers: [],
   styleUrls: ['./VisualizationsRawDataComponent.scss']
 })
@@ -22,7 +20,6 @@ export class VisualizationsRawDataComponent implements OnInit {
   private dataService = inject(DataService);
 
   public data = this.dataService.filteredRawData;
-  loading = this.dataService.loading;
   error = this.dataService.error;
 
 
@@ -36,10 +33,7 @@ export class VisualizationsRawDataComponent implements OnInit {
 
   filters!: Filter[];
 
-  selectedFilter!: Filter;
 
-  startDate: any;
-  endDate: any;
 
   visible = signal(false);
 
@@ -298,16 +292,7 @@ export class VisualizationsRawDataComponent implements OnInit {
     this.visible.update(v => !v);
   }
 
-  applyFilter(start: string, end: string) {
 
-
-    console.log('Applying filter: ', start, end);
-
-    let from = new Date(start);
-    let to = new Date(end);
-
-    this.dataService.setDateRange({ from, to });
-  }
 
   protected readonly Date = Date;
 }
