@@ -9,17 +9,17 @@
             <h5 class="text-[#BA0C2F] text-left">Log in to your Account</h5>
             <form (ngSubmit)="signIn()" [formGroup]="loginForm" class="mt-2">
               <div class="w-full pt-3">
-                <label class="login-label mb-2">Email Address</label>
-                <input class="form-control" formControlName="username" placeholder="Enter your Email" required
-                       type="email">
+                <label class="login-label mb-2" for="username">Email Address</label>
+                <input class="form-control" id="username" formControlName="username" placeholder="Enter your Email" required
+                       type="email" autocomplete="username" aria-required="true">
 
               </div>
               <div class="w-full pt-3">
-                <label class="login-label mb-2">Password</label>
+                <label class="login-label mb-2" for="password">Password</label>
                 <div class="input-group mb-3">
                   <input [type]="inputType" aria-label="password" autocomplete="off" class="form-control"
                          formControlName="password" id="password" placeholder="******" required>
-                  <div (click)="toggleShowPassword()" class="input-group-prepend cursor-pointer">
+                  <div (click)="toggleShowPassword()" class="input-group-prepend cursor-pointer" role="button" tabindex="0" [attr.aria-pressed]="showingPassword" aria-label="Toggle show password">
                     @if (!showingPassword) {
                       <span class="input-group-text p-1"><i class="pi pi-eye" style="font-size: 2rem; color: #708090"></i></span>
                     } @else {

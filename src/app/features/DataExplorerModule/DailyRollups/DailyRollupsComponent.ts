@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, Signal, signal} from '@angular/core';
+import {Component, inject, OnInit, Signal, signal, ChangeDetectionStrategy} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {ColDef, GridOptions, GridReadyEvent, ValueFormatterParams, CellClassParams} from 'ag-grid-community';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
@@ -7,6 +7,9 @@ import {DataService} from '../../../core/services/DataService';
 import {FilterDrawerComponent} from '../../shared/components/filter-drawer';
 import {DailyRollup, EventSource, ReleaseChannel} from '../../../core/models/DataModels';
 import { getSourceCellStyle, getReleaseChannelStyle, getDurationCellStyle } from '../../shared/utils/gridCellStyles';
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+
+ModuleRegistry.registerModules([AllCommunityModule]);
 
 
 @Component({
@@ -22,7 +25,8 @@ import { getSourceCellStyle, getReleaseChannelStyle, getDurationCellStyle } from
     FilterDrawerComponent
   ],
   providers: [],
-  styleUrls: ['./DailyRollupsComponent.scss']
+  styleUrls: ['./DailyRollupsComponent.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DailyRollupsComponent implements OnInit {
 
@@ -127,7 +131,6 @@ export class DailyRollupsComponent implements OnInit {
     enableCellTextSelection: true,
     ensureDomOrder: true,
     animateRows: true,
-    sideBar: false,
     suppressMenuHide: true,
     domLayout: 'normal'
   };

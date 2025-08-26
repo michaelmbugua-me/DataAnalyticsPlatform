@@ -1,12 +1,8 @@
 import { Routes } from '@angular/router';
 import {LoginComponent} from './features/access/Login/LoginComponent';
 import {BaseComponent} from './layout/base/BaseComponent';
-import {DataExplorerModule} from './features/DataExplorerModule/data-explorer.module';
-import {VisualizationsModule} from './features/VisualizationsModule/visualizations.module';
-import {AnalysisToolsModule} from './features/AnalysisToolsModule/analysis-tools.module';
 
 export const routes: Routes = [
-
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'login', component: LoginComponent },
   {
@@ -15,14 +11,16 @@ export const routes: Routes = [
     children: [
       {
         path: 'data-explorer',
-        loadChildren: () => DataExplorerModule
+        loadChildren: () => import('./features/DataExplorerModule/data-explorer.module').then(m => m.DataExplorerModule)
       },
-      {path: 'visualization',
-        loadChildren: () => VisualizationsModule
+      {
+        path: 'visualization',
+        loadChildren: () => import('./features/VisualizationsModule/visualizations.module').then(m => m.VisualizationsModule)
       },
-      {path: 'analysis-tools',
-        loadChildren: () => AnalysisToolsModule
-      },
+      {
+        path: 'analysis-tools',
+        loadChildren: () => import('./features/AnalysisToolsModule/analysis-tools.module').then(m => m.AnalysisToolsModule)
+      }
     ]
   }
 ];

@@ -74,12 +74,12 @@
             <div class="bg-surface-50 dark:bg-surface-950">
               <ag-grid-angular
                 style="height: 600px; width: 100%;"
+                aria-label="Raw events table"
                 [rowData]="data()"
                 [columnDefs]="columnDefs"
                 [defaultColDef]="defaultColDef"
                 [gridOptions]="gridOptions"
                 (gridReady)="onGridReady($event)"
-
               ></ag-grid-angular>
             </div>
 

@@ -1,4 +1,4 @@
-import {Component, effect, inject, OnInit, signal} from '@angular/core';
+import {Component, effect, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {FormsModule} from '@angular/forms';
 import {AgChartOptions} from 'ag-charts-community';
@@ -11,6 +11,7 @@ import {FilterDrawerComponent} from '../../shared/components/filter-drawer';
 @Component({
   selector: 'app-visualizations',
   templateUrl: './VisualizationsDailyRollupComponent.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ButtonDirective, ButtonIcon, ButtonLabel, FormsModule, Button, AgCharts, ProgressSpinner, FilterDrawerComponent],
   providers: [],
   styleUrls: ['./VisualizationsDailyRollupComponent.scss']

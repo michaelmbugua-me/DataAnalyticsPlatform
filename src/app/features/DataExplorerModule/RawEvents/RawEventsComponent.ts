@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal, computed, Signal} from '@angular/core';
+import {Component, inject, OnInit, signal, computed, Signal, ChangeDetectionStrategy} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {ColDef, GridOptions, GridReadyEvent, ValueFormatterParams, CellClassParams} from 'ag-grid-community';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
@@ -16,6 +16,10 @@ import {
   ReleaseChannel
 } from '../../../core/models/DataModels';
 import { getSourceCellStyle, getReleaseChannelStyle, getDurationCellStyle } from '../../shared/utils/gridCellStyles';
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+
+// Register AG Grid modules lazily for this feature chunk
+ModuleRegistry.registerModules([AllCommunityModule]);
 
 @Component({
   selector: 'app-raw-events-component',
@@ -30,7 +34,8 @@ import { getSourceCellStyle, getReleaseChannelStyle, getDurationCellStyle } from
     FilterDrawerComponent
   ],
   providers: [],
-  styleUrls: ['./RawEventsComponent.scss']
+  styleUrls: ['./RawEventsComponent.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RawEventsComponent implements OnInit {
 
@@ -181,24 +186,6 @@ export class RawEventsComponent implements OnInit {
     enableCellTextSelection: true,
     ensureDomOrder: true,
     animateRows: true,
-    sideBar: {
-      toolPanels: [
-        {
-          id: 'columns',
-          labelDefault: 'Columns',
-          labelKey: 'columns',
-          iconKey: 'columns',
-          toolPanel: 'agColumnsToolPanel'
-        },
-        {
-          id: 'filters',
-          labelDefault: 'Filters',
-          labelKey: 'filters',
-          iconKey: 'filter',
-          toolPanel: 'agFiltersToolPanel'
-        }
-      ]
-    },
     suppressMenuHide: true,
     domLayout: 'normal'
   };
