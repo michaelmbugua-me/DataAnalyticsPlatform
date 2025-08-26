@@ -13,7 +13,7 @@ import {NgOptimizedImage} from '@angular/common';
   selector: 'app-dashboard',
   templateUrl: './BaseComponent.html',
   imports: [Tag, RouterLink, RouterOutlet, NgOptimizedImage],
-  styleUrls: ['./BaseComponent.scss']
+  styleUrls: ['./BaseComponent.scss'],
 })
 export class BaseComponent implements OnInit, AfterViewChecked {
 
