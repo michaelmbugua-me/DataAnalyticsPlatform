@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, effect, inject, OnInit, signal} from '@angular/core';
 import {TableModule} from 'primeng/table';
 
 import {ProgressSpinner} from 'primeng/progressspinner';
@@ -8,6 +8,9 @@ import {AgGridAngular} from 'ag-grid-angular';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Drawer} from 'primeng/drawer';
 import {DataService} from '../../../core/services/DataService';
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+
+ModuleRegistry.registerModules([AllCommunityModule]);
 
 
 @Component({
@@ -49,6 +52,10 @@ export class AnalysisToolsRawComponent implements OnInit {
 
   filters!: Filter[];
 
+  // Dynamic select options derived from data
+  dimensionOptions: { label: string; value: string }[] = [];
+  measureOptions: { label: string; value: string }[] = [];
+
   visible = signal(false);
 
   dataGroupForm!: FormGroup;
@@ -77,6 +84,52 @@ export class AnalysisToolsRawComponent implements OnInit {
       valueMeasure: ['count', Validators.required]
     });
 
+    // React to data arrivals/changes to build options and initialize tables
+    effect(() => {
+      const records = this.data();
+      this.buildSelectOptions(records);
+      // Initialize when data available
+      if (records && records.length > 0) {
+        this.fetchCardStatistics();
+        if (this.groupTableLoaded) {
+          // no-op
+        }
+        this.groupData();
+        this.createPivotTable();
+      }
+    });
+  }
+
+  private buildSelectOptions(records: any[]) {
+    // Prefer known categorical dimensions; fall back to inferring string-like keys
+    const defaultDims = ['platform','country','device_tier','event_name','release_channel','source','day','app_version','network_type'];
+    const first = records?.[0] ?? {};
+    const keys = Object.keys(first || {});
+
+    const dims = defaultDims.filter(k => k in first).concat(
+      keys.filter(k => typeof first[k] === 'string' && !defaultDims.includes(k))
+    );
+
+    // Numeric measures present in data
+    const numericCandidates = ['count','duration_ms','revenue_usd','purchase_count'];
+    const measures = numericCandidates.filter(k => k in first);
+
+    this.dimensionOptions = [{ label: '-- Select Dimension --', value: '' },
+      ...dims.map(k => ({ label: this.pretty(k), value: k }))
+    ];
+
+    this.measureOptions = [
+      { label: 'Count', value: 'count' },
+      ...measures.filter(m => m !== 'count').map(k => ({ label: this.pretty(k), value: k }))
+    ];
+  }
+
+  private pretty(key: string) {
+    return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  get dimensionOptionsNoPlaceholder() {
+    return this.dimensionOptions.filter(o => !!o.value);
   }
 
   async ngOnInit() {
@@ -88,7 +141,12 @@ export class AnalysisToolsRawComponent implements OnInit {
       {name: 'This year\'s records', code: 'IST'}
     ];
 
-    this.fetchCardStatistics()
+    // If data already present synchronously, ensure cards and views are populated
+    if (this.data() && this.data().length > 0) {
+      this.fetchCardStatistics();
+      this.groupData();
+      this.createPivotTable();
+    }
   }
 
   onSubmit() {
@@ -207,7 +265,10 @@ export class AnalysisToolsRawComponent implements OnInit {
 
       // Update measures
       pivotData[rowValue][colValue].count += 1;
-      pivotData[rowValue][colValue].sum += item[valueMeasure] || 0;
+      // Only accumulate sum when valueMeasure is not 'count'
+      if (valueMeasure !== 'count') {
+        pivotData[rowValue][colValue].sum += Number(item?.[valueMeasure]) || 0;
+      }
     });
 
     // Prepare column definitions
@@ -228,20 +289,22 @@ export class AnalysisToolsRawComponent implements OnInit {
       });
     });
 
-    // Add total column
-    columnDefs.push({
-      headerName: 'Total',
-      valueGetter: (params: { data: { [x: string]: any; }; }) => {
-        const rowValue = params.data[rowDimension];
-        let total = 0;
-        for (const col in pivotData[rowValue]) {
-          total += valueMeasure === 'count' ?
-            pivotData[rowValue][col].count :
-            pivotData[rowValue][col].sum;
+    // Add total column only when there is a column dimension (to provide row totals)
+    if (columnDimension) {
+      columnDefs.push({
+        headerName: 'Total',
+        valueGetter: (params: { data: { [x: string]: any; }; }) => {
+          const rowValue = params.data[rowDimension];
+          let total = 0;
+          for (const col in pivotData[rowValue]) {
+            total += valueMeasure === 'count' ?
+              pivotData[rowValue][col].count :
+              pivotData[rowValue][col].sum;
+          }
+          return total;
         }
-        return total;
-      }
-    });
+      });
+    }
 
     // Prepare row data
     const rowData = Object.keys(pivotData).map(rowValue => {

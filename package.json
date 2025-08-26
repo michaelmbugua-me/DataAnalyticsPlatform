@@ -5,11 +5,12 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:subpath": "ng build --configuration production --base-href /equity-analytics/",
     "watch": "ng build --watch --configuration development",
     "test": "jest",
     "test-with-coverage": "jest --coverage",
     "coveralls": "jest --coverage --coverageReporters=text-lcov | coveralls",
-    "analyze": "ng build --configuration production --source-map=true && source-map-explorer 'dist/**/browser/*.js'"
+    "analyze": "ng build --configuration production --base-href / --source-map=true && source-map-explorer 'dist/**/browser/*.js'"
   },
   "prettier": {
     "printWidth": 100,
