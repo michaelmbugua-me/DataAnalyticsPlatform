@@ -8,6 +8,7 @@ module.exports = {
   preset: 'jest-preset-angular',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setup-jest.ts'],
+  maxWorkers: 1,
   transform: {
     '^.+\\.ts$': 'ts-jest', // Only transform .ts files
   },
@@ -15,9 +16,6 @@ module.exports = {
     '/node_modules/(?!flat)/', // Exclude modules except 'flat' from transformation
   ],
   moduleDirectories: ['node_modules', 'src'],
-  fakeTimers: {
-    enableGlobally: true,
-  },
 
   // Coveralls-specific configuration
   collectCoverage: true,

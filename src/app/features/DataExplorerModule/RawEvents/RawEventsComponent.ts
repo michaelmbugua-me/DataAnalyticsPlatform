@@ -37,7 +37,7 @@ export class RawEventsComponent implements OnInit {
   private dataService = inject(DataService);
 
   // Type-safe data with proper typing
-  public data: RawEvent[] = this.dataService.filteredRawData();
+  public data: Signal<RawEvent[]> = this.dataService.filteredRawData;
   error: Signal<string | null> = this.dataService.error;
 
   filters!: Filter[];
@@ -45,15 +45,15 @@ export class RawEventsComponent implements OnInit {
 
   // Computed signals for different event types (optional - for additional functionality)
   analyticsEvents = computed(() =>
-    this.data?.filter((event): event is AnalyticsEvent => event.source === 'analytics') ?? []
+    this.data()?.filter((event): event is AnalyticsEvent => event.source === 'analytics') ?? []
   );
 
   performanceEvents = computed(() =>
-    this.data?.filter((event): event is PerformanceEvent => event.source === 'performance') ?? []
+    this.data()?.filter((event): event is PerformanceEvent => event.source === 'performance') ?? []
   );
 
   crashEvents = computed(() =>
-    this.data?.filter((event): event is CrashEvent => event.source === 'crash') ?? []
+    this.data()?.filter((event): event is CrashEvent => event.source === 'crash') ?? []
   );
 
   // Enhanced column definitions with type-aware formatters
@@ -87,7 +87,7 @@ export class RawEventsComponent implements OnInit {
     {
       field: 'source',
       headerName: 'Source',
-      filter: 'agSetColumnFilter',
+      filter: 'agTextColumnFilter',
       minWidth: 160,
       cellStyle: (params: CellClassParams) => getSourceCellStyle(params.value as EventSource)
     },
@@ -100,26 +100,26 @@ export class RawEventsComponent implements OnInit {
     {
       field: 'platform',
       headerName: 'Platform',
-      filter: 'agSetColumnFilter',
+      filter: 'agTextColumnFilter',
       minWidth: 100,
       valueFormatter: (params: any) => this.getPlatformIcon(params.value)
     },
     {
       field: 'app_id',
       headerName: 'App ID',
-      filter: 'agSetColumnFilter',
+      filter: 'agTextColumnFilter',
       minWidth: 140
     },
     {
       field: 'country',
       headerName: 'Country',
-      filter: 'agSetColumnFilter',
+      filter: 'agTextColumnFilter',
       minWidth: 100
     },
     {
       field: 'release_channel',
       headerName: 'Release',
-      filter: 'agSetColumnFilter',
+      filter: 'agTextColumnFilter',
       minWidth: 100,
       cellStyle: (params: CellClassParams) => getReleaseChannelStyle(params.value as ReleaseChannel)
     },
@@ -162,7 +162,7 @@ export class RawEventsComponent implements OnInit {
     {
       field: 'crash_type',
       headerName: 'Crash Type',
-      filter: 'agSetColumnFilter',
+      filter: 'agTextColumnFilter',
       minWidth: 160,
       cellStyle: { color: '#dc3545', fontWeight: 'bold' }
     }
@@ -244,7 +244,7 @@ export class RawEventsComponent implements OnInit {
   }
 
   private updateColumnVisibility(params: GridReadyEvent<RawEvent>) {
-    const data = this.data;
+    const data = this.data();
     if (!data || data.length === 0) return;
 
     const hasAnalytics = data.some(event => event.source === 'analytics');
