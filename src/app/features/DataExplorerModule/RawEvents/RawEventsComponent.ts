@@ -4,7 +4,7 @@ import {ColDef, GridOptions, GridReadyEvent, ValueFormatterParams, CellClassPara
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {FormsModule} from '@angular/forms';
 import {DataService} from '../../../core/services/DataService';
-import {FilterDrawerComponent} from '../../shared/components/FilterDrawerComponent/FilterDrawerComponent';
+import {FilterDrawerComponent} from '../../shared/components/filter-drawer';
 import {
   RawEvent,
   AnalyticsEvent,

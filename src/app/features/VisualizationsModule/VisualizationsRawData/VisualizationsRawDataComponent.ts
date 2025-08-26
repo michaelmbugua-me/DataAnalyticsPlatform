@@ -5,7 +5,7 @@ import {AgChartOptions} from 'ag-charts-community';
 import {AgCharts} from 'ag-charts-angular';
 import {ProgressSpinner} from 'primeng/progressspinner';
 import {DataService} from '../../../core/services/DataService';
-import {FilterDrawerComponent} from '../../shared/components/FilterDrawerComponent/FilterDrawerComponent';
+import {FilterDrawerComponent} from '../../shared/components/filter-drawer';
 
 
 @Component({
