@@ -1,10 +1,10 @@
 import {Component, inject, OnInit, Signal, signal} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
-import {ColDef, GridOptions, GridReadyEvent} from 'ag-grid-community';
+import {ColDef, GridOptions, GridReadyEvent, ValueFormatterParams} from 'ag-grid-community';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {FormsModule} from '@angular/forms';
 import {DataService} from '../../../core/services/DataService';
-import {FilterDrawerComponent} from '../../shared/FilterDrawerComponent/FilterDrawerComponent';
+import {FilterDrawerComponent} from '../../shared/components/FilterDrawerComponent/FilterDrawerComponent';
 import {DailyRollup} from '../../../core/models/DataModels';
 
 
@@ -28,14 +28,14 @@ export class DailyRollupsComponent implements OnInit {
   private dataService = inject(DataService);
 
   public data: Signal<DailyRollup[]> = this.dataService.filteredDailyRollups;
-  error = this.dataService.error;
+  error: Signal<string | null> = this.dataService.error;
 
   filters!: Filter[];
 
 
   visible = signal(false);
 
-  columnDefs: ColDef[] = [
+  columnDefs: ColDef<DailyRollup>[] = [
     { field: 'day', headerName: 'Day', filter: 'agDateColumnFilter', minWidth: 120,
       maxWidth: 150 },
     { field: 'source', headerName: 'Source', filter: 'agTextColumnFilter', minWidth: 120,
@@ -80,7 +80,7 @@ export class DailyRollupsComponent implements OnInit {
       headerName: 'Revenue USD',
       filter: 'agNumberColumnFilter',
       type: 'numericColumn',minWidth: 120,
-      valueFormatter: params => params.value ? `$${params.value.toFixed(2)}` : '$0.00'
+      valueFormatter: (params: ValueFormatterParams<DailyRollup, number>) => params.value ? `$${params.value.toFixed(2)}` : '$0.00'
     },
     {
       field: 'purchase_count',
@@ -94,7 +94,7 @@ export class DailyRollupsComponent implements OnInit {
       headerName: 'Avg Duration (ms)',
       filter: 'agNumberColumnFilter',
       type: 'numericColumn', minWidth: 120,
-      valueFormatter: params => params.value ? `${params.value}ms` : ''
+      valueFormatter: (params: ValueFormatterParams<DailyRollup, number | undefined>) => params.value ? `${params.value}ms` : ''
     },
     {
       field: 'p50_duration_ms',
@@ -102,7 +102,7 @@ export class DailyRollupsComponent implements OnInit {
       filter: 'agNumberColumnFilter',
       type: 'numericColumn',
       minWidth: 120,
-      valueFormatter: params => params.value ? `${params.value}ms` : ''
+      valueFormatter: (params: ValueFormatterParams<DailyRollup, number | undefined>) => params.value ? `${params.value}ms` : ''
     },
     {
       field: 'p90_duration_ms',
@@ -110,7 +110,7 @@ export class DailyRollupsComponent implements OnInit {
       filter: 'agNumberColumnFilter',
       type: 'numericColumn',
       minWidth: 120,
-      valueFormatter: params => params.value ? `${params.value}ms` : ''
+      valueFormatter: (params: ValueFormatterParams<DailyRollup, number | undefined>) => params.value ? `${params.value}ms` : ''
     },
     {
       field: 'p99_duration_ms',
@@ -118,14 +118,14 @@ export class DailyRollupsComponent implements OnInit {
       filter: 'agNumberColumnFilter',
       type: 'numericColumn',
       minWidth: 120,
-      valueFormatter: params => params.value ? `${params.value}ms` : ''
+      valueFormatter: (params: ValueFormatterParams<DailyRollup, number | undefined>) => params.value ? `${params.value}ms` : ''
     }
   ];
 
-  public defaultColDef: ColDef = {};
+  public defaultColDef: ColDef<DailyRollup> = {};
 
   // Grid Options
-  public gridOptions: GridOptions = {
+  public gridOptions: GridOptions<DailyRollup> = {
     rowModelType: 'clientSide',
     pagination: true,
     enableCellTextSelection: true,
@@ -146,7 +146,7 @@ export class DailyRollupsComponent implements OnInit {
     ];
   }
 
-  onGridReady(params: GridReadyEvent) {
+  onGridReady(params: GridReadyEvent<DailyRollup>) {
     console.log('Grid is ready');
     params.api.sizeColumnsToFit();
 

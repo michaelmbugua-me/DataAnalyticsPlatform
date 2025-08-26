@@ -32,7 +32,7 @@ A modern Angular-based data analytics platform designed for exploring, filtering
 
 ## Technical Stack
 
-- **Framework**: Angular 17+ (Standalone Components)
+- **Framework**: Angular 20 (Standalone Components)
 - **Styling**: Sass with PrimeNG UI Component Library
 - **State Management**: Angular Signals + RxJS
 - **Testing**: Jest with comprehensive unit test coverage
@@ -62,9 +62,9 @@ src/
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- npm 9+ or yarn 1.22+
-- Angular CLI 17+
+- Node.js 22.18.0
+- npm 10.9.3
+- Angular CLI 20.2.0
 
 ### Installation
 

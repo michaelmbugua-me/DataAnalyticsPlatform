@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { FilterDrawerComponent } from './FilterDrawerComponent';
-import { DataService } from '../../../core/services/DataService';
+import { DataService } from '../../../../core/services/DataService';
 import { FormsModule } from '@angular/forms';
 import { signal } from '@angular/core';
 import {Drawer} from 'primeng/drawer';

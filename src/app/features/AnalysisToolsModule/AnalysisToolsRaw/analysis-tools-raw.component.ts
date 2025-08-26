@@ -2,7 +2,7 @@ import {Component, inject, OnInit, signal} from '@angular/core';
 import {TableModule} from 'primeng/table';
 
 import {ProgressSpinner} from 'primeng/progressspinner';
-import {ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
+import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {Select} from 'primeng/select';
 import {AgGridAngular} from 'ag-grid-angular';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -24,6 +24,7 @@ import {DataService} from '../../../core/services/DataService';
     ReactiveFormsModule,
     Drawer,
     FormsModule,
+    Button,
   ],
   providers: [],
   styleUrls: ['./analysis-tools-raw.component.scss']
@@ -284,6 +285,14 @@ export class AnalysisToolsRawComponent implements OnInit {
     this.averageDuration = (totalDuration / this.totalEvents).toFixed(2) + ' ms';
     this.uniqueUsers = uniqueUserIds.size;
 
+  }
+
+  exportPivotTable() {
+    console.log('Exported Pivot Table')
+  }
+
+  exportGroupTable() {
+    console.log('Exported Group Table')
   }
 }
 

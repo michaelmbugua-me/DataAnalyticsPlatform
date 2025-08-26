@@ -3,7 +3,7 @@ import {Drawer} from 'primeng/drawer';
 import {DatePicker} from 'primeng/datepicker';
 import {FormsModule} from '@angular/forms';
 import {ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
-import {DataService} from '../../../core/services/DataService';
+import {DataService} from '../../../../core/services/DataService';
 
 @Component({
   selector: 'app-filter-drawer',

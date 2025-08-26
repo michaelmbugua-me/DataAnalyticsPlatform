@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import {LoginComponent} from './features/Access/Login/LoginComponent';
+import {LoginComponent} from './features/access/Login/LoginComponent';
 import {BaseComponent} from './layout/base/BaseComponent';
 import {DataExplorerModule} from './features/DataExplorerModule/data-explorer.module';
 import {VisualizationsModule} from './features/VisualizationsModule/visualizations.module';
