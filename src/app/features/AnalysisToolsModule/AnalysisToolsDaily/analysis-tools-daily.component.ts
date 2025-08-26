@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, effect, inject, OnInit, signal} from '@angular/core';
 import {TableModule} from 'primeng/table';
 
 import {ProgressSpinner} from 'primeng/progressspinner';
@@ -32,7 +32,7 @@ export class AnalysisToolsDailyComponent implements OnInit {
 
   private dataService = inject(DataService);
 
-  public data = this.dataService.data;
+  public data = this.dataService.dailyRollups;
   loading = this.dataService.loading;
   error = this.dataService.error;
 
@@ -47,6 +47,10 @@ export class AnalysisToolsDailyComponent implements OnInit {
 
 
   filters!: Filter[];
+
+  // Dynamic select options derived from data
+  dimensionOptions: { label: string; value: string }[] = [];
+  measureOptions: { label: string; value: string }[] = [];
 
   visible = signal(false);
 
@@ -68,14 +72,67 @@ export class AnalysisToolsDailyComponent implements OnInit {
     this.dataGroupForm = fb.group({
       groupBy: ['country', Validators.required],
       aggregation: ['count', Validators.required],
-      measure: ['count', Validators.required]
+      measure: ['events_count', Validators.required]
     });
 
     this.pivotTableForm = fb.group({
       rowDimension: ['platform', Validators.required],
       columnDimension: [''],
-      valueMeasure: ['count', Validators.required]
+      valueMeasure: ['events_count', Validators.required]
     });
+
+    // React to data arrivals/changes to build options and initialize tables
+    effect(() => {
+      const records = this.data();
+      this.buildSelectOptions(records);
+      if (records && records.length > 0) {
+        this.fetchCardStatistics();
+        this.groupData();
+        this.createPivotTable();
+      }
+    });
+  }
+
+  private buildSelectOptions(records: any[]) {
+    const defaultDims = ['day','source','platform','app_id','app_version','release_channel','country','device_tier','event_group'];
+    const first = records?.[0] ?? {};
+    const keys = Object.keys(first || {});
+
+    const dims = defaultDims.filter(k => k in first).concat(
+      keys.filter(k => typeof first[k] === 'string' && !defaultDims.includes(k))
+    );
+
+    // Inject a user-friendly alias: Event Type -> event_name (resolved later to event_group if needed)
+    const withAlias = [...dims];
+    if (!('event_name' in first) && ('event_group' in first)) {
+      // Add a synthetic option value 'event_name' so the rest of the UI stays consistent
+      withAlias.push('event_name');
+    }
+
+    // Numeric measures present in daily rollups
+    const numericCandidates = [
+      'events_count','users_count','sessions_count',
+      'avg_duration_ms','p50_duration_ms','p90_duration_ms','p99_duration_ms',
+      'http_error_rate','crash_rate_per_1k_sessions',
+      'revenue_usd','purchase_count'
+    ];
+    const measures = numericCandidates.filter(k => k in first);
+
+    this.dimensionOptions = [{ label: '-- Select Dimension --', value: '' },
+      ...withAlias.map(k => ({ label: k === 'event_name' ? 'Event Type' : this.pretty(k), value: k }))
+    ];
+
+    this.measureOptions = measures.length
+      ? measures.map(k => ({ label: this.pretty(k), value: k }))
+      : [{ label: 'Events Count', value: 'events_count' }];
+  }
+
+  private pretty(key: string) {
+    return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  get dimensionOptionsNoPlaceholder() {
+    return this.dimensionOptions.filter(o => !!o.value);
   }
 
   async ngOnInit() {
@@ -87,7 +144,12 @@ export class AnalysisToolsDailyComponent implements OnInit {
       {name: 'This year\'s records', code: 'IST'}
     ];
 
-    this.fetchCardStatistics()
+    // If data already present synchronously, ensure cards and views are populated
+    if (this.data() && this.data().length > 0) {
+      this.fetchCardStatistics();
+      this.groupData();
+      this.createPivotTable();
+    }
 
   }
 
@@ -110,10 +172,18 @@ export class AnalysisToolsDailyComponent implements OnInit {
       return;
     }
 
+    const getDim = (it: any, key: string) => {
+      if (key === 'event_name') {
+        // Prefer event_name if present; otherwise fall back to event_group (Daily dataset)
+        return (it?.event_name ?? it?.event_group ?? 'Unknown');
+      }
+      return (it?.[key] ?? 'Unknown');
+    };
+
     const groupedData: Record<string, any[]> = {};
 
     this.data().forEach((item: any) => {
-      const key = item?.[dimension] ?? 'Unknown';
+      const key = getDim(item, dimension);
       if (!groupedData[key]) {
         groupedData[key] = [];
       }
@@ -190,9 +260,17 @@ export class AnalysisToolsDailyComponent implements OnInit {
     const pivotData: any = {};
     const columnValues = new Set();
 
+    const getDim = (it: any, key: string) => {
+      if (!key) return 'Total';
+      if (key === 'event_name') {
+        return (it?.event_name ?? it?.event_group ?? 'Unknown');
+      }
+      return (it?.[key] ?? 'Unknown');
+    };
+
     this.data().forEach((item: any) => {
-      const rowValue = item[rowDimension] || 'Unknown';
-      const colValue = columnDimension ? (item[columnDimension] || 'Unknown') : 'Total';
+      const rowValue = getDim(item, rowDimension);
+      const colValue = columnDimension ? getDim(item, columnDimension) : 'Total';
 
       // Add to column values set
       if (columnDimension) columnValues.add(colValue);
@@ -207,7 +285,9 @@ export class AnalysisToolsDailyComponent implements OnInit {
 
       // Update measures
       pivotData[rowValue][colValue].count += 1;
-      pivotData[rowValue][colValue].sum += item[valueMeasure] || 0;
+      if (valueMeasure !== 'count') {
+        pivotData[rowValue][colValue].sum += Number(item?.[valueMeasure]) || 0;
+      }
     });
 
     // Prepare column definitions
@@ -228,20 +308,22 @@ export class AnalysisToolsDailyComponent implements OnInit {
       });
     });
 
-    // Add total column
-    columnDefs.push({
-      headerName: 'Total',
-      valueGetter: (params: { data: { [x: string]: any; }; }) => {
-        const rowValue = params.data[rowDimension];
-        let total = 0;
-        for (const col in pivotData[rowValue]) {
-          total += valueMeasure === 'count' ?
-            pivotData[rowValue][col].count :
-            pivotData[rowValue][col].sum;
+    // Add total column only when there is a column dimension (to provide row totals)
+    if (columnDimension) {
+      columnDefs.push({
+        headerName: 'Total',
+        valueGetter: (params: { data: { [x: string]: any; }; }) => {
+          const rowValue = params.data[rowDimension];
+          let total = 0;
+          for (const col in pivotData[rowValue]) {
+            total += valueMeasure === 'count' ?
+              pivotData[rowValue][col].count :
+              pivotData[rowValue][col].sum;
+          }
+          return total;
         }
-        return total;
-      }
-    });
+      });
+    }
 
     // Prepare row data
     const rowData = Object.keys(pivotData).map(rowValue => {
@@ -263,27 +345,30 @@ export class AnalysisToolsDailyComponent implements OnInit {
   private fetchCardStatistics() {
 
     const data = this.data();
-    this.totalEvents = data.length;
 
-    if (this.totalEvents === 0) {
+    const totalEvents = data.reduce((acc: number, r: any) => acc + (Number(r?.events_count) || 0), 0);
+    const totalUsers = data.reduce((acc: number, r: any) => acc + (Number(r?.users_count) || 0), 0);
+
+    this.totalEvents = totalEvents;
+    this.uniqueUsers = totalUsers;
+
+    if (!data.length) {
       this.averageDuration = '0.00 ms';
-      this.uniqueUsers = 0;
       return;
     }
 
-    let totalDuration = 0;
-    const uniqueUserIds = new Set();
+    // Average of avg_duration_ms across records that have it
+    const durations = data
+      .map((r: any) => Number(r?.avg_duration_ms))
+      .filter((v: number) => !isNaN(v));
 
-      data.forEach((event: any) => {
-      totalDuration += event.duration_ms || 0;
-      if (event.user_pseudo_id) {
-        uniqueUserIds.add(event.user_pseudo_id);
-      }
-    });
+    if (durations.length === 0) {
+      this.averageDuration = '0.00 ms';
+      return;
+    }
 
-    this.averageDuration = (totalDuration / this.totalEvents).toFixed(2) + ' ms';
-    this.uniqueUsers = uniqueUserIds.size;
-
+    const avg = durations.reduce((a: number, b: number) => a + b, 0) / durations.length;
+    this.averageDuration = avg.toFixed(2) + ' ms';
   }
 
 }
