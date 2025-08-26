@@ -1,6 +1,6 @@
-import {Component, inject, OnInit, signal, computed} from '@angular/core';
+import {Component, inject, OnInit, signal, computed, Signal} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
-import {ColDef, GridOptions, GridReadyEvent, ValueFormatterParams} from 'ag-grid-community';
+import {ColDef, GridOptions, GridReadyEvent, ValueFormatterParams, CellClassParams} from 'ag-grid-community';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {FormsModule} from '@angular/forms';
 import {DataService} from '../../../core/services/DataService';
@@ -12,10 +12,10 @@ import {
   CrashEvent,
   EventSource,
   Platform,
-  AppId,
   Country,
   ReleaseChannel
 } from '../../../core/models/DataModels';
+import { getSourceCellStyle, getReleaseChannelStyle, getDurationCellStyle } from '../../shared/utils/gridCellStyles';
 
 @Component({
   selector: 'app-raw-events-component',
@@ -37,8 +37,8 @@ export class RawEventsComponent implements OnInit {
   private dataService = inject(DataService);
 
   // Type-safe data with proper typing
-  public data = this.dataService.filteredRawData();
-  error = this.dataService.error;
+  public data: RawEvent[] = this.dataService.filteredRawData();
+  error: Signal<string | null> = this.dataService.error;
 
   filters!: Filter[];
   visible = signal(false);
@@ -57,20 +57,19 @@ export class RawEventsComponent implements OnInit {
   );
 
   // Enhanced column definitions with type-aware formatters
-  columnDefs: ColDef[] = [
+  columnDefs: ColDef<RawEvent>[] = [
     {
       field: 'id',
       headerName: 'ID',
       filter: 'agTextColumnFilter',
-      minWidth: 200,
-      cellRenderer: (params: any) => params.value
+      minWidth: 200
     },
     {
       field: 'timestamp',
       headerName: 'Timestamp',
       filter: 'agDateColumnFilter',
       minWidth: 180,
-      valueFormatter: (params: ValueFormatterParams) =>
+      valueFormatter: (params: any) =>
         new Date(params.value).toLocaleString()
     },
     {
@@ -90,7 +89,7 @@ export class RawEventsComponent implements OnInit {
       headerName: 'Source',
       filter: 'agSetColumnFilter',
       minWidth: 160,
-      cellStyle: (params: any) => this.getSourceCellStyle(params.value)
+      cellStyle: (params: CellClassParams) => getSourceCellStyle(params.value as EventSource)
     },
     {
       field: 'event_name',
@@ -103,7 +102,7 @@ export class RawEventsComponent implements OnInit {
       headerName: 'Platform',
       filter: 'agSetColumnFilter',
       minWidth: 100,
-      cellRenderer: (params: any) => this.getPlatformIcon(params.value)
+      valueFormatter: (params: any) => this.getPlatformIcon(params.value)
     },
     {
       field: 'app_id',
@@ -122,21 +121,19 @@ export class RawEventsComponent implements OnInit {
       headerName: 'Release',
       filter: 'agSetColumnFilter',
       minWidth: 100,
-      cellStyle: (params: any) => this.getReleaseChannelStyle(params.value)
+      cellStyle: (params: CellClassParams) => getReleaseChannelStyle(params.value as ReleaseChannel)
     },
     {
       field: 'session_id',
       headerName: 'Session ID',
       filter: 'agTextColumnFilter',
-      minWidth: 160,
-      cellRenderer: (params: any) => params.value
+      minWidth: 160
     },
     {
       field: 'user_pseudo_id',
       headerName: 'User ID',
       filter: 'agTextColumnFilter',
-      minWidth: 160,
-      cellRenderer: (params: any) => params.value
+      minWidth: 160
     },
     // Conditional columns based on event type
     {
@@ -151,16 +148,16 @@ export class RawEventsComponent implements OnInit {
       headerName: 'Duration (ms)',
       filter: 'agNumberColumnFilter',
       minWidth: 160,
-      valueFormatter: (params: ValueFormatterParams) =>
+      valueFormatter: (params: ValueFormatterParams<RawEvent, number | undefined>) =>
         params.value ? `${params.value}ms` : '-',
-      cellStyle: (params: any) => this.getDurationCellStyle(params.value)
+      cellStyle: (params: CellClassParams) => getDurationCellStyle(params.value as number)
     },
     {
       field: 'status_code',
       headerName: 'Status',
       filter: 'agNumberColumnFilter',
       minWidth: 100,
-      cellStyle: (params: any) => this.getStatusCodeStyle(params.value)
+      cellStyle: (params: CellClassParams) => this.getStatusCodeStyle(params.value as number)
     },
     {
       field: 'crash_type',
@@ -171,13 +168,13 @@ export class RawEventsComponent implements OnInit {
     }
   ];
 
-  public defaultColDef: ColDef = {
+  public defaultColDef: ColDef<RawEvent> = {
     sortable: true,
     resizable: true,
     filter: true
   };
 
-  public gridOptions: GridOptions = {
+  public gridOptions: GridOptions<RawEvent> = {
     rowModelType: 'clientSide',
     pagination: true,
     paginationPageSize: 100,
@@ -215,7 +212,7 @@ export class RawEventsComponent implements OnInit {
     ];
   }
 
-  onGridReady(params: GridReadyEvent) {
+  onGridReady(params: GridReadyEvent<RawEvent>) {
     console.log('Grid is ready');
     params.api.sizeColumnsToFit();
 
@@ -228,15 +225,6 @@ export class RawEventsComponent implements OnInit {
   }
 
   // Type-safe helper methods using the model types
-  private getSourceCellStyle(source: EventSource): any {
-    const styles = {
-      analytics: { backgroundColor: '#e3f2fd', color: '#1976d2' },
-      performance: { backgroundColor: '#f3e5f5', color: '#7b1fa2' },
-      crash: { backgroundColor: '#ffebee', color: '#d32f2f' }
-    };
-    return styles[source] || {};
-  }
-
   private getPlatformIcon(platform: Platform): string {
     const icons = {
       ios: 'iOS',
@@ -246,25 +234,7 @@ export class RawEventsComponent implements OnInit {
     return icons[platform] || platform;
   }
 
-  private getReleaseChannelStyle(channel: ReleaseChannel): any {
-    const styles = {
-      prod: { backgroundColor: '#4caf50', color: 'white', fontWeight: 'bold' },
-      pilot: { backgroundColor: '#ff9800', color: 'white' },
-      uat: { backgroundColor: '#2196f3', color: 'white' },
-      dev: { backgroundColor: '#9e9e9e', color: 'white' }
-    };
-    return styles[channel] || {};
-  }
-
-  private getDurationCellStyle(duration: number): any {
-    if (!duration) return {};
-
-    if (duration > 2000) return { backgroundColor: '#ffebee', color: '#d32f2f' };
-    if (duration > 1000) return { backgroundColor: '#fff3e0', color: '#f57c00' };
-    return { backgroundColor: '#e8f5e8', color: '#2e7d32' };
-  }
-
-  private getStatusCodeStyle(statusCode: number): any {
+  private getStatusCodeStyle(statusCode: number): Record<string, string> {
     if (!statusCode) return {};
 
     if (statusCode >= 500) return { backgroundColor: '#d32f2f', color: 'white' };
@@ -273,19 +243,22 @@ export class RawEventsComponent implements OnInit {
     return {};
   }
 
-  private updateColumnVisibility(params: GridReadyEvent) {
+  private updateColumnVisibility(params: GridReadyEvent<RawEvent>) {
     const data = this.data;
     if (!data || data.length === 0) return;
 
-    // Hide columns that don't have data in current dataset
     const hasAnalytics = data.some(event => event.source === 'analytics');
     const hasPerformance = data.some(event => event.source === 'performance');
     const hasCrashes = data.some(event => event.source === 'crash');
 
-    // params.columnApi.setColumnVisible('analytics_event', hasAnalytics);
-    // params.columnApi.setColumnVisible('duration_ms', hasPerformance);
-    // params.columnApi.setColumnVisible('status_code', hasPerformance);
-    // params.columnApi.setColumnVisible('crash_type', hasCrashes);
+    params.api.applyColumnState({
+      state: [
+        { colId: 'analytics_event', hide: !hasAnalytics },
+        { colId: 'duration_ms', hide: !hasPerformance },
+        { colId: 'status_code', hide: !hasPerformance },
+        { colId: 'crash_type', hide: !hasCrashes }
+      ]
+    });
   }
 
   // Type-safe filter methods
