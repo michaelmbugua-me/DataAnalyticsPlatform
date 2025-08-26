@@ -1,0 +1,36 @@
+// Global SCSS design tokens
+// Colors
+$brand-primary: #A32A29;
+$brand-primary-600: #8c2423;
+$brand-accent: #00A8A7; // secondary accent seen in Login
+
+$surface-0: #ffffff;
+$surface-50: #FBFBFB; // light surface used across pages
+$surface-muted: #e5e7eb; // muted controls bg
+
+$text-default: #263238; // default dark text
+$text-muted: #4b5563;   // muted text
+$text-inverse: #ffffff; // on dark backgrounds
+$text-black: #000000;
+
+// Sidebar / layout
+$sidebar-bg: #1f2937; // dark slate
+$sidebar-border: #374151;
+$sidebar-hover: #4b5563;
+
+// Status/accents used in layout
+$accent-active-bg: #fef3f2; // light tinted background for active nav
+
+// Spacing scale (example tokens)
+$space-1: 0.25rem;
+$space-2: 0.5rem;
+$space-3: 0.75rem;
+$space-4: 1rem;
+$space-6: 1.5rem;
+
+// Radius
+$radius-sm: 0.375rem;
+$radius-md: 0.5rem;
+
+// Z-index
+$z-sidebar: 50;

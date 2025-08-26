@@ -1,3 +1,5 @@
+@use '../../../../styles/variables' as v;
+
 .form-container {
   display: flex;
   justify-content: center;
@@ -44,21 +46,15 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* Your styles for the centered div */
-
-  /* Additional styles for smaller screens */
 }
 
 /* Media query for screens with a maximum width of 768px (adjust as needed) */
 @media only screen and (max-width: 768px) {
   .centered-div {
-    /* Adjust the styles for smaller screens here */
-    /* For example, you might want to change positioning or dimensions */
-    position: relative; /* Example change */
-    top: auto; /* Example change */
-    left: auto; /* Example change */
-    transform: none; /* Example change */
-    /* Additional styles for smaller screens */
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
   }
 }
 
@@ -72,13 +68,13 @@
   font-weight: 400;
   line-height: 24px;
   text-align: left;
-  color: #000000;
+  color: v.$text-black;
 }
 .login-label-two {
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
-  color: #000000;
+  color: v.$text-black;
 }
 
 .image-container > * {
@@ -92,25 +88,25 @@
 }
 
 .active_nav_titles {
-  background-color: #FBFBFB!important;
-  color: #00A8A7!important;
+  background-color: v.$surface-50 !important;
+  color: v.$brand-accent !important;
   gap: 0;
   font-size: 18px;
   font-weight: 500;
   line-height: 21.33px;
   text-align: left;
-  border: none!important;
+  border: none !important;
 }
 
 .nav_titles {
-  background-color: #FBFBFB;
-  color: #263238;
+  background-color: v.$surface-50;
+  color: v.$text-default;
   gap: 0;
   font-size: 16px;
   font-weight: 400;
   line-height: 21.33px;
   text-align: left;
-  border: none!important;
+  border: none !important;
 }
 
 .welcome-font {
