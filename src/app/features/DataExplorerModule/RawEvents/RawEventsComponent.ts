@@ -35,7 +35,8 @@ ModuleRegistry.registerModules([AllCommunityModule]);
   ],
   providers: [],
   styleUrls: ['./RawEventsComponent.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RawEventsComponent implements OnInit {
 

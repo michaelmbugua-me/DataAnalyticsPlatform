@@ -11,6 +11,7 @@ import {FilterDrawerComponent} from '../../shared/components/filter-drawer';
 @Component({
   selector: 'app-visualizations',
   templateUrl: './VisualizationsDailyRollupComponent.html',
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ButtonDirective, ButtonIcon, ButtonLabel, FormsModule, Button, AgCharts, ProgressSpinner, FilterDrawerComponent],
   providers: [],

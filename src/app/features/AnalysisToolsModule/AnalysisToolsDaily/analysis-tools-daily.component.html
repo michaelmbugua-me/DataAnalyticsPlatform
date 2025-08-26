@@ -12,7 +12,9 @@
 
                 <div class="flex items-start flex-col md:justify-between md:flex-row">
                   <div>
-                    <div class="font-bold text-3xl text-surface-900 dark:text-surface-0 mb-2">Analysis Tools (Daily Rollup)</div>
+                    <div class="font-bold text-3xl text-surface-900 dark:text-surface-0 mb-2">Analysis Tools (Daily
+                      Rollup)
+                    </div>
                     <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
                       <div class="flex items-center gap-2">
                         <i class="pi pi-chart-bar text-base! leading-normal!"></i>
@@ -73,7 +75,9 @@
                   <div class="flex justify-between gap-4">
                     <div class="flex flex-col gap-2">
                       <span class="text-surface-700 dark:text-surface-300 font-normal leading-tight">Total Events Fetched</span>
-                      <div class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">{{ this.totalEvents }}</div>
+                      <div
+                        class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">{{ this.totalEvents }}
+                      </div>
                     </div>
                     <div class="flex items-center justify-center rounded-lg w-10 h-10">
                       <i class="pi pi-list-check text-surface-0 dark:text-surface-900 text-xl! leading-none!"></i>
@@ -86,7 +90,8 @@
                     <div class="flex flex-col gap-2">
                       <span
                         class="text-surface-700 dark:text-surface-300 font-normal leading-tight">Average Duration</span>
-                      <div class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">{{ averageDuration }}
+                      <div
+                        class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">{{ averageDuration }}
                       </div>
                     </div>
                     <div class="flex items-center justify-center rounded-lg w-10 h-10">
@@ -99,7 +104,8 @@
                   <div class="flex justify-between gap-4">
                     <div class="flex flex-col gap-2">
                       <span class="text-surface-700 dark:text-surface-300 font-normal leading-tight">Unique Users</span>
-                      <div class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">{{uniqueUsers}}
+                      <div
+                        class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!">{{ uniqueUsers }}
                       </div>
                     </div>
                     <div class="flex items-center justify-center rounded-lg w-10 h-10">
@@ -174,70 +180,75 @@
       <div class="space-y-6">
         <!-- Row 1 -->
         <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
-            <div class="controls-panel">
-              <form (ngSubmit)="onSubmit()" [formGroup]="dataGroupForm">
-                <h6 class="text-lg font-semibold text-gray-800 mb-3">Grouped Data Configuration</h6>
-                <div>
-                  <div class="flex flex-col">
-                    <label class="block text-sm font-medium mb-2" for="group-by">Group By</label>
-                    <p-select [formControlName]="'groupBy'" [options]="dimensionOptions" class="w-full" id="group-by"></p-select>
-                  </div>
+          <div class="controls-panel">
+            <form (ngSubmit)="onSubmit()" [formGroup]="dataGroupForm">
+              <h6 class="text-lg font-semibold text-gray-800 mb-3">Grouped Data Configuration</h6>
+              <div>
+                <div class="flex flex-col">
+                  <label class="block text-sm font-medium mb-2" for="group-by">Group By</label>
+                  <p-select [formControlName]="'groupBy'" [options]="dimensionOptions" class="w-full"
+                            id="group-by"></p-select>
+                </div>
 
-                  <div class="flex flex-col">
-                    <label class="block text-sm font-medium mb-2" for="aggregation">Aggregation</label>
-                    <p-select [formControlName]="'aggregation'" [options]="[
+                <div class="flex flex-col">
+                  <label class="block text-sm font-medium mb-2" for="aggregation">Aggregation</label>
+                  <p-select [formControlName]="'aggregation'" [options]="[
                                 {label: 'Count', value: 'count'},
                                 {label: 'Sum', value: 'sum'},
                                 {label: 'Average', value: 'avg'},
                                 {label: 'Minimum', value: 'min'},
                                 {label: 'Maximum', value: 'max'}
                               ]" class="w-full" id="aggregation"></p-select>
-                  </div>
-
-                  <div class="flex flex-col">
-                    <label class="block text-sm font-medium mb-2" for="measure">Measure</label>
-                    <p-select [formControlName]="'measure'" [options]="measureOptions" class="w-full" id="measure"></p-select>
-                  </div>
-
-                  <div class="flex flex-col">
-                    <span class="text-transparent block text-sm font-medium mb-2">Apply</span>
-                    <button class="btn custom-btn-primary" pButton type="submit">
-                      <i class="pi pi-calculator" pButtonIcon></i>
-                      <span pButtonLabel class="small">Apply Grouping</span>
-                    </button>
-                  </div>
                 </div>
-              </form>
 
-              <form (ngSubmit)="onPivotSubmit()" [formGroup]="pivotTableForm">
-                <h6 class="text-lg font-semibold text-gray-800 mb-3 mt-3">Pivot Table Configuration</h6>
-                <div>
-                  <div class="flex flex-col">
-                    <label class="block text-sm font-medium mb-2" for="row-dimension">Rows</label>
-                    <p-select [options]="dimensionOptionsNoPlaceholder" class="w-full" formControlName="rowDimension" id="row-dimension"></p-select>
-                  </div>
-
-                  <div class="flex flex-col">
-                    <label class="block text-sm font-medium mb-2" for="column-dimension">Columns</label>
-                    <p-select [options]="dimensionOptions" class="w-full" formControlName="columnDimension" id="column-dimension"></p-select>
-                  </div>
-
-                  <div class="flex flex-col">
-                    <label class="block text-sm font-medium mb-2" for="value-measure">Values</label>
-                    <p-select [options]="measureOptions" class="w-full" formControlName="valueMeasure" id="value-measure"></p-select>
-                  </div>
-
-
-                  <div class="flex flex-col">
-                    <span class="text-transparent block text-sm font-medium mb-2">Apply</span>
-                    <button class="btn custom-btn-primary" pButton type="submit">
-                      <i class="pi pi-table" pButtonIcon></i>
-                      <span pButtonLabel class="small">Generate Pivot Table</span>
-                    </button>
-                  </div>
+                <div class="flex flex-col">
+                  <label class="block text-sm font-medium mb-2" for="measure">Measure</label>
+                  <p-select [formControlName]="'measure'" [options]="measureOptions" class="w-full"
+                            id="measure"></p-select>
                 </div>
-              </form>
-            </div>
+
+                <div class="flex flex-col">
+                  <span class="text-transparent block text-sm font-medium mb-2">Apply</span>
+                  <button class="btn custom-btn-primary" pButton type="submit">
+                    <i class="pi pi-calculator" pButtonIcon></i>
+                    <span class="small" pButtonLabel>Apply Grouping</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            <form (ngSubmit)="onPivotSubmit()" [formGroup]="pivotTableForm">
+              <h6 class="text-lg font-semibold text-gray-800 mb-3 mt-3">Pivot Table Configuration</h6>
+              <div>
+                <div class="flex flex-col">
+                  <label class="block text-sm font-medium mb-2" for="row-dimension">Rows</label>
+                  <p-select [options]="dimensionOptionsNoPlaceholder" class="w-full" formControlName="rowDimension"
+                            id="row-dimension"></p-select>
+                </div>
+
+                <div class="flex flex-col">
+                  <label class="block text-sm font-medium mb-2" for="column-dimension">Columns</label>
+                  <p-select [options]="dimensionOptions" class="w-full" formControlName="columnDimension"
+                            id="column-dimension"></p-select>
+                </div>
+
+                <div class="flex flex-col">
+                  <label class="block text-sm font-medium mb-2" for="value-measure">Values</label>
+                  <p-select [options]="measureOptions" class="w-full" formControlName="valueMeasure"
+                            id="value-measure"></p-select>
+                </div>
+
+
+                <div class="flex flex-col">
+                  <span class="text-transparent block text-sm font-medium mb-2">Apply</span>
+                  <button class="btn custom-btn-primary" pButton type="submit">
+                    <i class="pi pi-table" pButtonIcon></i>
+                    <span class="small" pButtonLabel>Generate Pivot Table</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

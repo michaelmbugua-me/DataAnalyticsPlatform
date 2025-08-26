@@ -1,4 +1,4 @@
-import {Component, effect, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, OnInit, signal} from '@angular/core';
 import {TableModule} from 'primeng/table';
 
 import {ProgressSpinner} from 'primeng/progressspinner';
@@ -30,6 +30,8 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     Button,
   ],
   providers: [],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./analysis-tools-raw.component.scss']
 })
 export class AnalysisToolsRawComponent implements OnInit {

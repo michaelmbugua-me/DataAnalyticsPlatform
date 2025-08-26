@@ -1,4 +1,4 @@
-import {Component, effect, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, OnInit, signal} from '@angular/core';
 import {TableModule} from 'primeng/table';
 
 import {ProgressSpinner} from 'primeng/progressspinner';
@@ -26,6 +26,8 @@ import {DataService} from '../../../core/services/DataService';
     FormsModule,
   ],
   providers: [],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./analysis-tools-daily.component.scss']
 })
 export class AnalysisToolsDailyComponent implements OnInit {

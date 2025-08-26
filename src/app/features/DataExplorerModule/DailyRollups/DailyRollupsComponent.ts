@@ -25,8 +25,9 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     FilterDrawerComponent
   ],
   providers: [],
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./DailyRollupsComponent.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DailyRollupsComponent implements OnInit {
 
