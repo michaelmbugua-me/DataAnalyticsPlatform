@@ -1,0 +1,99 @@
+<!--<p-drawer [(visible)]="visible" header="Select Filter" position="right">-->
+<!--  <p>Select from your preset filters</p>-->
+<!--  <div class="pt-3">-->
+<!--    <div class="mb-3">-->
+<!--      <p-date-picker [(ngModel)]="startDate" [showIcon]="true" placeholder="Start Date" class="w-100 md:w-56"></p-date-picker>-->
+<!--    </div>-->
+<!--    <div class="mb-3">-->
+<!--      <p-date-picker [(ngModel)]="endDate" [showIcon]="true" placeholder="End Date" class="w-100 md:w-56"></p-date-picker>-->
+<!--    </div>-->
+<!--    <button class="btn custom-btn-primary w-100" pButton type="submit" (click)="applyFilter(startDate, endDate)">-->
+<!--      <i class="pi pi-filter" pButtonIcon></i>-->
+<!--      <span pButtonLabel>Apply Filter</span>-->
+<!--    </button>-->
+<!--  </div>-->
+
+<!--</p-drawer>-->
+
+
+<!--<p-drawer [(visible)]="visible" header="Set Parameters" position="right">-->
+<!--  <div class="my-2">-->
+<!--    <div class="bg-surface-50 dark:bg-surface-950">-->
+<!--      <div class="space-y-6">-->
+<!--        &lt;!&ndash; Row 1 &ndash;&gt;-->
+<!--        <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">-->
+<!--          <div class="controls-panel">-->
+<!--            <form (ngSubmit)="onSubmit()" [formGroup]="dataGroupForm">-->
+<!--              <h6 class="text-lg font-semibold text-gray-800 mb-3">Grouped Data Configuration</h6>-->
+<!--              <div>-->
+<!--                <div class="flex flex-col">-->
+<!--                  <label class="block text-sm font-medium mb-2" for="group-by">Group By</label>-->
+<!--                  <p-select [formControlName]="'groupBy'" [options]="dimensionOptions" class="w-full"-->
+<!--                            id="group-by"></p-select>-->
+<!--                </div>-->
+
+<!--                <div class="flex flex-col">-->
+<!--                  <label class="block text-sm font-medium mb-2" for="aggregation">Aggregation</label>-->
+<!--                  <p-select [formControlName]="'aggregation'" [options]="[-->
+<!--                                {label: 'Count', value: 'count'},-->
+<!--                                {label: 'Sum', value: 'sum'},-->
+<!--                                {label: 'Average', value: 'avg'},-->
+<!--                                {label: 'Minimum', value: 'min'},-->
+<!--                                {label: 'Maximum', value: 'max'}-->
+<!--                              ]" class="w-full" id="aggregation"></p-select>-->
+<!--                </div>-->
+
+<!--                <div class="flex flex-col">-->
+<!--                  <label class="block text-sm font-medium mb-2" for="measure">Measure</label>-->
+<!--                  <p-select [formControlName]="'measure'" [options]="measureOptions" class="w-full"-->
+<!--                            id="measure"></p-select>-->
+<!--                </div>-->
+
+<!--                <div class="flex flex-col">-->
+<!--                  <span class="text-transparent block text-sm font-medium mb-2">Apply</span>-->
+<!--                  <button class="btn custom-btn-primary" pButton type="submit">-->
+<!--                    <i class="pi pi-calculator" pButtonIcon></i>-->
+<!--                    <span class="small" pButtonLabel>Apply Grouping</span>-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </form>-->
+
+<!--            <form (ngSubmit)="onPivotSubmit()" [formGroup]="pivotTableForm">-->
+<!--              <h6 class="text-lg font-semibold text-gray-800 mb-3 mt-3">Pivot Table Configuration</h6>-->
+<!--              <div>-->
+<!--                <div class="flex flex-col">-->
+<!--                  <label class="block text-sm font-medium mb-2" for="row-dimension">Rows</label>-->
+<!--                  <p-select [options]="dimensionOptionsNoPlaceholder" class="w-full" formControlName="rowDimension"-->
+<!--                            id="row-dimension"></p-select>-->
+<!--                </div>-->
+
+<!--                <div class="flex flex-col">-->
+<!--                  <label class="block text-sm font-medium mb-2" for="column-dimension">Columns</label>-->
+<!--                  <p-select [options]="dimensionOptions" class="w-full" formControlName="columnDimension"-->
+<!--                            id="column-dimension"></p-select>-->
+<!--                </div>-->
+
+<!--                <div class="flex flex-col">-->
+<!--                  <label class="block text-sm font-medium mb-2" for="value-measure">Values</label>-->
+<!--                  <p-select [options]="measureOptions" class="w-full" formControlName="valueMeasure"-->
+<!--                            id="value-measure"></p-select>-->
+<!--                </div>-->
+
+
+<!--                <div class="flex flex-col">-->
+<!--                  <span class="text-transparent block text-sm font-medium mb-2">Apply</span>-->
+<!--                  <button class="btn custom-btn-primary" pButton type="submit">-->
+<!--                    <i class="pi pi-table" pButtonIcon></i>-->
+<!--                    <span class="small" pButtonLabel>Generate Pivot Table</span>-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </form>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--</p-drawer>-->

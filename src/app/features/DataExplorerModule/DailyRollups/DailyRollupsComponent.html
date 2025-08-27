@@ -1,6 +1,4 @@
-<div class="">
-  <div class=" text-sm lg:pt-20 pt-5">
-
+<div class="text-sm lg:pt-20 pt-5">
     <div class="  pt-2 w-full" style="background-color: #FBFBFB!important">
 
       <div class=" pt-2 ">
@@ -31,42 +29,24 @@
                   <span pButtonLabel>Select Filter</span>
                 </button>
 
-              <p-button severity="contrast" class="ms-2">
-                <i class="pi pi-download" pButtonIcon></i>
-                <span pButtonLabel>Export Records</span>
-              </p-button>
-
-            </div>
-
-
-          </div>
-        </div>
-      </div>
-
-      <div class=" pt-0">
-        <div class="lg:block">
-          <div class="lg:flex justify-content-between pt-0 items-center mr-2">
-
-            <div class="pt-2">
-              <div class="py-0 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                <div class="relative">
-
-
-                </div>
-              </div>
-            </div>
-
-            <div class="lg:flex lg:space-x-2 ">
-
-              <div class="py-0 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-              </div>
-
-            </div>
-
+              <p-split-button
+                class="ms-2"
+                severity="contrast"
+                label="Export Records"
+                [model]="items">
+                <ng-template pTemplate="content">
+                    <span class="flex align-items-center font-bold">
+                        <i class="pi pi-download" pButtonIcon></i>
+                        <span class="ms-2">Export Records</span>
+                    </span>
+                </ng-template>
+              </p-split-button>
 
           </div>
         </div>
       </div>
+
+      <!-- Filters moved to drawer -->
 
       <div class="pt-1">
         <section class="py-3 py-md-3">
@@ -75,7 +55,7 @@
               <ag-grid-angular
                 style="height: 600px; width: 100%;"
                 aria-label="Daily rollups table"
-                [rowData]="data()"
+                [rowData]="viewData()"
                 [columnDefs]="columnDefs"
                 [defaultColDef]="defaultColDef"
                 [gridOptions]="gridOptions"
@@ -95,5 +75,20 @@
 </div>
 
 
-<app-filter-drawer [visible]="visible" (visibleChange)="visible = $event">
+<app-filter-drawer
+  [visible]="visible"
+  [selectedSource]="selectedSource"
+  [selectedPlatform]="selectedPlatform"
+  [selectedCountry]="selectedCountry"
+  [selectedReleaseChannel]="selectedReleaseChannel"
+  [sourceOptions]="sourceOptions()"
+  [platformOptions]="platformOptions()"
+  [countryOptions]="countryOptions()"
+  [releaseChannelOptions]="releaseChannelOptions()"
+  [savedConfigNames]="savedConfigNames()"
+  (applySelectedConfig)="applySelectedConfig($event)"
+  (saveCurrentConfigClick)="saveCurrentConfig()"
+  (clearAllFiltersClick)="clearAllFilters()"
+  (resetDateRangeToThisMonthClick)="resetDateRangeToThisMonth()"
+  (visibleChange)="visible = $event">
 </app-filter-drawer>

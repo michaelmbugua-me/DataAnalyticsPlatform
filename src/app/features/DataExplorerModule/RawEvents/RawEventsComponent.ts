@@ -17,6 +17,9 @@ import {
 } from '../../../core/models/DataModels';
 import { getSourceCellStyle, getReleaseChannelStyle, getDurationCellStyle } from '../../shared/utils/gridCellStyles';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+import {DataExportationService} from '../../../core/services/DataExportationService';
+import { FiltersService } from '../../../core/services/FiltersService';
+import { evaluateQuery } from '../../../core/utils/query';
 
 // Register AG Grid modules lazily for this feature chunk
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -40,7 +43,32 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 })
 export class RawEventsComponent implements OnInit {
 
+  filtersService = inject(FiltersService);
+
+  // Derived filtered data based on search and custom query
+  public viewData: Signal<RawEvent[]> = computed(() => {
+    const base = this.data();
+    const search = (this.filtersService.searchText() || '').toLowerCase();
+    const query = this.filtersService.customQuery() || '';
+
+    const bySearch = (row: RawEvent) => {
+      if (!search) return true;
+      // simple: stringify limited fields for performance
+      const hay = [row.id, row.event_name, row.platform, row.country, row.app_id, row.source, row.release_channel]
+        .map(v => String(v ?? '')).join(' ').toLowerCase();
+      return hay.includes(search);
+    };
+
+    const byQuery = (row: RawEvent) => {
+      if (!query.trim()) return true;
+      try { return evaluateQuery(row as any, query); } catch { return false; }
+    };
+
+    return base.filter(r => bySearch(r) && byQuery(r));
+  });
+
   private dataService = inject(DataService);
+  private dataExportationService = inject(DataExportationService);
 
   // Type-safe data with proper typing
   public data: Signal<RawEvent[]> = this.dataService.filteredRawData;
@@ -192,6 +220,9 @@ export class RawEventsComponent implements OnInit {
   };
 
   async ngOnInit() {
+    // restore selected config application on init if needed
+    const sel = this.filtersService.selectedConfigName();
+    if (sel) this.applySelectedConfig(sel);
     this.filters = [
       {name: 'Today\'s records', code: 'TODAY'},
       {name: 'This week\'s records', code: 'WEEK'},
@@ -249,6 +280,37 @@ export class RawEventsComponent implements OnInit {
     });
   }
 
+  exportRecords() {
+
+
+    let cols: string[] = this.columnDefs.map((item: any) => {
+      if(item['headerName'].toLowerCase() !== 'actions'){
+        return item['field'].toUpperCase()
+      } else {
+        return ''
+      }
+    })
+
+    cols = cols.filter(item => item !== '')
+
+    let rowKeys: string[] = Object.keys(this.data()[0]);
+    let arr: string[][]= []
+
+    this.data().forEach((row: any) => {
+      let temp: string[] = []
+      cols.forEach(colKey => {
+        rowKeys.forEach(key => {
+          if(colKey == key.toUpperCase()){
+            temp.push(row[key])
+          }
+        })
+      })
+      arr.push(temp)
+    })
+
+    this.dataExportationService.exportToPdf(cols, arr, 'raw_events.pdf')
+  }
+
   // Type-safe filter methods
   filterBySource(source: EventSource) {
     // Implementation for filtering by event source
@@ -282,6 +344,23 @@ export class RawEventsComponent implements OnInit {
     const crashData = this.crashEvents();
     console.log('Exporting crash events:', crashData.length);
     // Implementation for export
+  }
+
+  saveCurrentConfig() {
+    const name = prompt('Save current filters as (name):');
+    if (!name) return;
+    this.filtersService.saveConfig(name, this.dataService.dateRange());
+  }
+
+  applySelectedConfig(name: string) {
+    const cfg = this.filtersService.loadConfig(name);
+    if (cfg?.dateRange) {
+      try {
+        const from = new Date(cfg.dateRange.from);
+        const to = new Date(cfg.dateRange.to);
+        if (!isNaN(from.getTime()) && !isNaN(to.getTime())) this.dataService.setDateRange({ from, to });
+      } catch {}
+    }
   }
 }
 

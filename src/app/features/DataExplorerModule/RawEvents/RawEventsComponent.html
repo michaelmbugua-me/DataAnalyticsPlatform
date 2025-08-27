@@ -31,7 +31,7 @@
                   <span pButtonLabel>Select Filter</span>
                 </button>
 
-              <p-button severity="contrast" class="ms-2">
+              <p-button severity="contrast" class="ms-2" (click)="exportRecords()">
                 <i class="pi pi-download" pButtonIcon></i>
                 <span pButtonLabel>Export Records</span>
               </p-button>
@@ -49,9 +49,26 @@
 
             <div class="pt-2">
               <div class="py-0 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                <div class="relative">
-
-
+                <div class="relative flex flex-col md:flex-row gap-2 items-start md:items-end">
+                  <div class="flex flex-col">
+                    <label class="text-xs mb-1">Search</label>
+                    <input class="p-inputtext p-component" [ngModel]="filtersService.searchText()" (ngModelChange)="filtersService.searchText.set($event)" placeholder="Type to search..." />
+                  </div>
+                  <div class="flex flex-col">
+                    <label class="text-xs mb-1">Custom Query</label>
+                    <input class="p-inputtext p-component" [ngModel]="filtersService.customQuery()" (ngModelChange)="filtersService.customQuery.set($event)" placeholder="e.g. country == 'US' and events_count > 100" />
+                  </div>
+                  <div class="flex flex-col">
+                    <label class="text-xs mb-1">Saved Filters</label>
+                    <select class="p-inputtext p-component" [ngModel]="filtersService.selectedConfigName()" (ngModelChange)="applySelectedConfig($event)">
+                      <option [ngValue]="null">-- Select --</option>
+                      <option *ngFor="let c of filtersService.savedConfigs()" [ngValue]="c.name">{{c.name}}</option>
+                    </select>
+                  </div>
+                  <button class="btn custom-btn-primary ml-2" pButton type="button" (click)="saveCurrentConfig()">
+                    <i class="pi pi-save" pButtonIcon></i>
+                    <span pButtonLabel>Save</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -75,7 +92,7 @@
               <ag-grid-angular
                 style="height: 600px; width: 100%;"
                 aria-label="Raw events table"
-                [rowData]="data()"
+                [rowData]="viewData()"
                 [columnDefs]="columnDefs"
                 [defaultColDef]="defaultColDef"
                 [gridOptions]="gridOptions"

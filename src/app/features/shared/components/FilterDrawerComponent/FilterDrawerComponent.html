@@ -1,16 +1,76 @@
-<p-drawer [(visible)]="visible" header="Select Filter" position="right">
-  <p>Select from your preset filters</p>
-  <div class="pt-3">
+<p-drawer [(visible)]="visible" header="Set Up Filter" position="right">
+  <div class="pt-3 text-sm">
+    <!-- Date Range -->
     <div class="mb-3">
-      <p-date-picker [(ngModel)]="startDate" [showIcon]="true" placeholder="Start Date" class="w-100 md:w-56"></p-date-picker>
+      <label class="text-xs mb-1">Date Range</label>
+      <p-date-picker  [(ngModel)]="startDate" [showIcon]="true" selectionMode="range" placeholder="Start Date" class="w-100 md:w-56"></p-date-picker>
     </div>
-    <div class="mb-3">
-      <p-date-picker [(ngModel)]="endDate" [showIcon]="true" placeholder="End Date" class="w-100 md:w-56"></p-date-picker>
-    </div>
-    <button class="btn custom-btn-primary w-100" pButton type="submit" (click)="applyFilter(startDate, endDate)">
-      <i class="pi pi-filter" pButtonIcon></i>
-      <span pButtonLabel>Apply Filter</span>
-    </button>
-  </div>
+<!--    <div class="mb-4">-->
+<!--      <button class="btn custom-btn-primary w-100" pButton type="button" (click)="applyFilter(startDate, endDate)">-->
+<!--        <i class="pi pi-filter" pButtonIcon></i>-->
+<!--        <span pButtonLabel>Apply Date Filter</span>-->
+<!--      </button>-->
+<!--    </div>-->
 
+    <!-- Search -->
+    <div class="mb-3">
+      <label class="text-xs mb-1">Search</label>
+      <input class="p-inputtext p-component w-100" [ngModel]="filtersService.searchText()" (ngModelChange)="filtersService.searchText.set($event)" placeholder="Type to search..." />
+    </div>
+
+    <!-- My filters -->
+    <div class="mb-3">
+      <label class="text-xs mb-1">Source</label>
+      <p-select [options]="sourceOptions || []" [ngModel]="selectedSource()" placeholder="Select a Source" (onChange)="selectedSource.set($event.value)" class="w-100" />
+
+    </div>
+
+    <div class="mb-3">
+      <label class="text-xs mb-1">Platform</label>
+      <p-select [options]="platformOptions || []" [ngModel]="selectedPlatform()" placeholder="Select a Platform" (onChange)="selectedPlatform.set($event.value)" class="w-100" />
+
+    </div>
+
+    <div class="mb-3">
+      <label class="text-xs mb-1">Country</label>
+      <p-select [options]="countryOptions || []" [ngModel]="selectedCountry()" placeholder="Select a Country" (onChange)="selectedCountry.set($event.value)" class="w-100" />
+    </div>
+
+    <div class="mb-3">
+      <label class="text-xs mb-1">Release Channel</label>
+      <p-select [options]="releaseChannelOptions || []" [ngModel]="selectedReleaseChannel()" placeholder="Select a Release Channel" (onChange)="selectedReleaseChannel.set($event.value)" class="w-100" />
+
+    </div>
+
+    <!-- Custom query -->
+    <div class="mb-3">
+      <label class="text-xs mb-1">Custom Query</label>
+      <input class="p-inputtext p-component w-100" [ngModel]="filtersService.customQuery()" (ngModelChange)="filtersService.customQuery.set($event)" placeholder="e.g. country == 'US' and revenue_usd > 1000" />
+    </div>
+
+    <!-- Saved Filters -->
+    <div class="mb-3">
+      <label class="text-xs mb-1">Saved Filters</label>
+      <p-select [options]="savedConfigNames || []" [ngModel]="filtersService.selectedConfigName()" placeholder="Select a Saved Configuration" (onChange)="onApplySelectedConfig($event.value)" class="w-100" />
+
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-2 mb-2">
+      <button class="btn custom-btn-primary flex-1" pButton type="button" (click)="saveCurrentConfigClick.emit()">
+        <i class="pi pi-save" pButtonIcon></i>
+        <span pButtonLabel>Save</span>
+      </button>
+      <button class="btn p-button-outlined flex-1" pButton type="button" (click)="clearAllFiltersClick.emit()">
+        <i class="pi pi-filter-slash" pButtonIcon></i>
+        <span pButtonLabel>Clear</span>
+      </button>
+    </div>
+<!--    <div>-->
+<!--      <button class="btn p-button-secondary w-100" pButton type="button" (click)="resetDateRangeToThisMonthClick.emit()">-->
+<!--        <i class="pi pi-calendar" pButtonIcon></i>-->
+<!--        <span pButtonLabel>This Month</span>-->
+<!--      </button>-->
+<!--    </div>-->
+  </div>
 </p-drawer>
