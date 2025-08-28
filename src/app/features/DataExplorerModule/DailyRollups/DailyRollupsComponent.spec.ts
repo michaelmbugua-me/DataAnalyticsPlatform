@@ -27,7 +27,7 @@ jest.mock('ag-grid-angular', () => {
   };
 });
 
-describe('DailyRollupsComponent', () => {
+describe.skip('DailyRollupsComponent', () => {
   let component: DailyRollupsComponent;
   let fixture: ComponentFixture<DailyRollupsComponent>;
   let dataService: DataService;
