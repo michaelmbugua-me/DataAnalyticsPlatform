@@ -13,7 +13,7 @@ import { FiltersService } from '../../../core/services/FiltersService';
 import { evaluateQuery } from '../../../core/utils/query';
 import {SplitButton} from 'primeng/splitbutton';
 import {MenuItem, PrimeTemplate} from 'primeng/api';
-import {AutoComplete} from 'primeng/autocomplete';
+import {Select} from 'primeng/select';
 
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -31,6 +31,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     FilterDrawerComponent,
     SplitButton,
     PrimeTemplate,
+    Select,
   ],
   providers: [],
   standalone: true,

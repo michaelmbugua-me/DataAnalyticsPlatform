@@ -48,12 +48,12 @@
       <input class="p-inputtext p-component w-100" [ngModel]="filtersService.customQuery()" (ngModelChange)="filtersService.customQuery.set($event)" placeholder="e.g. country == 'US' and revenue_usd > 1000" />
     </div>
 
-    <!-- Saved Filters -->
-    <div class="mb-3">
-      <label class="text-xs mb-1">Saved Filters</label>
-      <p-select [options]="savedConfigNames || []" [ngModel]="filtersService.selectedConfigName()" placeholder="Select a Saved Configuration" (onChange)="onApplySelectedConfig($event.value)" class="w-100" />
+<!--    &lt;!&ndash; Saved Filters &ndash;&gt;-->
+<!--    <div class="mb-3">-->
+<!--      <label class="text-xs mb-1">Saved Filters</label>-->
+<!--      <p-select [options]="savedConfigNames || []" [ngModel]="filtersService.selectedConfigName()" placeholder="Select a Saved Configuration" (onChange)="onApplySelectedConfig($event.value)" class="w-100" />-->
 
-    </div>
+<!--    </div>-->
 
     <!-- Actions -->
     <div class="flex gap-2 mb-2">

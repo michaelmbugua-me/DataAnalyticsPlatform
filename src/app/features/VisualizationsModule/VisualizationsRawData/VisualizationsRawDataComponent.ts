@@ -6,6 +6,8 @@ import {AgCharts} from 'ag-charts-angular';
 import {ProgressSpinner} from 'primeng/progressspinner';
 import {DataService} from '../../../core/services/DataService';
 import {FilterDrawerComponent} from '../../shared/components/filter-drawer';
+import { FiltersService } from '../../../core/services/FiltersService';
+import { applyCommonFilters } from '../../shared/utils/applyFilters';
 
 
 @Component({
@@ -20,11 +22,36 @@ import {FilterDrawerComponent} from '../../shared/components/filter-drawer';
 export class VisualizationsRawDataComponent implements OnInit {
 
   private dataService = inject(DataService);
+  protected filtersService = inject(FiltersService);
 
   public data = this.dataService.filteredRawData;
   error = this.dataService.error;
 
+  // Facet selections
+  selectedSource = signal<string | null>(null);
+  selectedPlatform = signal<string | null>(null);
+  selectedCountry = signal<string | null>(null);
+  selectedReleaseChannel = signal<string | null>(null);
 
+  // Options derived from current data
+  sourceOptions = () => uniqSorted((this.data() || []).map((r: any) => r.source).filter(Boolean));
+  platformOptions = () => uniqSorted((this.data() || []).map((r: any) => r.platform).filter(Boolean));
+  countryOptions = () => uniqSorted((this.data() || []).map((r: any) => r.country).filter(Boolean));
+  releaseChannelOptions = () => uniqSorted((this.data() || []).map((r: any) => r.release_channel).filter(Boolean));
+
+  // Derived filtered data applying search/query/facets in addition to date range
+  public viewData = () => applyCommonFilters(this.data() || [], {
+    searchText: this.filtersService.searchText(),
+    query: this.filtersService.customQuery(),
+    facets: {
+      source: this.selectedSource(),
+      platform: this.selectedPlatform(),
+      country: this.selectedCountry(),
+      release_channel: this.selectedReleaseChannel(),
+    },
+    stringify: (row: any) => [row.id, row.event_name, row.platform, row.country, row.app_id, row.source, row.release_channel]
+      .map((v: any) => String(v ?? '')).join(' ')
+  });
 
   performanceChartOptions!: AgChartOptions;
   eventsChartOptions!: AgChartOptions;
@@ -35,7 +62,7 @@ export class VisualizationsRawDataComponent implements OnInit {
 
   filters!: Filter[];
 
-
+  savedConfigNames = () => (this.filtersService.savedConfigs() || []).map(c => c.name);
 
   visible = signal(false);
 
@@ -196,7 +223,7 @@ export class VisualizationsRawDataComponent implements OnInit {
 
   getEventDistribution() {
     const eventCounts: any = {};
-    this.data().forEach((item: any) => {
+    (this.viewData() || []).forEach((item: any) => {
       if (item.event_name) {
         eventCounts[item.event_name] = (eventCounts[item.event_name] || 0) + 1;
       }
@@ -208,16 +235,16 @@ export class VisualizationsRawDataComponent implements OnInit {
   }
 
   getPerformanceData() {
-    return this.data()
-      .filter(item => item.source === 'performance' && item.perf_type === 'app_start')
-      .map(item => ({
+    return (this.viewData() || [])
+      .filter((item: any) => item.source === 'performance' && item.perf_type === 'app_start')
+      .map((item: any) => ({
         day: item.day, duration_ms: item.duration_ms, platform: item.platform
       }));
   }
 
   getPlatformData() {
     const platformCounts: any = {};
-    this.data().forEach((item: any) => {
+    (this.viewData() || []).forEach((item: any) => {
       platformCounts[item.platform] = (platformCounts[item.platform] || 0) + 1;
     });
 
@@ -231,7 +258,7 @@ export class VisualizationsRawDataComponent implements OnInit {
     const tierData: any = {};
     const tierCounts: any = {};
 
-    this.data()
+    (this.viewData() || [])
       .filter((item: any) => item.duration_ms)
       .forEach((item: any) => {
         if (!tierData[item.device_tier]) {
@@ -244,14 +271,15 @@ export class VisualizationsRawDataComponent implements OnInit {
 
     return Object.keys(tierData).map(tier => ({
       device_tier: tier,
-      avg_duration: Math.round(tierData[tier] / tierCounts[tier])
+      avg_duration: Math.round(tierData[tier] / (tierCounts[tier] || 1))
     }));
   }
 
   getCountryData() {
     const countryCounts: any = {};
-    this.data().forEach(item => {
-      countryCounts[item.country] = (countryCounts[item.country] || 0) + 1;
+    (this.viewData() || []).forEach(item => {
+      const key = item.country || 'unknown';
+      countryCounts[key] = (countryCounts[key] || 0) + 1;
     });
 
     return Object.keys(countryCounts).map(country => ({
@@ -264,7 +292,7 @@ export class VisualizationsRawDataComponent implements OnInit {
     const networkData: any = {};
     const networkCounts: any = {};
 
-    this.data()
+    (this.viewData() || [])
       .filter((item: any) => item.duration_ms && item.network_type)
       .forEach((item: any) => {
         if (!networkData[item.network_type]) {
@@ -277,7 +305,7 @@ export class VisualizationsRawDataComponent implements OnInit {
 
     return Object.keys(networkData).map(network => ({
       network_type: network,
-      avg_duration: Math.round(networkData[network] / networkCounts[network])
+      avg_duration: Math.round(networkData[network] / (networkCounts[network] || 1))
     }));
   }
 
@@ -297,6 +325,13 @@ export class VisualizationsRawDataComponent implements OnInit {
 
   protected readonly Date = Date;
 }
+
+function uniqSorted(arr: (string | null | undefined)[]): string[] {
+  const set = new Set<string>();
+  for (const v of arr) { if (v != null) set.add(String(v)); }
+  return Array.from(set).sort((a,b) => a.localeCompare(b));
+}
+
 
 interface Filter {
   name: string,

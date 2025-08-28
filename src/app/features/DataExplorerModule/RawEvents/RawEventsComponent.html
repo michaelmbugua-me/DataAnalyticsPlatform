@@ -26,10 +26,17 @@
 
 
             <div class="lg:flex lg:space-x-2 ">
-                <button class="btn custom-btn-primary" (click)="toggleFilterVisibility()" pButton type="submit">
-                  <i class="pi pi-filter" pButtonIcon></i>
-                  <span pButtonLabel>Select Filter</span>
-                </button>
+
+              <p-select [options]="savedConfigNames()"
+                        [ngModel]="filtersService.selectedConfigName()"
+                        placeholder="Select a Saved Configuration"
+                        (onChange)="applySelectedConfig($event.value)"
+                        class="ms-2" />
+
+              <button (click)="toggleFilterVisibility()" class="btn custom-btn-primary" pButton type="submit">
+                <i class="pi pi-plus" pButtonIcon></i>
+                <span pButtonLabel>Set Up Filter</span>
+              </button>
 
               <p-button severity="contrast" class="ms-2" (click)="exportRecords()">
                 <i class="pi pi-download" pButtonIcon></i>
@@ -43,47 +50,7 @@
         </div>
       </div>
 
-      <div class=" pt-0">
-        <div class="lg:block">
-          <div class="lg:flex justify-content-between pt-0 items-center mr-2">
-
-            <div class="pt-2">
-              <div class="py-0 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                <div class="relative flex flex-col md:flex-row gap-2 items-start md:items-end">
-                  <div class="flex flex-col">
-                    <label class="text-xs mb-1">Search</label>
-                    <input class="p-inputtext p-component" [ngModel]="filtersService.searchText()" (ngModelChange)="filtersService.searchText.set($event)" placeholder="Type to search..." />
-                  </div>
-                  <div class="flex flex-col">
-                    <label class="text-xs mb-1">Custom Query</label>
-                    <input class="p-inputtext p-component" [ngModel]="filtersService.customQuery()" (ngModelChange)="filtersService.customQuery.set($event)" placeholder="e.g. country == 'US' and events_count > 100" />
-                  </div>
-                  <div class="flex flex-col">
-                    <label class="text-xs mb-1">Saved Filters</label>
-                    <select class="p-inputtext p-component" [ngModel]="filtersService.selectedConfigName()" (ngModelChange)="applySelectedConfig($event)">
-                      <option [ngValue]="null">-- Select --</option>
-                      <option *ngFor="let c of filtersService.savedConfigs()" [ngValue]="c.name">{{c.name}}</option>
-                    </select>
-                  </div>
-                  <button class="btn custom-btn-primary ml-2" pButton type="button" (click)="saveCurrentConfig()">
-                    <i class="pi pi-save" pButtonIcon></i>
-                    <span pButtonLabel>Save</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div class="lg:flex lg:space-x-2 ">
-
-              <div class="py-0 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-              </div>
-
-            </div>
-
-
-          </div>
-        </div>
-      </div>
+      <!-- Filters moved to drawer -->
 
       <div class="pt-1">
         <section class="py-3 py-md-3">
@@ -112,5 +79,20 @@
 </div>
 
 
-<app-filter-drawer [visible]="visible" (visibleChange)="visible = $event">
+<app-filter-drawer
+  (applySelectedConfig)="applySelectedConfig($event)"
+  (clearAllFiltersClick)="clearAllFilters()"
+  (resetDateRangeToThisMonthClick)="resetDateRangeToThisMonth()"
+  (saveCurrentConfigClick)="saveCurrentConfig()"
+  (visibleChange)="visible = $event"
+  [countryOptions]="countryOptions()"
+  [platformOptions]="platformOptions()"
+  [releaseChannelOptions]="releaseChannelOptions()"
+  [savedConfigNames]="savedConfigNames()"
+  [selectedCountry]="selectedCountry"
+  [selectedPlatform]="selectedPlatform"
+  [selectedReleaseChannel]="selectedReleaseChannel"
+  [selectedSource]="selectedSource"
+  [sourceOptions]="sourceOptions()"
+  [visible]="visible">
 </app-filter-drawer>

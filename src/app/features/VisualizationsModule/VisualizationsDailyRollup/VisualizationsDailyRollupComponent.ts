@@ -6,6 +6,8 @@ import {AgCharts} from 'ag-charts-angular';
 import {ProgressSpinner} from 'primeng/progressspinner';
 import {DataService} from '../../../core/services/DataService';
 import {FilterDrawerComponent} from '../../shared/components/filter-drawer';
+import { FiltersService } from '../../../core/services/FiltersService';
+import { applyCommonFilters } from '../../shared/utils/applyFilters';
 
 
 @Component({
@@ -20,10 +22,37 @@ import {FilterDrawerComponent} from '../../shared/components/filter-drawer';
 export class VisualizationsDailyRollupComponent implements OnInit {
 
   private dataService = inject(DataService);
+  protected filtersService = inject(FiltersService);
 
   public data = this.dataService.filteredDailyRollups;
   loading = this.dataService.loading;
   error = this.dataService.error;
+
+  // Facet selections
+  selectedSource = signal<string | null>(null);
+  selectedPlatform = signal<string | null>(null);
+  selectedCountry = signal<string | null>(null);
+  selectedReleaseChannel = signal<string | null>(null);
+
+  // Options for dropdowns derived from current data
+  sourceOptions = () => uniqSorted((this.data() || []).map((r: any) => r.source).filter(Boolean));
+  platformOptions = () => uniqSorted((this.data() || []).map((r: any) => r.platform).filter(Boolean));
+  countryOptions = () => uniqSorted((this.data() || []).map((r: any) => r.country).filter(Boolean));
+  releaseChannelOptions = () => uniqSorted((this.data() || []).map((r: any) => r.release_channel).filter(Boolean));
+
+  // Derived filtered data applying search/query/facets in addition to date range
+  public viewData = () => applyCommonFilters(this.data() || [], {
+    searchText: this.filtersService.searchText(),
+    query: this.filtersService.customQuery(),
+    facets: {
+      source: this.selectedSource(),
+      platform: this.selectedPlatform(),
+      country: this.selectedCountry(),
+      release_channel: this.selectedReleaseChannel(),
+    },
+    stringify: (row: any) => [row.day, row.source, row.platform, row.country, row.app_id, row.event_group]
+      .map((v: any) => String(v ?? '')).join(' ')
+  });
 
   eventsOverTime: any;
   eventGroupDistribution: any;
@@ -41,6 +70,8 @@ export class VisualizationsDailyRollupComponent implements OnInit {
   appStartPercentilesChartOptions!: AgChartOptions;
 
   filters!: Filter[];
+
+  savedConfigNames = () => (this.filtersService.savedConfigs() || []).map(c => c.name);
 
   visible = signal(false);
 
@@ -174,7 +205,7 @@ export class VisualizationsDailyRollupComponent implements OnInit {
   // Sum events_count per day
   getEventsOverTime() {
     const byDay: Record<string, number> = {};
-    this.data().forEach((item: any) => {
+    (this.viewData() || []).forEach((item: any) => {
       byDay[item.day] = (byDay[item.day] || 0) + (item.events_count || 0);
     });
     return Object.keys(byDay)
@@ -185,7 +216,7 @@ export class VisualizationsDailyRollupComponent implements OnInit {
   // Distribution of events_count by event_group
   getEventGroupDistribution() {
     const groups: Record<string, number> = {};
-    this.data().forEach((item: any) => {
+    (this.viewData() || []).forEach((item: any) => {
       const key = item.event_group || 'unknown';
       groups[key] = (groups[key] || 0) + (item.events_count || 0);
     });
@@ -195,7 +226,7 @@ export class VisualizationsDailyRollupComponent implements OnInit {
   // Sum events_count by platform
   getPlatformDistribution() {
     const platforms: Record<string, number> = {};
-    this.data().forEach((item: any) => {
+    (this.viewData() || []).forEach((item: any) => {
       const key = item.platform || 'unknown';
       platforms[key] = (platforms[key] || 0) + (item.events_count || 0);
     });
@@ -206,7 +237,7 @@ export class VisualizationsDailyRollupComponent implements OnInit {
   getAppStartByDeviceTier() {
     const sumWeighted: Record<string, number> = {};
     const sumCounts: Record<string, number> = {};
-    this.data()
+    (this.viewData() || [])
       .filter((item: any) => item.source === 'performance' && item.event_group === 'performance:app_start' && typeof item.avg_duration_ms === 'number')
       .forEach((item: any) => {
         const tier = item.device_tier || 'unknown';
@@ -223,7 +254,7 @@ export class VisualizationsDailyRollupComponent implements OnInit {
   // Sum events_count by country
   getCountryDistribution() {
     const countries: Record<string, number> = {};
-    this.data().forEach((item: any) => {
+    (this.viewData() || []).forEach((item: any) => {
       const key = item.country || 'unknown';
       countries[key] = (countries[key] || 0) + (item.events_count || 0);
     });
@@ -233,7 +264,7 @@ export class VisualizationsDailyRollupComponent implements OnInit {
   // Weighted average percentiles per day for app_start
   getAppStartPercentilesOverTime() {
     const byDay: Record<string, { w: number; p50: number; p90: number; p99: number }> = {};
-    this.data()
+    (this.viewData() || [])
       .filter((item: any) => item.source === 'performance' && item.event_group === 'performance:app_start')
       .forEach((item: any) => {
         const w = item.events_count || 0;
@@ -266,6 +297,43 @@ export class VisualizationsDailyRollupComponent implements OnInit {
   toggleFilterVisibility() {
     this.visible.update(v => !v);
   }
+
+  saveCurrentConfig() {
+    const name = prompt('Save current filters as (name):');
+    if (!name) return;
+    this.filtersService.saveConfig(name, this.dataService.dateRange());
+  }
+
+  applySelectedConfig(name: string) {
+    const cfg = this.filtersService.loadConfig(name);
+    if (cfg?.dateRange) {
+      try {
+        const from = new Date(cfg.dateRange.from);
+        const to = new Date(cfg.dateRange.to);
+        if (!isNaN(from.getTime()) && !isNaN(to.getTime())) this.dataService.setDateRange({ from, to });
+      } catch {}
+    }
+  }
+
+  clearAllFilters() {
+    this.filtersService.searchText.set('');
+    this.filtersService.customQuery.set('');
+    this.selectedSource.set(null);
+    this.selectedPlatform.set(null);
+    this.selectedCountry.set(null);
+    this.selectedReleaseChannel.set(null);
+    this.filtersService.selectedConfigName.set(null);
+  }
+
+  resetDateRangeToThisMonth() {
+    this.dataService.resetToThisMonth();
+  }
+}
+
+function uniqSorted(arr: (string | null | undefined)[]): string[] {
+  const set = new Set<string>();
+  for (const v of arr) { if (v != null) set.add(String(v)); }
+  return Array.from(set).sort((a,b) => a.localeCompare(b));
 }
 
 interface Filter {

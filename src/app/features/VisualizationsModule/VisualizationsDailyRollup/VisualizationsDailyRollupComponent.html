@@ -122,6 +122,21 @@
 </div>
 
 
-<app-filter-drawer [visible]="visible" (visibleChange)="visible = $event">
-</app-filter-drawer>
+<app-filter-drawer
+  [visible]="visible"
+  (visibleChange)="visible = $event"
+  [selectedSource]="selectedSource"
+  [selectedPlatform]="selectedPlatform"
+  [selectedCountry]="selectedCountry"
+  [selectedReleaseChannel]="selectedReleaseChannel"
+  [sourceOptions]="sourceOptions()"
+  [platformOptions]="platformOptions()"
+  [countryOptions]="countryOptions()"
+  [releaseChannelOptions]="releaseChannelOptions()"
+  [savedConfigNames]="savedConfigNames()"
+  (saveCurrentConfigClick)="saveCurrentConfig()"
+  (applySelectedConfig)="applySelectedConfig($event)"
+  (clearAllFiltersClick)="clearAllFilters()"
+  (resetDateRangeToThisMonthClick)="resetDateRangeToThisMonth()"
+></app-filter-drawer>
 

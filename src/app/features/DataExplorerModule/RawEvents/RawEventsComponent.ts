@@ -2,6 +2,7 @@ import {Component, inject, OnInit, signal, computed, Signal, ChangeDetectionStra
 import {AgGridAngular} from 'ag-grid-angular';
 import {ColDef, GridOptions, GridReadyEvent, ValueFormatterParams, CellClassParams} from 'ag-grid-community';
 import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
+import {Select} from 'primeng/select';
 import {FormsModule} from '@angular/forms';
 import {DataService} from '../../../core/services/DataService';
 import {FilterDrawerComponent} from '../../shared/components/filter-drawer';
@@ -34,7 +35,8 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     ButtonLabel,
     FormsModule,
     Button,
-    FilterDrawerComponent
+    FilterDrawerComponent,
+    Select
   ],
   providers: [],
   styleUrls: ['./RawEventsComponent.scss'],
@@ -45,11 +47,31 @@ export class RawEventsComponent implements OnInit {
 
   filtersService = inject(FiltersService);
 
-  // Derived filtered data based on search and custom query
+  // Facet selection signals for easier user interaction
+  selectedSource = signal<string | null>(null);
+  selectedPlatform = signal<string | null>(null);
+  selectedCountry = signal<string | null>(null);
+  selectedReleaseChannel = signal<string | null>(null);
+
+  // Options for dropdowns derived from current data
+  sourceOptions = computed(() => uniqSorted(this.data().map(r => r.source).filter(Boolean)));
+  platformOptions = computed(() => uniqSorted(this.data().map(r => r.platform).filter(Boolean)));
+  countryOptions = computed(() => uniqSorted(this.data().map(r => r.country).filter(Boolean)));
+  releaseChannelOptions = computed(() => uniqSorted(this.data().map(r => r.release_channel).filter(Boolean)));
+
+  // Saved config names
+  savedConfigNames = computed(() => (this.filtersService.savedConfigs() || []).map(c => c.name));
+
+  // Derived filtered data based on search + custom query + facet dropdowns
   public viewData: Signal<RawEvent[]> = computed(() => {
     const base = this.data();
     const search = (this.filtersService.searchText() || '').toLowerCase();
     const query = this.filtersService.customQuery() || '';
+
+    const src = this.selectedSource();
+    const plat = this.selectedPlatform();
+    const ctry = this.selectedCountry();
+    const rel = this.selectedReleaseChannel();
 
     const bySearch = (row: RawEvent) => {
       if (!search) return true;
@@ -64,7 +86,13 @@ export class RawEventsComponent implements OnInit {
       try { return evaluateQuery(row as any, query); } catch { return false; }
     };
 
-    return base.filter(r => bySearch(r) && byQuery(r));
+    const byFacets = (row: RawEvent) =>
+      (!src || row.source === src) &&
+      (!plat || row.platform === plat) &&
+      (!ctry || row.country === ctry) &&
+      (!rel || row.release_channel === rel);
+
+    return base.filter(r => bySearch(r) && byQuery(r) && byFacets(r));
   });
 
   private dataService = inject(DataService);
@@ -362,6 +390,26 @@ export class RawEventsComponent implements OnInit {
       } catch {}
     }
   }
+
+  clearAllFilters() {
+    this.filtersService.searchText.set('');
+    this.filtersService.customQuery.set('');
+    this.selectedSource.set(null);
+    this.selectedPlatform.set(null);
+    this.selectedCountry.set(null);
+    this.selectedReleaseChannel.set(null);
+    this.filtersService.selectedConfigName.set(null);
+  }
+
+  resetDateRangeToThisMonth() {
+    this.dataService.resetToThisMonth();
+  }
+}
+
+function uniqSorted(arr: (string | null | undefined)[]): string[] {
+  const set = new Set<string>();
+  for (const v of arr) { if (v != null) set.add(String(v)); }
+  return Array.from(set).sort((a,b) => a.localeCompare(b));
 }
 
 interface Filter {

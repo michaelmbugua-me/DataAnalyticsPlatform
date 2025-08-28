@@ -1,46 +1,55 @@
 <div class="text-sm lg:pt-20 pt-5">
-    <div class="  pt-2 w-full" style="background-color: #FBFBFB!important">
+  <div class="  pt-2 w-full" style="background-color: #FBFBFB!important">
 
-      <div class=" pt-2 ">
-        <div class="lg:block">
-          <div class="lg:flex justify-content-between pt-2 items-center">
+    <div class=" pt-2 ">
+      <div class="lg:block">
+        <div class="lg:flex justify-content-between pt-2 items-center">
 
-            <div class="pt-2">
-              <div class="bg-surface-0 dark:bg-surface-950">
+          <div class="pt-2">
+            <div class="bg-surface-0 dark:bg-surface-950">
 
-                <div class="flex items-start flex-col md:justify-between md:flex-row">
-                  <div>
-                    <div class="font-bold text-3xl text-surface-900 dark:text-surface-0 mb-2">Data Explorer (Daily Rollups)</div>
-                    <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
-                      <div class="flex items-center gap-2">
-                        <i class="pi pi-chart-bar text-base! leading-normal!"></i>
-                        <span>Find a summary of the different analysis details here</span>
-                      </div>
+              <div class="flex items-start flex-col md:justify-between md:flex-row">
+                <div>
+                  <div class="font-bold text-3xl text-surface-900 dark:text-surface-0 mb-2">Data Explorer (Daily
+                    Rollups)
+                  </div>
+                  <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
+                    <div class="flex items-center gap-2">
+                      <i class="pi pi-chart-bar text-base! leading-normal!"></i>
+                      <span>Find a summary of the different analysis details here</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
 
-            <div class="lg:flex lg:space-x-2 ">
-                <button class="btn custom-btn-primary" (click)="toggleFilterVisibility()" pButton type="submit">
-                  <i class="pi pi-filter" pButtonIcon></i>
-                  <span pButtonLabel>Select Filter</span>
-                </button>
+          <div class="lg:flex lg:space-x-2 ">
 
-              <p-split-button
-                class="ms-2"
-                severity="contrast"
-                label="Export Records"
-                [model]="items">
-                <ng-template pTemplate="content">
+            <p-select [options]="savedConfigNames()"
+                      [ngModel]="filtersService.selectedConfigName()"
+                      placeholder="Select a Saved Configuration"
+                      (onChange)="applySelectedConfig($event.value)"
+                      class="ms-2" />
+
+            <button (click)="toggleFilterVisibility()" class="btn custom-btn-primary" pButton type="submit">
+              <i class="pi pi-plus" pButtonIcon></i>
+              <span pButtonLabel>Set Up Filter</span>
+            </button>
+
+            <p-split-button
+              [model]="items"
+              class="ms-2"
+              label="Export Records"
+              severity="contrast">
+              <ng-template pTemplate="content">
                     <span class="flex align-items-center font-bold">
                         <i class="pi pi-download" pButtonIcon></i>
                         <span class="ms-2">Export Records</span>
                     </span>
-                </ng-template>
-              </p-split-button>
+              </ng-template>
+            </p-split-button>
 
           </div>
         </div>
@@ -53,13 +62,13 @@
           <div>
             <div class="bg-surface-50 dark:bg-surface-950">
               <ag-grid-angular
-                style="height: 600px; width: 100%;"
-                aria-label="Daily rollups table"
-                [rowData]="viewData()"
+                (gridReady)="onGridReady($event)"
                 [columnDefs]="columnDefs"
                 [defaultColDef]="defaultColDef"
                 [gridOptions]="gridOptions"
-                (gridReady)="onGridReady($event)"
+                [rowData]="viewData()"
+                aria-label="Daily rollups table"
+                style="height: 600px; width: 100%;"
               ></ag-grid-angular>
             </div>
 
@@ -76,19 +85,19 @@
 
 
 <app-filter-drawer
-  [visible]="visible"
-  [selectedSource]="selectedSource"
-  [selectedPlatform]="selectedPlatform"
-  [selectedCountry]="selectedCountry"
-  [selectedReleaseChannel]="selectedReleaseChannel"
-  [sourceOptions]="sourceOptions()"
-  [platformOptions]="platformOptions()"
-  [countryOptions]="countryOptions()"
-  [releaseChannelOptions]="releaseChannelOptions()"
-  [savedConfigNames]="savedConfigNames()"
   (applySelectedConfig)="applySelectedConfig($event)"
-  (saveCurrentConfigClick)="saveCurrentConfig()"
   (clearAllFiltersClick)="clearAllFilters()"
   (resetDateRangeToThisMonthClick)="resetDateRangeToThisMonth()"
-  (visibleChange)="visible = $event">
+  (saveCurrentConfigClick)="saveCurrentConfig()"
+  (visibleChange)="visible = $event"
+  [countryOptions]="countryOptions()"
+  [platformOptions]="platformOptions()"
+  [releaseChannelOptions]="releaseChannelOptions()"
+  [savedConfigNames]="savedConfigNames()"
+  [selectedCountry]="selectedCountry"
+  [selectedPlatform]="selectedPlatform"
+  [selectedReleaseChannel]="selectedReleaseChannel"
+  [selectedSource]="selectedSource"
+  [sourceOptions]="sourceOptions()"
+  [visible]="visible">
 </app-filter-drawer>

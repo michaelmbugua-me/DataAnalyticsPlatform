@@ -18,7 +18,6 @@ import {Select} from 'primeng/select';
     ButtonLabel,
     ButtonIcon,
     ButtonDirective,
-    AutoComplete,
     Select
   ],
   styleUrls: ['./FilterDrawerComponent.scss']
