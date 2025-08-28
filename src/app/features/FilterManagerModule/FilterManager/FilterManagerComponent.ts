@@ -4,6 +4,9 @@ import {ColDef, GridOptions, GridReadyEvent} from 'ag-grid-community';
 import {FormsModule} from '@angular/forms';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import {FiltersService, FilterConfig} from '../../../core/services/FiltersService';
+import {ConfirmationService, MessageService} from 'primeng/api';
+import {Toast} from 'primeng/toast';
+import {ConfirmDialog} from 'primeng/confirmdialog';
 
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -14,6 +17,8 @@ ModuleRegistry.registerModules([AllCommunityModule]);
   imports: [
     AgGridAngular,
     FormsModule,
+    Toast,
+    ConfirmDialog,
   ],
   providers: [],
   styleUrls: ['./FilterManagerComponent.scss'],
@@ -23,6 +28,8 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 export class FilterManagerComponent implements OnInit {
 
   private filtersService = inject(FiltersService);
+  private confirmationService = inject(ConfirmationService);
+  private messageService = inject(MessageService);
 
   public data: Signal<FilterConfig[]> = computed(() => (this.filtersService.savedConfigs() || []));
 
@@ -93,7 +100,31 @@ export class FilterManagerComponent implements OnInit {
     params.api.sizeColumnsToFit();
   }
 
+
   deleteConfig(name: string) {
-    this.filtersService.deleteConfig(name);
+    this.confirmationService.confirm({
+      message: 'Do you want to delete this configuration?',
+      header: 'Permanent Action',
+      icon: 'pi pi-info-circle',
+      rejectLabel: 'Cancel',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+        severity: 'danger',
+      },
+
+      accept: () => {
+        this.messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'Configuration deleted' });
+        this.filtersService.deleteConfig(name);
+      },
+      reject: () => {
+        this.messageService.add({ severity: 'error', summary: 'Rejected', detail: 'You have cancelled your action' });
+      },
+    });
   }
+
 }
