@@ -20,6 +20,10 @@ export const routes: Routes = [
       {
         path: 'analysis-tools',
         loadChildren: () => import('./features/AnalysisToolsModule/analysis-tools.module').then(m => m.AnalysisToolsModule)
+      },
+      {
+        path: 'filter-manager',
+        loadChildren: () => import('./features/FilterManagerModule/filter-manager.module').then(m => m.FilterManagerModule)
       }
     ]
   }

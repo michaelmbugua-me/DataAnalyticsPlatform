@@ -108,7 +108,12 @@ export class BaseComponent implements OnInit, AfterViewChecked {
 
       // Filter Builder
       {
-        id: 2, title: 'FILTER MANAGER', route: ['/filter-builder'], alwaysVisible: true, isCollapsible: false, icon: 'pi pi-filter'
+        id: 2,
+        title: 'FILTER MANAGER',
+        route: ['/filter-manager/filter-table'],
+        alwaysVisible: true,
+        isCollapsible: false,
+        icon: 'pi pi-filter'
       },
 
 

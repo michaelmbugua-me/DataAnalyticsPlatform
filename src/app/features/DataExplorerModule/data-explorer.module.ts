@@ -1,4 +1,4 @@
-// data-explorer.module.ts
+// filter-manager.module.ts
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
