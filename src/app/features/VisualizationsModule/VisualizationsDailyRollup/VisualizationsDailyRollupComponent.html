@@ -9,19 +9,25 @@
         [subtitle]="'Find a summary of the different charts details here'">
         <div actions class="w-100">
           <div class="flex flex-col sm:flex-row w-full items-stretch sm:items-center gap-2 sm:gap-3">
-            <div class="lg:flex lg:space-x-2 ">
-              <button (click)="toggleFilterVisibility()" class="btn custom-btn-primary w-100" pButton type="submit">
-                <i class="pi pi-filter" pButtonIcon></i>
-                <span pButtonLabel>Select Filter</span>
-              </button>
-
-
-              <button (click)="printScreen()" class="w-100" severity="contrast" pButton type="submit">
-                <i class="pi pi-download" pButtonIcon></i>
-                <span pButtonLabel>Export</span>
-              </button>
-
-            </div>
+            <p-select
+              [options]="savedConfigNames()"
+              [ngModel]="filtersService.selectedConfigName()"
+              placeholder="Select a Saved Configuration"
+              (onChange)="applySelectedConfig($event.value)"
+              class="w-full sm:w-64"
+            />
+            <button
+              (click)="toggleFilterVisibility()"
+              class="btn custom-btn-primary w-full sm:w-auto"
+              pButton
+              type="submit">
+              <i class="pi pi-plus" pButtonIcon></i>
+              <span pButtonLabel>Set Up Filter</span>
+            </button>
+            <button (click)="printScreen()" class="w-full sm:w-auto" severity="contrast" pButton type="submit">
+              <i class="pi pi-download" pButtonIcon></i>
+              <span pButtonLabel>Export</span>
+            </button>
           </div>
         </div>
       </app-page-header>

@@ -8,6 +8,8 @@ import {DataService} from '../../../core/services/DataService';
 import {FilterDrawerComponent} from '../../shared/components/filter-drawer';
 import { FiltersService } from '../../../core/services/FiltersService';
 import { applyCommonFilters } from '../../shared/utils/applyFilters';
+import {PageHeaderComponent} from '../../shared/components/PageHeaderComponent/PageHeaderComponent';
+import {Select} from 'primeng/select';
 
 
 @Component({
@@ -15,7 +17,7 @@ import { applyCommonFilters } from '../../shared/utils/applyFilters';
   templateUrl: './VisualizationsRawDataComponent.html',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ButtonDirective, ButtonIcon, ButtonLabel, FormsModule, Button, AgCharts, ProgressSpinner, FilterDrawerComponent],
+  imports: [ButtonDirective, ButtonIcon, ButtonLabel, FormsModule, Button, AgCharts, ProgressSpinner, FilterDrawerComponent, PageHeaderComponent, Select],
   providers: [],
   styleUrls: ['./VisualizationsRawDataComponent.scss']
 })
@@ -324,6 +326,21 @@ export class VisualizationsRawDataComponent implements OnInit {
 
 
   protected readonly Date = Date;
+
+  applySelectedConfig(name: string) {
+    const cfg = this.filtersService.loadConfig(name);
+    if (cfg?.dateRange) {
+      try {
+        const from = new Date(cfg.dateRange.from);
+        const to = new Date(cfg.dateRange.to);
+        if (!isNaN(from.getTime()) && !isNaN(to.getTime())) this.dataService.setDateRange({ from, to });
+      } catch {}
+    }
+  }
+
+  printScreen() {
+    window.print();
+  }
 }
 
 function uniqSorted(arr: (string | null | undefined)[]): string[] {

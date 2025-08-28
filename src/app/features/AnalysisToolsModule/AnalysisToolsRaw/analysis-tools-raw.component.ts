@@ -9,6 +9,7 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {Drawer} from 'primeng/drawer';
 import {DataService} from '../../../core/services/DataService';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+import {PageHeaderComponent} from '../../shared/components/PageHeaderComponent/PageHeaderComponent';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -28,6 +29,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     Drawer,
     FormsModule,
     Button,
+    PageHeaderComponent,
   ],
   providers: [],
   standalone: true,

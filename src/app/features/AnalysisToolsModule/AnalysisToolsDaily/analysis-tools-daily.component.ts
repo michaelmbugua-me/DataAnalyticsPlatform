@@ -8,6 +8,8 @@ import {AgGridAngular} from 'ag-grid-angular';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Drawer} from 'primeng/drawer';
 import {DataService} from '../../../core/services/DataService';
+import {PageHeaderComponent} from '../../shared/components/PageHeaderComponent/PageHeaderComponent';
+import {SplitButton} from 'primeng/splitbutton';
 
 
 @Component({
@@ -24,6 +26,8 @@ import {DataService} from '../../../core/services/DataService';
     ReactiveFormsModule,
     Drawer,
     FormsModule,
+    PageHeaderComponent,
+    SplitButton,
   ],
   providers: [],
   standalone: true,

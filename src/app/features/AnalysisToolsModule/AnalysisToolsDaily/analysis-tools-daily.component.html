@@ -3,43 +3,22 @@
 
     <div class="  pt-2 w-full" style="background-color: #FBFBFB!important">
 
-      <div class=" pt-2 ">
-        <div class="lg:block">
-          <div class="lg:flex justify-content-between pt-2 items-center">
+      <app-page-header
+        [title]="'Analysis Tools (Daily Rollup)'"
+        [subtitle]="'Find a summary of user engagement and application performance metrics'">
+        <div actions class="w-100">
+          <div class="flex flex-col sm:flex-row w-full items-stretch sm:items-center gap-2 sm:gap-3">
 
-            <div class="pt-2">
-              <div class="bg-surface-0 dark:bg-surface-950">
-
-                <div class="flex items-start flex-col md:justify-between md:flex-row">
-                  <div>
-                    <div class="font-bold text-3xl text-surface-900 dark:text-surface-0 mb-2">Analysis Tools (Daily
-                      Rollup)
-                    </div>
-                    <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
-                      <div class="flex items-center gap-2">
-                        <i class="pi pi-chart-bar text-base! leading-normal!"></i>
-                        <span>Find a summary of user engagement and application performance metrics</span>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-
-            </div>
-
-
-            <div class="lg:flex lg:space-x-2 ">
-              <button (click)="toggleFilterVisibility()" class="btn custom-btn-primary" pButton type="submit">
-                <i class="pi pi-database" pButtonIcon></i>
-                <span pButtonLabel>Set Analysis Parameters</span>
-              </button>
-            </div>
-
+            <button (click)="toggleFilterVisibility()" class="btn custom-btn-primary  w-full sm:w-auto" pButton type="submit">
+              <i class="pi pi-database" pButtonIcon></i>
+              <span pButtonLabel>Set Analysis Parameters</span>
+            </button>
 
           </div>
         </div>
-      </div>
+      </app-page-header>
+
+
 
       <div class=" pt-0">
         <div class="lg:block">
