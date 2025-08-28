@@ -1,9 +1,12 @@
 <div class="antialiased bg-gray-50 dark:bg-gray-900">
-  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:bg-white focus:text-black focus:p-2">Skip to main content</a>
+  <a class="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:bg-white focus:text-black focus:p-2"
+     href="#main">Skip
+    to main content</a>
   <!--  NAVBAR-->
   <nav
+    aria-label="Primary"
     class="bg-white border-b border-gray-200 px-4 py-1 dark:bg-gray-800 dark:border-gray-700 fixed left-0 right-0 top-0 z-50"
-    role="navigation" aria-label="Primary">
+    role="navigation">
     <div class="flex flex-wrap justify-between items-center">
       <div class="flex justify-start items-center px-0">
         <button
@@ -43,6 +46,7 @@
         </button>
 
         <span class="hidden sm:flex items-center justify-between mr-4">
+                  <img alt="image" class="rounded mr-3 h-10" src="/images/site-images/equity_bank_logo.png">
                   <span class="self-center text-xl font-semibold whitespace-nowrap"
                         style="text-decoration: none; color: #a32a29">Equity Analytics</span>
                 </span>
@@ -226,7 +230,7 @@
   </aside>
 
   <!--  PAGE CONTENT-->
-  <main id="main" role="main" aria-label="Main content" class="px-4 md:ml-64 flex-1 overflow-auto min-h-0 pt-1">
+  <main aria-label="Main content" class="px-4 md:ml-64 flex-1 overflow-auto min-h-0 pt-1" id="main" role="main">
     <router-outlet></router-outlet>
   </main>
 </div>
