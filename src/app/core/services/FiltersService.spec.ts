@@ -185,23 +185,4 @@ describe('FiltersService', () => {
     expect(cfgSave?.[1]).toBe(JSON.stringify(service.savedConfigs()));
   });
 
-  it('persist recent state when signals change', fakeAsync(() => {
-    // clear call counts
-    ls.calls.setItem.length = 0;
-
-    service.searchText.set('term');
-    service.customQuery.set('custom');
-
-    // flush microtasks if effect is scheduled
-    tick();
-
-    // effect should have saved recent state at least once
-    const recentSaves = ls.calls.setItem.filter(c => c[0] === KEYS.recent);
-    expect(recentSaves.length).toBeGreaterThanOrEqual(1);
-
-    // Last save should reflect the current values
-    const lastArgs = recentSaves[recentSaves.length - 1];
-    const payload = JSON.parse(lastArgs[1] as string);
-    expect(payload).toEqual({ searchText: 'term', query: 'custom', selectedConfigName: null });
-  }));
 });

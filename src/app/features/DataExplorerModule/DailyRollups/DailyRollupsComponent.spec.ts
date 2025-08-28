@@ -139,34 +139,6 @@ describe.skip('DailyRollupsComponent', () => {
       expect(eventsCountColumn?.type).toBe('numericColumn');
     });
 
-    // it('should format revenue values correctly', () => {
-    //   const revenueColumn = component.columnDefs.find(col => col.field === 'revenue_usd');
-    //   const formatter = revenueColumn?.valueFormatter;
-    //
-    //   if (formatter && typeof formatter === 'function') {
-    //     const formattedValue = formatter({ value: 999.99 });
-    //     expect(formattedValue).toBe('$999.99');
-    //
-    //     const zeroValue = formatter({ value: 0 });
-    //     expect(zeroValue).toBe('$0.00');
-    //
-    //     const nullValue = formatter({ value: null });
-    //     expect(nullValue).toBe('$0.00');
-    //   }
-    // });
-
-    // it('should format duration values correctly', () => {
-    //   const avgDurationColumn = component.columnDefs.find(col => col.field === 'avg_duration_ms');
-    //   const formatter = avgDurationColumn?.valueFormatter;
-    //
-    //   if (formatter && typeof formatter === 'function') {
-    //     const formattedValue = formatter({ value: 5000 });
-    //     expect(formattedValue).toBe('5000ms');
-    //
-    //     const nullValue = formatter({ value: null });
-    //     expect(nullValue).toBe('');
-    //   }
-    // });
   });
 
   describe('UI Interactions', () => {

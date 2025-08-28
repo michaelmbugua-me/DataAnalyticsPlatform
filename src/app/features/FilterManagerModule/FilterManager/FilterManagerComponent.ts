@@ -4,9 +4,13 @@ import {ColDef, GridOptions, GridReadyEvent} from 'ag-grid-community';
 import {FormsModule} from '@angular/forms';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import {FiltersService, FilterConfig} from '../../../core/services/FiltersService';
-import {ConfirmationService, MessageService} from 'primeng/api';
+import {ConfirmationService, MessageService, PrimeTemplate} from 'primeng/api';
 import {Toast} from 'primeng/toast';
 import {ConfirmDialog} from 'primeng/confirmdialog';
+import {ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
+import {PageHeaderComponent} from '../../shared/components/PageHeaderComponent/PageHeaderComponent';
+import {Select} from 'primeng/select';
+import {SplitButton} from 'primeng/splitbutton';
 
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -19,6 +23,13 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     FormsModule,
     Toast,
     ConfirmDialog,
+    ButtonDirective,
+    ButtonIcon,
+    ButtonLabel,
+    PageHeaderComponent,
+    PrimeTemplate,
+    Select,
+    SplitButton,
   ],
   providers: [],
   styleUrls: ['./FilterManagerComponent.scss'],

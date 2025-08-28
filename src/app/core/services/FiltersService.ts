@@ -86,9 +86,6 @@ export class FiltersService {
 
   private loadConfigs(): FilterConfig[] {
     const raw = localStorage.getItem(this.STORAGE_KEYS.configs);
-
-    console.log('raw')
-    console.log(raw)
     if (!raw) return [];
     try { return JSON.parse(raw) as FilterConfig[]; } catch { return []; }
   }

@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start-test-polyfills": "ng serve --port 4202 --allowed-hosts=778e6f01df6c.ngrok-free-app,.ngrok-free.app",
     "build": "ng build",
     "build:subpath": "ng build --configuration production --base-href /equity-analytics/",
     "watch": "ng build --watch --configuration development",

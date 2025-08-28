@@ -14,6 +14,7 @@ import { evaluateQuery } from '../../../core/utils/query';
 import {SplitButton} from 'primeng/splitbutton';
 import {MenuItem, PrimeTemplate} from 'primeng/api';
 import {Select} from 'primeng/select';
+import { PageHeaderComponent } from '../../shared/components/PageHeaderComponent/PageHeaderComponent';
 
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -32,6 +33,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     SplitButton,
     PrimeTemplate,
     Select,
+    PageHeaderComponent
   ],
   providers: [],
   standalone: true,

@@ -1,10 +1,9 @@
-import {Component, EventEmitter, inject, Input, OnInit, Output, Signal, WritableSignal} from '@angular/core';
+import {Component, EventEmitter, inject, Input, OnInit, Output, WritableSignal} from '@angular/core';
 import {Drawer} from 'primeng/drawer';
 import {DatePicker} from 'primeng/datepicker';
 import {FormsModule} from '@angular/forms';
 import {ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {DataService} from '../../../../core/services/DataService';
-import {AutoComplete} from 'primeng/autocomplete';
 import {FiltersService} from '../../../../core/services/FiltersService';
 import {Select} from 'primeng/select';
 
@@ -27,9 +26,8 @@ export class FilterDrawerComponent implements OnInit {
   private dataService: DataService = inject(DataService);
   protected filtersService: FiltersService = inject(FiltersService);
 
-  // date range controlled locally within drawer
-  @Input() startDate!: any;
-  @Input() endDate!: any;
+  // Local date range model for the PrimeNG date picker (range mode)
+  dateRange: Date[] | null = null;
 
   // drawer visibility signal from parent
   @Input() visible!: WritableSignal<boolean>;
@@ -58,11 +56,19 @@ export class FilterDrawerComponent implements OnInit {
 
   @Input() dataType!: string;
 
-  applyFilter(start: string, end: string) {
-    const from = new Date(start);
-    const to = new Date(end);
-    if (!isNaN(from.getTime()) && !isNaN(to.getTime())) {
-      this.dataService.setDateRange({ from, to });
+  // Update global date range when user selects two dates
+  onDateRangeChange(range: Date[] | null) {
+    this.dateRange = range;
+    if (Array.isArray(range) && range.length === 2) {
+      const [from, to] = range;
+      const d1 = new Date(from);
+      const d2 = new Date(to);
+      if (!isNaN(d1.getTime()) && !isNaN(d2.getTime())) {
+        // Normalize to inclusive end-of-day for 'to'
+        const fromNorm = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate(), 0, 0, 0, 0);
+        const toNorm = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate(), 23, 59, 59, 999);
+        this.dataService.setDateRange({ from: fromNorm, to: toNorm });
+      }
     }
   }
 
@@ -71,7 +77,8 @@ export class FilterDrawerComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('sourceOptions')
-    console.log(this.sourceOptions)
+    // Initialize local date range from current global range
+    const r = this.dataService.dateRange();
+    if (r?.from && r?.to) this.dateRange = [r.from, r.to];
   }
 }

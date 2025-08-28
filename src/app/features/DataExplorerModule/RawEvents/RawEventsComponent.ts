@@ -21,6 +21,7 @@ import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import {DataExportationService} from '../../../core/services/DataExportationService';
 import { FiltersService } from '../../../core/services/FiltersService';
 import { evaluateQuery } from '../../../core/utils/query';
+import { PageHeaderComponent } from '../../shared/components/PageHeaderComponent/PageHeaderComponent';
 
 // Register AG Grid modules lazily for this feature chunk
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -36,7 +37,8 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     FormsModule,
     Button,
     FilterDrawerComponent,
-    Select
+    Select,
+    PageHeaderComponent
   ],
   providers: [],
   styleUrls: ['./RawEventsComponent.scss'],

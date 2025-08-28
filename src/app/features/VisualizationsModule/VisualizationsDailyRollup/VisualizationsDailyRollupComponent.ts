@@ -8,6 +8,10 @@ import {DataService} from '../../../core/services/DataService';
 import {FilterDrawerComponent} from '../../shared/components/filter-drawer';
 import { FiltersService } from '../../../core/services/FiltersService';
 import { applyCommonFilters } from '../../shared/utils/applyFilters';
+import {PageHeaderComponent} from '../../shared/components/PageHeaderComponent/PageHeaderComponent';
+import {PrimeTemplate} from 'primeng/api';
+import {Select} from 'primeng/select';
+import {SplitButton} from 'primeng/splitbutton';
 
 
 @Component({
@@ -15,7 +19,7 @@ import { applyCommonFilters } from '../../shared/utils/applyFilters';
   templateUrl: './VisualizationsDailyRollupComponent.html',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ButtonDirective, ButtonIcon, ButtonLabel, FormsModule, Button, AgCharts, ProgressSpinner, FilterDrawerComponent],
+  imports: [ButtonDirective, ButtonIcon, ButtonLabel, FormsModule, Button, AgCharts, ProgressSpinner, FilterDrawerComponent, PageHeaderComponent, PrimeTemplate, Select, SplitButton],
   providers: [],
   styleUrls: ['./VisualizationsDailyRollupComponent.scss']
 })
@@ -328,6 +332,12 @@ export class VisualizationsDailyRollupComponent implements OnInit {
   resetDateRangeToThisMonth() {
     this.dataService.resetToThisMonth();
   }
+
+  printScreen() {
+    window.print();
+  }
+
+  protected readonly print = print;
 }
 
 function uniqSorted(arr: (string | null | undefined)[]): string[] {

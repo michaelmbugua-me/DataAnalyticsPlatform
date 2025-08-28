@@ -1,59 +1,41 @@
 <div class="text-sm lg:pt-20 pt-5">
   <div class="  pt-2 w-full" style="background-color: #FBFBFB!important">
 
-    <div class=" pt-2 ">
-      <div class="lg:block">
-        <div class="lg:flex justify-content-between pt-2 items-center">
-
-          <div class="pt-2">
-            <div class="bg-surface-0 dark:bg-surface-950">
-
-              <div class="flex items-start flex-col md:justify-between md:flex-row">
-                <div>
-                  <div class="font-bold text-3xl text-surface-900 dark:text-surface-0 mb-2">Data Explorer (Daily
-                    Rollups)
-                  </div>
-                  <div class="flex items-center text-surface-700 dark:text-surface-300 flex-wrap gap-8">
-                    <div class="flex items-center gap-2">
-                      <i class="pi pi-chart-bar text-base! leading-normal!"></i>
-                      <span>Find a summary of the different analysis details here</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-          <div class="lg:flex lg:space-x-2 ">
-
-            <p-select [options]="savedConfigNames()"
-                      [ngModel]="filtersService.selectedConfigName()"
-                      placeholder="Select a Saved Configuration"
-                      (onChange)="applySelectedConfig($event.value)"
-                      class="ms-2" />
-
-            <button (click)="toggleFilterVisibility()" class="btn custom-btn-primary" pButton type="submit">
-              <i class="pi pi-plus" pButtonIcon></i>
-              <span pButtonLabel>Set Up Filter</span>
-            </button>
-
-            <p-split-button
-              [model]="items"
-              class="ms-2"
-              label="Export Records"
-              severity="contrast">
-              <ng-template pTemplate="content">
-                    <span class="flex align-items-center font-bold">
-                        <i class="pi pi-download" pButtonIcon></i>
-                        <span class="ms-2">Export Records</span>
-                    </span>
-              </ng-template>
-            </p-split-button>
-
-          </div>
+    <app-page-header
+      [title]="'Data Explorer (Daily Rollups)'"
+      [subtitle]="'Find a summary of the different analysis details here'">
+      <div actions class="w-100">
+        <div class="flex flex-col sm:flex-row w-full items-stretch sm:items-center gap-2 sm:gap-3">
+          <p-select
+            [options]="savedConfigNames()"
+            [ngModel]="filtersService.selectedConfigName()"
+            placeholder="Select a Saved Configuration"
+            (onChange)="applySelectedConfig($event.value)"
+            class="w-full sm:w-64"
+          />
+          <button
+            (click)="toggleFilterVisibility()"
+            class="btn custom-btn-primary w-full sm:w-auto"
+            pButton
+            type="submit">
+            <i class="pi pi-plus" pButtonIcon></i>
+            <span pButtonLabel>Set Up Filter</span>
+          </button>
+          <p-split-button
+            [model]="items"
+            class="w-full sm:w-auto"
+            label="Export Records"
+            severity="contrast">
+            <ng-template pTemplate="content">
+              <span class="flex align-items-center font-bold">
+                <i class="pi pi-download" pButtonIcon></i>
+                <span class="ms-2">Export Records</span>
+              </span>
+            </ng-template>
+          </p-split-button>
         </div>
       </div>
+    </app-page-header>
 
       <!-- Filters moved to drawer -->
 
@@ -81,7 +63,6 @@
 
     </div>
   </div>
-</div>
 
 
 <app-filter-drawer

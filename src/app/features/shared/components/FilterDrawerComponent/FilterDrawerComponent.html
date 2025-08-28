@@ -3,14 +3,14 @@
     <!-- Date Range -->
     <div class="mb-3">
       <label class="text-xs mb-1">Date Range</label>
-      <p-date-picker  [(ngModel)]="startDate" [showIcon]="true" selectionMode="range" placeholder="Start Date" class="w-100 md:w-56"></p-date-picker>
+      <p-date-picker
+        [(ngModel)]="dateRange"
+        (ngModelChange)="onDateRangeChange($event)"
+        [showIcon]="true"
+        selectionMode="range"
+        placeholder="Select date range"
+        class="w-100 md:w-56"></p-date-picker>
     </div>
-<!--    <div class="mb-4">-->
-<!--      <button class="btn custom-btn-primary w-100" pButton type="button" (click)="applyFilter(startDate, endDate)">-->
-<!--        <i class="pi pi-filter" pButtonIcon></i>-->
-<!--        <span pButtonLabel>Apply Date Filter</span>-->
-<!--      </button>-->
-<!--    </div>-->
 
     <!-- Search -->
     <div class="mb-3">
@@ -18,17 +18,15 @@
       <input class="p-inputtext p-component w-100" [ngModel]="filtersService.searchText()" (ngModelChange)="filtersService.searchText.set($event)" placeholder="Type to search..." />
     </div>
 
-    <!-- My filters -->
+    <!-- Facets -->
     <div class="mb-3">
       <label class="text-xs mb-1">Source</label>
       <p-select [options]="sourceOptions || []" [ngModel]="selectedSource()" placeholder="Select a Source" (onChange)="selectedSource.set($event.value)" class="w-100" />
-
     </div>
 
     <div class="mb-3">
       <label class="text-xs mb-1">Platform</label>
       <p-select [options]="platformOptions || []" [ngModel]="selectedPlatform()" placeholder="Select a Platform" (onChange)="selectedPlatform.set($event.value)" class="w-100" />
-
     </div>
 
     <div class="mb-3">
@@ -39,7 +37,6 @@
     <div class="mb-3">
       <label class="text-xs mb-1">Release Channel</label>
       <p-select [options]="releaseChannelOptions || []" [ngModel]="selectedReleaseChannel()" placeholder="Select a Release Channel" (onChange)="selectedReleaseChannel.set($event.value)" class="w-100" />
-
     </div>
 
     <!-- Custom query -->
@@ -47,13 +44,6 @@
       <label class="text-xs mb-1">Custom Query</label>
       <input class="p-inputtext p-component w-100" [ngModel]="filtersService.customQuery()" (ngModelChange)="filtersService.customQuery.set($event)" placeholder="e.g. country == 'US' and revenue_usd > 1000" />
     </div>
-
-<!--    &lt;!&ndash; Saved Filters &ndash;&gt;-->
-<!--    <div class="mb-3">-->
-<!--      <label class="text-xs mb-1">Saved Filters</label>-->
-<!--      <p-select [options]="savedConfigNames || []" [ngModel]="filtersService.selectedConfigName()" placeholder="Select a Saved Configuration" (onChange)="onApplySelectedConfig($event.value)" class="w-100" />-->
-
-<!--    </div>-->
 
     <!-- Actions -->
     <div class="flex gap-2 mb-2">
@@ -66,11 +56,5 @@
         <span pButtonLabel>Clear</span>
       </button>
     </div>
-<!--    <div>-->
-<!--      <button class="btn p-button-secondary w-100" pButton type="button" (click)="resetDateRangeToThisMonthClick.emit()">-->
-<!--        <i class="pi pi-calendar" pButtonIcon></i>-->
-<!--        <span pButtonLabel>This Month</span>-->
-<!--      </button>-->
-<!--    </div>-->
   </div>
 </p-drawer>
