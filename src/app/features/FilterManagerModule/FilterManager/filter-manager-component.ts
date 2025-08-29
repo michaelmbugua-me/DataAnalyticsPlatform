@@ -8,7 +8,7 @@ import {ConfirmationService, MessageService, PrimeTemplate} from 'primeng/api';
 import {Toast} from 'primeng/toast';
 import {ConfirmDialog} from 'primeng/confirmdialog';
 import {ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
-import {PageHeaderComponent} from '../../shared/components/PageHeaderComponent/PageHeaderComponent';
+import {PageHeaderComponent} from '../../shared/components/shared-globally/PageHeaderComponent/PageHeaderComponent';
 import {Select} from 'primeng/select';
 import {SplitButton} from 'primeng/splitbutton';
 
@@ -17,7 +17,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 
 @Component({
   selector: 'app-filter-manager-component',
-  templateUrl: './FilterManagerComponent.html',
+  templateUrl: './filter-manager-component.html',
   imports: [
     AgGridAngular,
     FormsModule,
@@ -26,7 +26,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     PageHeaderComponent
   ],
   providers: [],
-  styleUrls: ['./FilterManagerComponent.scss'],
+  styleUrls: ['./filter-manager-component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

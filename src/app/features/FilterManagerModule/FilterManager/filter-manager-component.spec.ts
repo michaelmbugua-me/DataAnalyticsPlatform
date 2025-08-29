@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {FilterManagerComponent} from './FilterManagerComponent';
+import {FilterManagerComponent} from './filter-manager-component';
 
 describe('FilterManagerComponent', () => {
 

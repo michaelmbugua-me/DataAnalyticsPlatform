@@ -4,7 +4,7 @@ import {ColDef, GridOptions, GridReadyEvent, ValueFormatterParams, CellClassPara
 import {ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {FormsModule} from '@angular/forms';
 import {DataService} from '../../../core/services/DataService';
-import { FilterDrawerComponent } from '../../shared/components/FilterDrawerComponent/FilterDrawerComponent';
+import { FilterDrawerComponent } from '../../shared/components/data-explorer/FilterDrawerComponent/FilterDrawerComponent';
 import {DailyRollup, EventSource, ReleaseChannel} from '../../../core/models/DataModels';
 import { getSourceCellStyle, getReleaseChannelStyle, getDurationCellStyle } from '../../shared/utils/gridCellStyles';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
@@ -14,7 +14,7 @@ import { evaluateQuery } from '../../../core/utils/query';
 import {SplitButton} from 'primeng/splitbutton';
 import {MenuItem, PrimeTemplate} from 'primeng/api';
 import {Select} from 'primeng/select';
-import { PageHeaderComponent } from '../../shared/components/PageHeaderComponent/PageHeaderComponent';
+import { PageHeaderComponent } from '../../shared/components/shared-globally/PageHeaderComponent/PageHeaderComponent';
 
 
 ModuleRegistry.registerModules([AllCommunityModule]);

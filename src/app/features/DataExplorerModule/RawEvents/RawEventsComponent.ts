@@ -5,7 +5,7 @@ import {ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {Select} from 'primeng/select';
 import {FormsModule} from '@angular/forms';
 import {DataService} from '../../../core/services/DataService';
-import { FilterDrawerComponent } from '../../shared/components/FilterDrawerComponent/FilterDrawerComponent';
+import { FilterDrawerComponent } from '../../shared/components/data-explorer/FilterDrawerComponent/FilterDrawerComponent';
 import {
   RawEvent,
   EventSource,
@@ -17,7 +17,7 @@ import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import {DataExportationService} from '../../../core/services/DataExportationService';
 import { FiltersService } from '../../../core/services/FiltersService';
 import { evaluateQuery } from '../../../core/utils/query';
-import { PageHeaderComponent } from '../../shared/components/PageHeaderComponent/PageHeaderComponent';
+import { PageHeaderComponent } from '../../shared/components/shared-globally/PageHeaderComponent/PageHeaderComponent';
 import {MenuItem, PrimeTemplate} from 'primeng/api';
 import {SplitButton} from 'primeng/splitbutton';
 

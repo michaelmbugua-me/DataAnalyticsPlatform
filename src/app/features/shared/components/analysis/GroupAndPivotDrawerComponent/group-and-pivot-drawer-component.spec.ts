@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { GroupAndPivotDrawerComponent } from './GroupAndPivotDrawerComponent';
-import { DataService } from '../../../../core/services/DataService';
+import { GroupAndPivotDrawerComponent } from './group-and-pivot-drawer-component';
+import { DataService } from '../../../../../core/services/DataService';
 import { FormsModule } from '@angular/forms';
 import { signal } from '@angular/core';
 import {Drawer} from 'primeng/drawer';

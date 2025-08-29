@@ -3,16 +3,18 @@ import {TableModule} from 'primeng/table';
 
 import {ProgressSpinner} from 'primeng/progressspinner';
 import {ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
-import {Select} from 'primeng/select';
-import {AgGridAngular} from 'ag-grid-angular';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Drawer} from 'primeng/drawer';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {DataService} from '../../../core/services/DataService';
 import {AllCommunityModule, ModuleRegistry} from 'ag-grid-community';
-import {PageHeaderComponent} from '../../shared/components/PageHeaderComponent/PageHeaderComponent';
+import {PageHeaderComponent} from '../../shared/components/shared-globally/PageHeaderComponent/PageHeaderComponent';
 import {DataExportationService} from '../../../core/services/DataExportationService';
-import {SplitButton} from 'primeng/splitbutton';
 import {MenuItem} from 'primeng/api';
+import {PivotTableComponentComponent} from '../../shared/components/analysis/PivotTableComponent/pivot-table-component.component';
+import {GroupedTableComponentComponent} from '../../shared/components/analysis/GroupedTableComponent/grouped-table-component.component';
+import {AnalysisCardsComponentComponent} from '../../shared/components/analysis/AnalysisCardsComponent/analysis-cards-component.component';
+import {
+  GroupAndPivotDrawerComponent
+} from '../../shared/components/analysis/GroupAndPivotDrawerComponent/group-and-pivot-drawer-component';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -20,7 +22,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 @Component({
   selector: 'app-analysis-tools',
   templateUrl: './analysis-tools-raw.component.html',
-  imports: [TableModule, ProgressSpinner, ButtonDirective, ButtonIcon, ButtonLabel, Select, AgGridAngular, ReactiveFormsModule, Drawer, FormsModule, PageHeaderComponent, SplitButton,],
+  imports: [TableModule, ProgressSpinner, ButtonDirective, ButtonIcon, ButtonLabel, ReactiveFormsModule, FormsModule, PageHeaderComponent, PivotTableComponentComponent, GroupedTableComponentComponent, AnalysisCardsComponentComponent, GroupAndPivotDrawerComponent,],
   providers: [],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,25 +32,20 @@ export class AnalysisToolsRawComponent implements OnInit {
 
   groupColumnDefs: any[] = [];
   groupRowData: any[] = [];
-  groupDefaultColDef = {sortable: true, filter: true, resizable: true};
   domLayout: 'autoHeight' = 'autoHeight';
   pivotColumnDefs: any[] = [];
   pivotRowData: any[] = [];
-  pivotDefaultColDef = {sortable: true, filter: true, resizable: true};
   filters!: Filter[];
-  // Dynamic select options derived from data
   dimensionOptions: { label: string; value: string }[] = [];
   measureOptions: { label: string; value: string }[] = [];
   visible = signal(false);
-  dataGroupForm!: FormGroup;
-  pivotTableForm!: FormGroup;
   groupTableLoaded: boolean = true;
   pivotTableLoaded: boolean = true;
-  // Card Statistics
+
   totalEvents = 0;
   averageDuration = '0ms';
   uniqueUsers = 0;
-  // Card Statistics
+
   items: MenuItem[] | undefined;
   pivotItems: MenuItem[] | undefined;
   private dataService = inject(DataService);
@@ -57,18 +54,12 @@ export class AnalysisToolsRawComponent implements OnInit {
   error = this.dataService.error;
   private dataExportationService = inject(DataExportationService);
 
-  constructor(private fb: FormBuilder) {
-    this.dataGroupForm = fb.group({
-      groupBy: ['country', Validators.required],
-      aggregation: ['count', Validators.required],
-      measure: ['count', Validators.required]
-    });
 
-    this.pivotTableForm = fb.group({
-      rowDimension: ['platform', Validators.required],
-      columnDimension: [''],
-      valueMeasure: ['count', Validators.required]
-    });
+  private dataGroupFormValue: any;
+  private pivotTableFormValue: any;
+
+  constructor() {
+
 
     this.items = [{
       label: 'Export as PDF', command: () => {
@@ -98,24 +89,25 @@ export class AnalysisToolsRawComponent implements OnInit {
       }
     }]
 
-    // React to data arrivals/changes to build options and initialize tables
     effect(() => {
       const records = this.data();
       this.buildSelectOptions(records);
-      // Initialize when data available
       if (records && records.length > 0) {
         this.fetchCardStatistics();
-        if (this.groupTableLoaded) {
-          // no-op
-        }
         this.groupData();
         this.createPivotTable();
       }
     });
   }
 
-  get dimensionOptionsNoPlaceholder() {
-    return this.dimensionOptions.filter(o => !!o.value);
+  onGroupSubmit(formValue: any) {
+    this.dataGroupFormValue = formValue;
+    this.groupData();
+  }
+
+  onPivotSubmit(formValue: any) {
+    this.pivotTableFormValue = formValue;
+    this.createPivotTable();
   }
 
   async ngOnInit() {
@@ -127,19 +119,16 @@ export class AnalysisToolsRawComponent implements OnInit {
     }
   }
 
-  onSubmit() {
-
-    if (!this.dataGroupForm || this.dataGroupForm.invalid) {
-      this.dataGroupForm?.markAllAsTouched();
-      return;
-    }
-    this.groupData();
-  }
-
   groupData() {
 
-    this.groupTableLoaded = false;
-    const {groupBy: dimension, aggregation, measure} = this.dataGroupForm.value;
+    // this.groupTableLoaded = false;
+
+    if (!this.dataGroupFormValue) {
+      console.warn('Form values not initialized');
+      return;
+    }
+      const {groupBy: dimension, aggregation, measure} = this.dataGroupFormValue;
+
 
     if (!dimension) {
       alert('Please select a dimension to group by');
@@ -188,8 +177,7 @@ export class AnalysisToolsRawComponent implements OnInit {
 
     // Create grouped grid
     const columnDefs = [{headerName: dimension, field: dimension}, {
-      headerName: String(aggregation).toUpperCase(),
-      field: 'value'
+      headerName: String(aggregation).toUpperCase(), field: 'value'
     }];
 
     this.groupColumnDefs = [...columnDefs];
@@ -198,20 +186,16 @@ export class AnalysisToolsRawComponent implements OnInit {
 
   }
 
-  onPivotSubmit() {
-    if (!this.pivotTableForm || this.pivotTableForm.invalid) {
-      this.pivotTableForm?.markAllAsTouched();
-      return;
-    }
-
-    this.createPivotTable();
-
-
-  }
 
   createPivotTable() {
 
-    const {rowDimension, columnDimension, valueMeasure} = this.pivotTableForm.value;
+    if (!this.pivotTableFormValue) {
+      console.warn('Form values not initialized');
+      return;
+    }
+
+    const {rowDimension, columnDimension, valueMeasure} = this.pivotTableFormValue;
+
 
     if (!rowDimension) {
       alert('Please select at least a row dimension');
@@ -385,7 +369,6 @@ export class AnalysisToolsRawComponent implements OnInit {
   }
 
   private buildSelectOptions(records: any[]) {
-    // Prefer known categorical dimensions; fall back to inferring string-like keys
     const defaultDims = ['platform', 'country', 'device_tier', 'event_name', 'release_channel', 'source', 'day', 'app_version', 'network_type'];
     const first = records?.[0] ?? {};
     const keys = Object.keys(first || {});
@@ -397,13 +380,11 @@ export class AnalysisToolsRawComponent implements OnInit {
     const measures = numericCandidates.filter(k => k in first);
 
     this.dimensionOptions = [{label: '-- Select Dimension --', value: ''}, ...dims.map(k => ({
-      label: this.pretty(k),
-      value: k
+      label: this.pretty(k), value: k
     }))];
 
     this.measureOptions = [{
-      label: 'Count',
-      value: 'count'
+      label: 'Count', value: 'count'
     }, ...measures.filter(m => m !== 'count').map(k => ({label: this.pretty(k), value: k}))];
   }
 

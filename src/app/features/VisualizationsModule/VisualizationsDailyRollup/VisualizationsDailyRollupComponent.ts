@@ -5,10 +5,10 @@ import {AgChartOptions} from 'ag-charts-community';
 import {AgCharts} from 'ag-charts-angular';
 import {ProgressSpinner} from 'primeng/progressspinner';
 import {DataService} from '../../../core/services/DataService';
-import {FilterDrawerComponent} from '../../shared/components/FilterDrawerComponent/FilterDrawerComponent';
+import {FilterDrawerComponent} from '../../shared/components/data-explorer/FilterDrawerComponent/FilterDrawerComponent';
 import {FiltersService} from '../../../core/services/FiltersService';
 import {applyCommonFilters} from '../../shared/utils/applyFilters';
-import {PageHeaderComponent} from '../../shared/components/PageHeaderComponent/PageHeaderComponent';
+import {PageHeaderComponent} from '../../shared/components/shared-globally/PageHeaderComponent/PageHeaderComponent';
 import {Select} from 'primeng/select';
 
 

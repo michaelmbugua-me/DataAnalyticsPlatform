@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 
-import {FilterManagerComponent} from './FilterManager/FilterManagerComponent';
+import {FilterManagerComponent} from './FilterManager/filter-manager-component';
 import {ConfirmationService, MessageService} from 'primeng/api';
 import {ToastModule} from 'primeng/toast';
 import {ConfirmDialog} from 'primeng/confirmdialog';

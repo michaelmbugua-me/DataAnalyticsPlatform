@@ -3,8 +3,8 @@ import {Drawer} from 'primeng/drawer';
 import {DatePicker} from 'primeng/datepicker';
 import {FormsModule} from '@angular/forms';
 import {ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
-import {DataService} from '../../../../core/services/DataService';
-import {FiltersService} from '../../../../core/services/FiltersService';
+import {DataService} from '../../../../../core/services/DataService';
+import {FiltersService} from '../../../../../core/services/FiltersService';
 import {Select} from 'primeng/select';
 
 @Component({
