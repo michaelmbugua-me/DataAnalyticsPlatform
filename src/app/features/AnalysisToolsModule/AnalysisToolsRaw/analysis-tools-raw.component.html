@@ -104,10 +104,20 @@
                   <div class="w-full rounded-xl border border-gray-200 bg-white shadow p-4 md:p-6">
                     <div class="flex justify-between items-center mb-3">
                       <h6 class="text-lg font-semibold text-gray-800 mb-3">Pivot Table View</h6>
-                      <p-button severity="contrast" class="flex items-center gap-2" (click)="exportPivotTable()">
-                        <i class="pi pi-download" pButtonIcon></i>
-                        <span pButtonLabel>Export Records</span>
-                      </p-button>
+
+                      <p-split-button
+                        [model]="pivotItems"
+                        class="w-full sm:w-auto"
+                        label="Export Records"
+                        severity="contrast">
+                        <ng-template pTemplate="content">
+                          <span class="flex align-items-center font-bold">
+                            <i class="pi pi-download" pButtonIcon></i>
+                            <span class="ms-2">Export Records</span>
+                          </span>
+                        </ng-template>
+                      </p-split-button>
+
                     </div>
 
                     <ag-grid-angular
@@ -129,10 +139,19 @@
                     <div class="flex justify-between items-center mb-3">
                       <h6 class="text-lg font-semibold text-gray-800">Grouped Data View</h6>
 
-                      <p-button severity="contrast" class="flex items-center gap-2" (click)="exportGroupTable()">
-                        <i class="pi pi-download" pButtonIcon></i>
-                        <span pButtonLabel>Export Records</span>
-                      </p-button>
+
+                      <p-split-button
+                        [model]="items"
+                        class="w-full sm:w-auto"
+                        label="Export Records"
+                        severity="contrast">
+                        <ng-template pTemplate="content">
+                          <span class="flex align-items-center font-bold">
+                            <i class="pi pi-download" pButtonIcon></i>
+                            <span class="ms-2">Export Records</span>
+                          </span>
+                        </ng-template>
+                      </p-split-button>
 
                     </div>
                     <ag-grid-angular

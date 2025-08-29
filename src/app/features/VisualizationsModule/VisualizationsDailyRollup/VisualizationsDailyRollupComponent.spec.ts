@@ -1,5 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {VisualizationsDailyRollupComponent} from './VisualizationsDailyRollupComponent';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('VisualizationsDailyRollupComponent', () => {
 
@@ -9,7 +10,7 @@ describe('VisualizationsDailyRollupComponent', () => {
   beforeEach(async () => {
 
     await TestBed.configureTestingModule({
-      declarations: [], imports: [VisualizationsDailyRollupComponent]
+      declarations: [], imports: [HttpClientTestingModule, VisualizationsDailyRollupComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(VisualizationsDailyRollupComponent);

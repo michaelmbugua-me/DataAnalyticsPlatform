@@ -66,30 +66,39 @@
                 <div class="space-y-6">
                   <!-- Row 1 -->
                   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="w-full min-h-[420px] md:min-h-[520px] lg:min-h-[600px] rounded-xl border border-gray-200 bg-white shadow p-4 md:p-6">
-                      <ag-charts style="width: 100%; height: 100%" [options]="eventsOverTimeChartOptions"></ag-charts>
+
+                    <!--  Experimental Stuff  -->
+                    <div class="w-full min-h-[420px] md:min-h-[520px] lg:min-h-[600px] rounded-xl border border-gray-200 bg-white shadow">
+                      <ag-charts
+                        style="width: 100%; height: 100%"
+                        [options]="simplePerformanceChartOptions">
+                      </ag-charts>
                     </div>
-                    <div class="w-full min-h-[420px] md:min-h-[520px] lg:min-h-[600px] rounded-xl border border-gray-200 bg-white shadow p-4 md:p-6">
+
+                    <!--  Experimental Stuff  -->
+
+
+                    <div class="w-full min-h-[420px] md:min-h-[520px] lg:min-h-[600px] rounded-xl border border-gray-200 bg-white shadow">
                       <ag-charts style="width: 100%; height: 100%" [options]="eventsChartOptions"></ag-charts>
                     </div>
                   </div>
 
                   <!-- Row 2 -->
                   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="w-full min-h-[420px] md:min-h-[520px] lg:min-h-[600px] rounded-xl border border-gray-200 bg-white shadow p-4 md:p-6">
+                    <div class="w-full min-h-[420px] md:min-h-[520px] lg:min-h-[600px] rounded-xl border border-gray-200 bg-white shadow">
                       <ag-charts style="width: 100%; height: 100%" [options]="platformChartOptions"></ag-charts>
                     </div>
-                    <div class="w-full min-h-[420px] md:min-h-[520px] lg:min-h-[600px] rounded-xl border border-gray-200 bg-white shadow p-4 md:p-6">
+                    <div class="w-full min-h-[420px] md:min-h-[520px] lg:min-h-[600px] rounded-xl border border-gray-200 bg-white shadow">
                       <ag-charts style="width: 100%; height: 100%" [options]="deviceTierChartOptions"></ag-charts>
                     </div>
                   </div>
 
                   <!-- Row 3 -->
                   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="w-full min-h-[420px] md:min-h-[520px] lg:min-h-[600px] rounded-xl border border-gray-200 bg-white shadow p-4 md:p-6">
+                    <div class="w-full min-h-[420px] md:min-h-[520px] lg:min-h-[600px] rounded-xl border border-gray-200 bg-white shadow">
                       <ag-charts style="width: 100%; height: 100%" [options]="countryChartOptions"></ag-charts>
                     </div>
-                    <div class="w-full min-h-[420px] md:min-h-[520px] lg:min-h-[600px] rounded-xl border border-gray-200 bg-white shadow p-4 md:p-6">
+                    <div class="w-full min-h-[420px] md:min-h-[520px] lg:min-h-[600px] rounded-xl border border-gray-200 bg-white shadow">
                       <ag-charts style="width: 100%; height: 100%" [options]="appStartPercentilesChartOptions"></ag-charts>
                     </div>
                   </div>

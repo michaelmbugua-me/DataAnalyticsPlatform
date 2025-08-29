@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { DailyRollupsComponent } from './DailyRollupsComponent';
 import { DataService } from '../../../core/services/DataService';
 import { AgGridAngular } from 'ag-grid-angular';
-import { FilterDrawerComponent } from '../../shared/components/filter-drawer';
+import { FilterDrawerComponent } from '../../shared/components/FilterDrawerComponent/FilterDrawerComponent';
 import { By } from '@angular/platform-browser';
 import { signal } from '@angular/core';
 import { DailyRollup } from '../../../core/models/DataModels';
@@ -57,7 +57,7 @@ describe.skip('DailyRollupsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FormsModule, DailyRollupsComponent],
+      imports: [FormsModule, HttpClientTestingModule, DailyRollupsComponent],
       providers: [
         { provide: DataService, useValue: mockDataService }
       ]

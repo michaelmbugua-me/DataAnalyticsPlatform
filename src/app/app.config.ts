@@ -12,7 +12,7 @@ import Aura from '@primeuix/themes/aura';
 
 import { routes } from './app.routes';
 import { DataService } from './core/services/DataService';
-import {combineLatest, firstValueFrom, forkJoin, of, timeout} from 'rxjs';
+import {combineLatest, firstValueFrom, of, timeout} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 
 export function preloadDataFactory() {

@@ -27,7 +27,6 @@ import {SplitButton} from 'primeng/splitbutton';
     Drawer,
     FormsModule,
     PageHeaderComponent,
-    SplitButton,
   ],
   providers: [],
   standalone: true,
@@ -72,7 +71,6 @@ export class AnalysisToolsDailyComponent implements OnInit {
   totalEvents = 0;
   averageDuration = '0ms';
   uniqueUsers = 0;
-  // Card Statistics
 
   constructor(private fb: FormBuilder) {
     this.dataGroupForm = fb.group({
@@ -87,7 +85,6 @@ export class AnalysisToolsDailyComponent implements OnInit {
       valueMeasure: ['events_count', Validators.required]
     });
 
-    // React to data arrivals/changes to build options and initialize tables
     effect(() => {
       const records = this.data();
       this.buildSelectOptions(records);
@@ -108,10 +105,8 @@ export class AnalysisToolsDailyComponent implements OnInit {
       keys.filter(k => typeof first[k] === 'string' && !defaultDims.includes(k))
     );
 
-    // Inject a user-friendly alias: Event Type -> event_name (resolved later to event_group if needed)
     const withAlias = [...dims];
     if (!('event_name' in first) && ('event_group' in first)) {
-      // Add a synthetic option value 'event_name' so the rest of the UI stays consistent
       withAlias.push('event_name');
     }
 
@@ -180,7 +175,6 @@ export class AnalysisToolsDailyComponent implements OnInit {
 
     const getDim = (it: any, key: string) => {
       if (key === 'event_name') {
-        // Prefer event_name if present; otherwise fall back to event_group (Daily dataset)
         return (it?.event_name ?? it?.event_group ?? 'Unknown');
       }
       return (it?.[key] ?? 'Unknown');
@@ -196,7 +190,6 @@ export class AnalysisToolsDailyComponent implements OnInit {
       groupedData[key].push(item);
     });
 
-    // Apply aggregation
     const result: any[] = [];
     for (const key in groupedData) {
       const group = groupedData[key];
@@ -247,10 +240,6 @@ export class AnalysisToolsDailyComponent implements OnInit {
 
     this.createPivotTable();
 
-
-
-
-
   }
 
   createPivotTable() {
@@ -262,7 +251,6 @@ export class AnalysisToolsDailyComponent implements OnInit {
       return;
     }
 
-    // Group data by row and column dimensions
     const pivotData: any = {};
     const columnValues = new Set();
 
@@ -278,7 +266,6 @@ export class AnalysisToolsDailyComponent implements OnInit {
       const rowValue = getDim(item, rowDimension);
       const colValue = columnDimension ? getDim(item, columnDimension) : 'Total';
 
-      // Add to column values set
       if (columnDimension) columnValues.add(colValue);
 
       if (!pivotData[rowValue]) {
@@ -289,19 +276,16 @@ export class AnalysisToolsDailyComponent implements OnInit {
         pivotData[rowValue][colValue] = { count: 0, sum: 0 };
       }
 
-      // Update measures
       pivotData[rowValue][colValue].count += 1;
       if (valueMeasure !== 'count') {
         pivotData[rowValue][colValue].sum += Number(item?.[valueMeasure]) || 0;
       }
     });
 
-    // Prepare column definitions
     const columnDefs: any = [
       { headerName: rowDimension, field: rowDimension, pinned: 'left' }
     ];
 
-    // Add column dimension values as columns
     const columnArray: any = columnDimension ? Array.from(columnValues) : ['Total'];
     columnArray.forEach((col: string | number) => {
       columnDefs.push({
@@ -314,7 +298,6 @@ export class AnalysisToolsDailyComponent implements OnInit {
       });
     });
 
-    // Add total column only when there is a column dimension (to provide row totals)
     if (columnDimension) {
       columnDefs.push({
         headerName: 'Total',
@@ -331,7 +314,6 @@ export class AnalysisToolsDailyComponent implements OnInit {
       });
     }
 
-    // Prepare row data
     const rowData = Object.keys(pivotData).map(rowValue => {
       return {[rowDimension]: rowValue};
     });
@@ -352,6 +334,8 @@ export class AnalysisToolsDailyComponent implements OnInit {
 
     const data = this.data();
 
+    console.log(data.length)
+
     const totalEvents = data.reduce((acc: number, r: any) => acc + (Number(r?.events_count) || 0), 0);
     const totalUsers = data.reduce((acc: number, r: any) => acc + (Number(r?.users_count) || 0), 0);
 
@@ -363,7 +347,6 @@ export class AnalysisToolsDailyComponent implements OnInit {
       return;
     }
 
-    // Average of avg_duration_ms across records that have it
     const durations = data
       .map((r: any) => Number(r?.avg_duration_ms))
       .filter((v: number) => !isNaN(v));

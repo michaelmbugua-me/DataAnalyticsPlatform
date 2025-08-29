@@ -1,11 +1,11 @@
 import {Component, effect, inject, OnInit, signal, ChangeDetectionStrategy} from '@angular/core';
-import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
+import { ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {FormsModule} from '@angular/forms';
-import {AgChartOptions} from 'ag-charts-community';
+import {AgChartOptions, AgCartesianChartOptions} from 'ag-charts-community';
 import {AgCharts} from 'ag-charts-angular';
 import {ProgressSpinner} from 'primeng/progressspinner';
 import {DataService} from '../../../core/services/DataService';
-import {FilterDrawerComponent} from '../../shared/components/filter-drawer';
+import {FilterDrawerComponent} from '../../shared/components/FilterDrawerComponent/FilterDrawerComponent';
 import { FiltersService } from '../../../core/services/FiltersService';
 import { applyCommonFilters } from '../../shared/utils/applyFilters';
 import {PageHeaderComponent} from '../../shared/components/PageHeaderComponent/PageHeaderComponent';
@@ -17,7 +17,7 @@ import {Select} from 'primeng/select';
   templateUrl: './VisualizationsRawDataComponent.html',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ButtonDirective, ButtonIcon, ButtonLabel, FormsModule, Button, AgCharts, ProgressSpinner, FilterDrawerComponent, PageHeaderComponent, Select],
+  imports: [ButtonDirective, ButtonIcon, ButtonLabel, FormsModule, AgCharts, ProgressSpinner, FilterDrawerComponent, PageHeaderComponent, Select],
   providers: [],
   styleUrls: ['./VisualizationsRawDataComponent.scss']
 })
@@ -55,12 +55,16 @@ export class VisualizationsRawDataComponent implements OnInit {
       .map((v: any) => String(v ?? '')).join(' ')
   });
 
+
+  simplePerformanceChartOptions!: AgCartesianChartOptions;
   performanceChartOptions!: AgChartOptions;
   eventsChartOptions!: AgChartOptions;
   platformChartOptions!: AgChartOptions;
   deviceTierChartOptions!: AgChartOptions;
   countryChartOptions!: AgChartOptions;
   networkChartOptions!: AgChartOptions;
+  crashChartOptions!: AgChartOptions;
+  crashByChannelChartOptions!: AgChartOptions;
 
   filters!: Filter[];
 
@@ -70,36 +74,99 @@ export class VisualizationsRawDataComponent implements OnInit {
 
   // Charts
   chartLoaded: any = false;
+  eventTypes!: any[];
 
   constructor() {
 
     effect(() => {
 
       // Derive datasets from current filtered rows
-      const performanceData = this.getPerformanceData();
+      let appStartPerformanceOverTime = this.prepareRawPerformanceData();
       const eventDistribution = this.getEventDistribution();
-      const platformData = this.getPlatformData();
       const deviceTierData = this.getDeviceTierData();
       const countryChartData = this.getCountryData();
       const networkChartData = this.getNetworkData();
+      const crashDataResult = this.getCrashDataByVersion();
+      const crashByChannelDataResult = this.getCrashDataByReleaseChannel();
 
       this.chartLoaded = true;
 
       // Chart 1: Performance Over Time (App Start Duration)
-      this.performanceChartOptions = {
+      this.simplePerformanceChartOptions = {
         title: {
-          text: 'App Start Performance Over Time',
-        }, data: [...performanceData], series: [{
-          type: 'line', xKey: 'day', yKey: 'duration_ms', yName: 'App Start Time (ms)',
-        },], axes: [{
-          type: 'category', position: 'bottom', title: {
-            text: 'Date',
+          text: 'App Start Performance Trends',
+        },
+        subtitle: {
+          text: 'Daily average app start time with key percentiles'
+        },
+        data: this.prepareRawPerformanceData(),
+        series: [
+          {
+            type: 'line',
+            xKey: 'day',
+            yKey: 'avg_duration_ms',
+            yName: 'Average',
+            stroke: '#2563eb',
+            strokeWidth: 3,
+            marker: {
+              enabled: true,
+              size: 6,
+              fill: '#2563eb'
+            }
           },
-        }, {
-          type: 'number', position: 'left', title: {
-            text: 'Duration (ms)',
+          {
+            type: 'line',
+            xKey: 'day',
+            yKey: 'max_duration_ms',
+            yName: 'Maximum',
+            stroke: '#f59e0b',
+            strokeWidth: 2,
+            lineDash: [4, 4],
+            marker: {
+              enabled: true,
+              size: 4,
+              fill: '#f59e0b'
+            }
           },
-        },],
+          {
+            type: 'line',
+            xKey: 'day',
+            yKey: 'min_duration_ms',
+            yName: 'Minimum',
+            stroke: '#327c1f',
+            strokeWidth: 2,
+            lineDash: [4, 4],
+            marker: {
+              enabled: true,
+              size: 4,
+              fill: '#327c1f'
+            }
+          }
+        ],
+        axes: [
+          {
+            type: 'time',
+            position: 'bottom',
+            title: {
+              text: 'Date',
+            },
+            label: {
+              format: '%b %d',
+              rotation: 45
+            }
+          },
+          {
+            type: 'number',
+            position: 'left',
+            title: {
+              text: 'Duration (ms)',
+            },
+            min: 0
+          }
+        ],
+        legend: {
+          position: 'bottom'
+        }
       };
 
       // Chart 2: Event Distribution
@@ -114,16 +181,16 @@ export class VisualizationsRawDataComponent implements OnInit {
       // Chart 3: Platform Usage
       this.platformChartOptions = {
         title: {
-          text: 'Usage by Platform',
+          text: 'Usage by Platform and Event Type',
         },
-        data: [...platformData],
-        series: [
-          {
-            type: 'bar',
-            xKey: 'platform',
-            yKey: 'count',
-          },
-        ],
+        data: this.getPlatformEventChartData(),
+        series: this.eventTypes.map(event => ({
+          type: 'bar',
+          xKey: 'platform',
+          yKey: event,
+          stacked: true,
+          yName: event.replace('_', ' ').toUpperCase()
+        })),
         axes: [
           {
             type: 'category',
@@ -219,9 +286,103 @@ export class VisualizationsRawDataComponent implements OnInit {
         ],
       };
 
+      // Chart 7: Crashes and crash types by app_version
+      this.crashChartOptions = {
+        title: {
+          text: 'Crashes by App Version',
+        },
+        data: crashDataResult.data,
+        series: crashDataResult.crashGroupTypes.map(crashGroup => ({
+          type: 'bar',
+          xKey: 'app_version',
+          yKey: crashGroup as string,
+          stacked: true,
+          yName: formatCrashGroupName(crashGroup)
+        })),
+        axes: [
+        ],
+        legend: {
+          position: 'bottom'
+        }
+      };
+
+      // Chart 8: Crashes and crash types by release channel
+      this.crashByChannelChartOptions = {
+        title: {
+          text: 'Crashes by Release Channel',
+        },
+        data: crashByChannelDataResult.data,
+        series: crashByChannelDataResult.crashGroupTypes.map(crashGroup => ({
+          type: 'bar',
+          xKey: 'app_version',
+          yKey: crashGroup as string,
+          stacked: true,
+          yName: formatCrashGroupName(crashGroup)
+        })),
+        axes: [
+        ],
+        legend: {
+          position: 'bottom'
+        }
+      };
+
     });
 
   }
+
+  prepareRawPerformanceData() {
+    const appStartData = this.viewData()
+      .filter((item: any) => item.event_name === 'app_start' && item.duration_ms)
+      .map((item: any) => ({
+        day: new Date(item.day),
+        duration_ms: item.duration_ms,
+        platform: item.platform,
+        device_tier: item.device_tier,
+        country: item.country,
+        app_version: item.app_version,
+        network_type: item.network_type
+      }))
+      .sort((a, b) => a.day.getTime() - b.day.getTime());
+
+    // Group by day and calculate statistics
+    const dailyData: any = {};
+
+    appStartData.forEach(item => {
+      const dayKey = item.day.toISOString().split('T')[0];
+
+      if (!dailyData[dayKey]) {
+        dailyData[dayKey] = {
+          day: item.day,
+          durations: [],
+          platforms: new Set(),
+          device_tiers: new Set(),
+          countries: new Set()
+        };
+      }
+
+      dailyData[dayKey].durations.push(item.duration_ms);
+      dailyData[dayKey].platforms.add(item.platform);
+      dailyData[dayKey].device_tiers.add(item.device_tier);
+      dailyData[dayKey].countries.add(item.country);
+    });
+
+    // Calculate metrics for each day
+    return Object.values(dailyData).map((dayData: any) => {
+      const durations = dayData.durations.sort((a: number, b: number) => a - b);
+      const count = durations.length;
+
+      return {
+        day: dayData.day,
+        avg_duration_ms: Math.round(durations.reduce((sum: number, val: number) => sum + val, 0) / count),
+        min_duration_ms: durations[0],
+        max_duration_ms: durations[count - 1],
+        total_events: count,
+        platforms_active: dayData.platforms.size,
+        device_tiers_active: dayData.device_tiers.size,
+        countries_active: dayData.countries.size
+      };
+    });
+  };
 
   getEventDistribution() {
     const eventCounts: any = {};
@@ -233,26 +394,6 @@ export class VisualizationsRawDataComponent implements OnInit {
 
     return Object.keys(eventCounts).map(event => ({
       event, count: eventCounts[event]
-    }));
-  }
-
-  getPerformanceData() {
-    return (this.viewData() || [])
-      .filter((item: any) => item.source === 'performance' && item.perf_type === 'app_start')
-      .map((item: any) => ({
-        day: item.day, duration_ms: item.duration_ms, platform: item.platform
-      }));
-  }
-
-  getPlatformData() {
-    const platformCounts: any = {};
-    (this.viewData() || []).forEach((item: any) => {
-      platformCounts[item.platform] = (platformCounts[item.platform] || 0) + 1;
-    });
-
-    return Object.keys(platformCounts).map((platform) => ({
-      platform,
-      count: platformCounts[platform]
     }));
   }
 
@@ -271,10 +412,24 @@ export class VisualizationsRawDataComponent implements OnInit {
         tierCounts[item.device_tier]++;
       });
 
-    return Object.keys(tierData).map(tier => ({
-      device_tier: tier,
-      avg_duration: Math.round(tierData[tier] / (tierCounts[tier] || 1))
-    }));
+    // Define the desired order
+    const tierOrder = ['low', 'mid', 'medium', 'high'];
+
+    return Object.keys(tierData)
+      .map(tier => ({
+        device_tier: tier,
+        avg_duration: Math.round(tierData[tier] / (tierCounts[tier] || 1))
+      }))
+      .sort((a, b) => {
+        const indexA = tierOrder.indexOf(a.device_tier.toLowerCase());
+        const indexB = tierOrder.indexOf(b.device_tier.toLowerCase());
+
+        // If tier not found in order array, put it at the end
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+
+        return indexA - indexB;
+      });
   }
 
   getCountryData() {
@@ -311,6 +466,129 @@ export class VisualizationsRawDataComponent implements OnInit {
     }));
   }
 
+  getPlatformEventChartData() {
+    const platformEventData: any = {};
+
+    // First, collect all unique events for stacking
+    (this.viewData() || []).forEach((item: any) => {
+      if (!platformEventData[item.platform]) {
+        platformEventData[item.platform] = {};
+      }
+      platformEventData[item.platform][item.event_name] =
+        (platformEventData[item.platform][item.event_name] || 0) + 1;
+    });
+
+    const allEvents = new Set();
+    (this.viewData() || []).forEach(item => allEvents.add(item.event_name));
+     this.eventTypes = Array.from(allEvents);
+
+    // Transform data for stacked bar chart
+    return Object.keys(platformEventData).map((platform) => {
+      const platformEntry: any = { platform };
+
+      this.eventTypes.forEach(event => {
+        platformEntry[event] = platformEventData[platform][event] || 0;
+      });
+
+      return platformEntry;
+    });
+  }
+
+  getCrashDataByVersion() {
+    const crashData: any = {};
+
+    // Filter for crash events only
+    (this.viewData() || []).filter(item => item.is_crash === 1).forEach((item: any) => {
+      const versionKey = item.app_version;
+
+      if (!crashData[versionKey]) {
+        crashData[versionKey] = {
+          total: 0,
+          crashGroups: {}
+        };
+      }
+
+      crashData[versionKey].total += 1;
+
+      // Use crash_group_id if available, otherwise use exception_type as fallback
+      const crashGroup = item.crash_group_id || item.exception_type || 'unknown';
+      crashData[versionKey].crashGroups[crashGroup] =
+        (crashData[versionKey].crashGroups[crashGroup] || 0) + 1;
+    });
+
+    // Get all unique crash groups for stacking
+    const allCrashGroups = new Set();
+    (this.viewData() || []).filter((item: any) => item.is_crash === 1).forEach((item: any) => {
+      const crashGroup = item.crash_group_id || item.exception_type || 'unknown';
+      allCrashGroups.add(crashGroup);
+    });
+    const crashGroupTypes = Array.from(allCrashGroups);
+
+    // Transform data for stacked bar chart
+    return {
+      data: Object.keys(crashData).map((version) => {
+        const versionEntry: any = {
+          app_version: version,
+          total: crashData[version].total
+        };
+
+        crashGroupTypes.forEach((group: any) => {
+          versionEntry[group] = crashData[version].crashGroups[group] || 0;
+        });
+
+        return versionEntry;
+      }),
+      crashGroupTypes: crashGroupTypes
+    };
+  }
+
+  getCrashDataByReleaseChannel() {
+    const crashData: any = {};
+
+    // Filter for crash events only
+    (this.viewData() || []).filter(item => item.is_crash === 1).forEach((item: any) => {
+      const versionKey = item.release_channel;
+
+      if (!crashData[versionKey]) {
+        crashData[versionKey] = {
+          total: 0,
+          crashGroups: {}
+        };
+      }
+
+      crashData[versionKey].total += 1;
+
+      // Use crash_group_id if available, otherwise use exception_type as fallback
+      const crashGroup = item.crash_group_id || item.exception_type || 'unknown';
+      crashData[versionKey].crashGroups[crashGroup] =
+        (crashData[versionKey].crashGroups[crashGroup] || 0) + 1;
+    });
+
+    // Get all unique crash groups for stacking
+    const allCrashGroups = new Set();
+    (this.viewData() || []).filter((item: any) => item.is_crash === 1).forEach((item: any) => {
+      const crashGroup = item.crash_group_id || item.exception_type || 'unknown';
+      allCrashGroups.add(crashGroup);
+    });
+    const crashGroupTypes = Array.from(allCrashGroups);
+
+    // Transform data for stacked bar chart
+    return {
+      data: Object.keys(crashData).map((version) => {
+        const versionEntry: any = {
+          app_version: version,
+          total: crashData[version].total
+        };
+
+        crashGroupTypes.forEach((group: any) => {
+          versionEntry[group] = crashData[version].crashGroups[group] || 0;
+        });
+
+        return versionEntry;
+      }),
+      crashGroupTypes: crashGroupTypes
+    };
+  }
 
   async ngOnInit() {
 
@@ -341,6 +619,31 @@ export class VisualizationsRawDataComponent implements OnInit {
   printScreen() {
     window.print();
   }
+
+  preparePlatformComparisonData() {
+    const platformData: any = {};
+
+    this.viewData()
+      .filter((item: any) => item.event_name === 'app_start' && item.duration_ms)
+      .forEach((item: any) => {
+        if (!platformData[item.platform]) {
+          platformData[item.platform] = [];
+        }
+        platformData[item.platform].push(item.duration_ms);
+      });
+
+    return Object.entries(platformData).map(([platform, durations]: [string, any]) => {
+      const sorted = durations.sort((a: number, b: number) => a - b);
+      const count = sorted.length;
+
+      return {
+        platform,
+        avg_duration: Math.round(sorted.reduce((sum: number, val: number) => sum + val, 0) / count),
+        p90_duration: sorted[Math.floor(count * 0.9)],
+        sample_size: count
+      };
+    });
+  }
 }
 
 function uniqSorted(arr: (string | null | undefined)[]): string[] {
@@ -355,3 +658,13 @@ interface Filter {
   code: string
 }
 
+
+// Helper to format crash group names for display
+function formatCrashGroupName(crashGroup: any): string {
+  return crashGroup
+    .replace('cg_', '')
+    .replace(/_/g, ' ')
+    .split(' ')
+    .map((word: any) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}

@@ -3,13 +3,6 @@ import { evaluateQuery } from '../../../core/utils/query';
 export interface FacetMap {
   [key: string]: string | null | undefined;
 }
-
-/**
- * Apply common filters to an array of records.
- * - searchText: free text search against a provided stringify(row)
- * - query: simple query language evaluated via evaluateQuery
- * - facets: exact match on provided key/value pairs (skip facet if value is falsy)
- */
 export function applyCommonFilters<T>(rows: T[], opts: {
   searchText?: string;
   query?: string;

@@ -23,13 +23,18 @@
               <i class="pi pi-plus" pButtonIcon></i>
               <span pButtonLabel>Set Up Filter</span>
             </button>
-            <p-button
-              (click)="exportRecords()"
+            <p-split-button
+              [model]="items"
               class="w-full sm:w-auto"
+              label="Export Records"
               severity="contrast">
-              <i class="pi pi-download" pButtonIcon></i>
-              <span pButtonLabel>Export Records</span>
-            </p-button>
+              <ng-template pTemplate="content">
+              <span class="flex align-items-center font-bold">
+                <i class="pi pi-download" pButtonIcon></i>
+                <span class="ms-2">Export Records</span>
+              </span>
+              </ng-template>
+            </p-split-button>
           </div>
         </div>
       </app-page-header>

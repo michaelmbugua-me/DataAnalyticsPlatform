@@ -17,6 +17,15 @@
           "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
+            "allowedCommonJsDependencies": [
+              "html2canvas",
+              "jspdf",
+              "core-js",
+              "canvg",
+              "raf",
+              "rgbcolor",
+              "file-saver"
+            ],
             "polyfills": [
               "zone.js"
             ],
@@ -42,7 +51,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
-                  "maximumError": "3MB"
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",

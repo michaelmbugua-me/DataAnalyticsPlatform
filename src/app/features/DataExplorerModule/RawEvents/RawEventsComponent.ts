@@ -1,19 +1,15 @@
 import {Component, inject, OnInit, signal, computed, Signal, ChangeDetectionStrategy} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {ColDef, GridOptions, GridReadyEvent, ValueFormatterParams, CellClassParams} from 'ag-grid-community';
-import {Button, ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
+import {ButtonDirective, ButtonIcon, ButtonLabel} from 'primeng/button';
 import {Select} from 'primeng/select';
 import {FormsModule} from '@angular/forms';
 import {DataService} from '../../../core/services/DataService';
-import {FilterDrawerComponent} from '../../shared/components/filter-drawer';
+import { FilterDrawerComponent } from '../../shared/components/FilterDrawerComponent/FilterDrawerComponent';
 import {
   RawEvent,
-  AnalyticsEvent,
-  PerformanceEvent,
-  CrashEvent,
   EventSource,
   Platform,
-  Country,
   ReleaseChannel
 } from '../../../core/models/DataModels';
 import { getSourceCellStyle, getReleaseChannelStyle, getDurationCellStyle } from '../../shared/utils/gridCellStyles';
@@ -22,6 +18,8 @@ import {DataExportationService} from '../../../core/services/DataExportationServ
 import { FiltersService } from '../../../core/services/FiltersService';
 import { evaluateQuery } from '../../../core/utils/query';
 import { PageHeaderComponent } from '../../shared/components/PageHeaderComponent/PageHeaderComponent';
+import {MenuItem, PrimeTemplate} from 'primeng/api';
+import {SplitButton} from 'primeng/splitbutton';
 
 // Register AG Grid modules lazily for this feature chunk
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -35,10 +33,11 @@ ModuleRegistry.registerModules([AllCommunityModule]);
     ButtonIcon,
     ButtonLabel,
     FormsModule,
-    Button,
     FilterDrawerComponent,
     Select,
-    PageHeaderComponent
+    PageHeaderComponent,
+    PrimeTemplate,
+    SplitButton
   ],
   providers: [],
   styleUrls: ['./RawEventsComponent.scss'],
@@ -46,6 +45,30 @@ ModuleRegistry.registerModules([AllCommunityModule]);
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RawEventsComponent implements OnInit {
+
+  constructor() {
+
+    this.items = [
+      {
+        label: 'Export as PDF',
+        command: () => {
+          this.exportRecords('pdf');
+        }
+      },
+      {
+        label: 'Export as Excel',
+        command: () => {
+          this.exportRecords('xlsx');
+        }
+      },
+      {
+        label: 'Export as CSV',
+        command: () => {
+          this.exportRecords('csv');
+        }
+      }
+    ]
+  }
 
   filtersService = inject(FiltersService);
 
@@ -64,7 +87,6 @@ export class RawEventsComponent implements OnInit {
   // Saved config names
   savedConfigNames = computed(() => (this.filtersService.savedConfigs() || []).map(c => c.name));
 
-  // Derived filtered data based on search + custom query + facet dropdowns
   public viewData: Signal<RawEvent[]> = computed(() => {
     const base = this.data();
     const search = (this.filtersService.searchText() || '').toLowerCase();
@@ -77,7 +99,6 @@ export class RawEventsComponent implements OnInit {
 
     const bySearch = (row: RawEvent) => {
       if (!search) return true;
-      // simple: stringify limited fields for performance
       const hay = [row.id, row.event_name, row.platform, row.country, row.app_id, row.source, row.release_channel]
         .map(v => String(v ?? '')).join(' ').toLowerCase();
       return hay.includes(search);
@@ -100,27 +121,10 @@ export class RawEventsComponent implements OnInit {
   private dataService = inject(DataService);
   private dataExportationService = inject(DataExportationService);
 
-  // Type-safe data with proper typing
   public data: Signal<RawEvent[]> = this.dataService.filteredRawData;
   error: Signal<string | null> = this.dataService.error;
-
-  filters!: Filter[];
   visible = signal(false);
 
-  // Computed signals for different event types (optional - for additional functionality)
-  analyticsEvents = computed(() =>
-    this.data()?.filter((event): event is AnalyticsEvent => event.source === 'analytics') ?? []
-  );
-
-  performanceEvents = computed(() =>
-    this.data()?.filter((event): event is PerformanceEvent => event.source === 'performance') ?? []
-  );
-
-  crashEvents = computed(() =>
-    this.data()?.filter((event): event is CrashEvent => event.source === 'crash') ?? []
-  );
-
-  // Enhanced column definitions with type-aware formatters
   columnDefs: ColDef<RawEvent>[] = [
     {
       field: 'id',
@@ -250,15 +254,8 @@ export class RawEventsComponent implements OnInit {
   };
 
   async ngOnInit() {
-    // restore selected config application on init if needed
     const sel = this.filtersService.selectedConfigName();
     if (sel) this.applySelectedConfig(sel);
-    this.filters = [
-      {name: 'Today\'s records', code: 'TODAY'},
-      {name: 'This week\'s records', code: 'WEEK'},
-      {name: 'This month\'s records', code: 'MONTH'},
-      {name: 'This year\'s records', code: 'YEAR'}
-    ];
   }
 
   onGridReady(params: GridReadyEvent<RawEvent>) {
@@ -310,71 +307,55 @@ export class RawEventsComponent implements OnInit {
     });
   }
 
-  exportRecords() {
-
-
+  exportRecords(type: 'pdf' | 'xlsx' | 'csv' = 'pdf') {
+    // Build column headers and row data from current grid data
     let cols: string[] = this.columnDefs.map((item: any) => {
-      if(item['headerName'].toLowerCase() !== 'actions'){
-        return item['field'].toUpperCase()
+      if(item['headerName'] && String(item['headerName']).toLowerCase() !== 'actions'){
+        return String(item['field'] ?? '').toUpperCase();
       } else {
         return ''
       }
-    })
+    });
 
-    cols = cols.filter(item => item !== '')
+    cols = cols.filter(item => item !== '' && item !== undefined);
 
-    let rowKeys: string[] = Object.keys(this.data()[0]);
-    let arr: string[][]= []
+    const view = this.viewData();
+    if (!view || view.length === 0) return;
 
-    this.data().forEach((row: any) => {
-      let temp: string[] = []
+    const rowKeys: string[] = Object.keys(view[0] as any);
+
+    // rows for PDF/Excel (matrix)
+    const matrix: (string | number)[][] = [];
+    // rows for CSV/XLSX JSON form
+    const jsonRows: Record<string, any>[] = [];
+
+    view.forEach((row: any) => {
+      const temp: (string | number)[] = [];
+      const jsonRow: Record<string, any> = {};
       cols.forEach(colKey => {
         rowKeys.forEach(key => {
-          if(colKey == key.toUpperCase()){
-            temp.push(row[key])
+          if(colKey === key.toUpperCase()){
+            temp.push(row[key]);
+            jsonRow[key] = row[key];
           }
         })
       })
-      arr.push(temp)
+      matrix.push(temp);
+      jsonRows.push(jsonRow);
     })
 
-    this.dataExportationService.exportToPdf(cols, arr, 'raw_events.pdf')
-  }
-
-  // Type-safe filter methods
-  filterBySource(source: EventSource) {
-    // Implementation for filtering by event source
-    console.log(`Filtering by source: ${source}`);
-  }
-
-  filterByPlatform(platform: Platform) {
-    // Implementation for filtering by platform
-    console.log(`Filtering by platform: ${platform}`);
-  }
-
-  filterByCountry(country: Country) {
-    // Implementation for filtering by country
-    console.log(`Filtering by country: ${country}`);
+    if (type === 'pdf') {
+      this.dataExportationService.exportToPdf(cols, matrix as string[][], 'Raw_Events.pdf');
+    } else if (type === 'xlsx') {
+      this.dataExportationService.exportDataXlsx(jsonRows, 'Raw_Events');
+    } else if (type === 'csv') {
+      this.dataExportationService.exportToCsv(jsonRows as any, 'Raw_Events');
+    }
   }
 
   // Export functionality with proper typing
-  exportAnalyticsEvents() {
-    const analyticsData = this.analyticsEvents();
-    console.log('Exporting analytics events:', analyticsData.length);
-    // Implementation for export
-  }
+  items: MenuItem[] | undefined;
 
-  exportPerformanceEvents() {
-    const performanceData = this.performanceEvents();
-    console.log('Exporting performance events:', performanceData.length);
-    // Implementation for export
-  }
-
-  exportCrashEvents() {
-    const crashData = this.crashEvents();
-    console.log('Exporting crash events:', crashData.length);
-    // Implementation for export
-  }
 
   saveCurrentConfig() {
     const name = prompt('Save current filters as (name):');
