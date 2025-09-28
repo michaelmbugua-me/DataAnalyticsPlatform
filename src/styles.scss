@@ -29,7 +29,6 @@ button {
 }
 
 :root {
-  /* Expose CSS custom properties for app-wide consumption */
   --color-primary: #{v.$brand-primary};
   --color-primary-600: #{v.$brand-primary-600};
   --color-accent: #{v.$brand-accent};

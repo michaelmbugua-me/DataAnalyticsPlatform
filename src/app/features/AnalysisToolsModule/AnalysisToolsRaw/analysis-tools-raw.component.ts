@@ -221,18 +221,14 @@ export class AnalysisToolsRawComponent implements OnInit {
         pivotData[rowValue][colValue] = {count: 0, sum: 0};
       }
 
-      // Update measures
       pivotData[rowValue][colValue].count += 1;
-      // Only accumulate sum when valueMeasure is not 'count'
       if (valueMeasure !== 'count') {
         pivotData[rowValue][colValue].sum += Number(item?.[valueMeasure]) || 0;
       }
     });
 
-    // Prepare column definitions
     const columnDefs: any = [{headerName: rowDimension, field: rowDimension, pinned: 'left'}];
 
-    // Add column dimension values as columns
     const columnArray: any = columnDimension ? Array.from(columnValues) : ['Total'];
     columnArray.forEach((col: string | number) => {
       columnDefs.push({
